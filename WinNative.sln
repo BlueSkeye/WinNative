@@ -12,26 +12,58 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "�
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleBasicNativeApp", "SampleBasicNativeApp\SampleBasicNativeApp.vcxproj", "{F3686F43-82B6-4E9F-BEF2-8266DF626F47}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Includes", "Includes", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		Includes\NtAtoms.h = Includes\NtAtoms.h
+		Includes\NtCommonDefs.h = Includes\NtCommonDefs.h
+		Includes\NTCRuntime.h = Includes\NTCRuntime.h
+		Includes\NtDebugging.h = Includes\NtDebugging.h
+		Includes\NtDevices.h = Includes\NtDevices.h
+		Includes\NtDll.h = Includes\NtDll.h
+		Includes\NtEnvironment.h = Includes\NtEnvironment.h
+		Includes\NtEvents.h = Includes\NtEvents.h
+		Includes\NtFile.h = Includes\NtFile.h
+		Includes\NtIo.h = Includes\NtIo.h
+		Includes\NtLocalProcedureCalls.h = Includes\NtLocalProcedureCalls.h
+		Includes\NtMemory.h = Includes\NtMemory.h
+		Includes\NtObjects.h = Includes\NtObjects.h
+		Includes\NtPartition.h = Includes\NtPartition.h
+		Includes\NtProcesses.h = Includes\NtProcesses.h
+		Includes\NtRegistry.h = Includes\NtRegistry.h
+		Includes\NTRuntimeLib.h = Includes\NTRuntimeLib.h
+		Includes\NtSection.h = Includes\NtSection.h
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9E7EB7F0-9E8F-4608-BE47-ED933F735DC2}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{9E7EB7F0-9E8F-4608-BE47-ED933F735DC2}.Debug|Any CPU.Build.0 = Debug|x64
 		{9E7EB7F0-9E8F-4608-BE47-ED933F735DC2}.Debug|x64.ActiveCfg = Debug|x64
 		{9E7EB7F0-9E8F-4608-BE47-ED933F735DC2}.Debug|x64.Build.0 = Debug|x64
 		{9E7EB7F0-9E8F-4608-BE47-ED933F735DC2}.Debug|x86.ActiveCfg = Debug|x64
 		{9E7EB7F0-9E8F-4608-BE47-ED933F735DC2}.Debug|x86.Build.0 = Debug|x64
+		{9E7EB7F0-9E8F-4608-BE47-ED933F735DC2}.Release|Any CPU.ActiveCfg = Release|x64
+		{9E7EB7F0-9E8F-4608-BE47-ED933F735DC2}.Release|Any CPU.Build.0 = Release|x64
 		{9E7EB7F0-9E8F-4608-BE47-ED933F735DC2}.Release|x64.ActiveCfg = Release|x64
 		{9E7EB7F0-9E8F-4608-BE47-ED933F735DC2}.Release|x64.Build.0 = Release|x64
 		{9E7EB7F0-9E8F-4608-BE47-ED933F735DC2}.Release|x86.ActiveCfg = Release|x64
 		{9E7EB7F0-9E8F-4608-BE47-ED933F735DC2}.Release|x86.Build.0 = Release|x64
+		{F3686F43-82B6-4E9F-BEF2-8266DF626F47}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{F3686F43-82B6-4E9F-BEF2-8266DF626F47}.Debug|Any CPU.Build.0 = Debug|x64
 		{F3686F43-82B6-4E9F-BEF2-8266DF626F47}.Debug|x64.ActiveCfg = Debug|x64
 		{F3686F43-82B6-4E9F-BEF2-8266DF626F47}.Debug|x64.Build.0 = Debug|x64
 		{F3686F43-82B6-4E9F-BEF2-8266DF626F47}.Debug|x86.ActiveCfg = Debug|Win32
 		{F3686F43-82B6-4E9F-BEF2-8266DF626F47}.Debug|x86.Build.0 = Debug|Win32
+		{F3686F43-82B6-4E9F-BEF2-8266DF626F47}.Release|Any CPU.ActiveCfg = Release|x64
+		{F3686F43-82B6-4E9F-BEF2-8266DF626F47}.Release|Any CPU.Build.0 = Release|x64
 		{F3686F43-82B6-4E9F-BEF2-8266DF626F47}.Release|x64.ActiveCfg = Release|x64
 		{F3686F43-82B6-4E9F-BEF2-8266DF626F47}.Release|x64.Build.0 = Release|x64
 		{F3686F43-82B6-4E9F-BEF2-8266DF626F47}.Release|x86.ActiveCfg = Release|Win32

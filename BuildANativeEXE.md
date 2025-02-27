@@ -5,6 +5,7 @@
 <br/>
 ## Includes and libraries
 The x.y.z.t term is used below as the Windows SDK version of interest. At time of writing this is 10.0.26100.0.<br/>
+"minwindef.h"  from %SystemDrive%\Program Files (x86)\Windows Kits\10\Include\x.y.z.t\shared<br/>
 "winternl.h" from %SystemDrive%\Program Files (x86)\Windows Kits\10\Include\x.y.z.t<br/>
 "ntdll.lib" from %SystemDrive%\Program Files (x86)\Windows Kits\10\Lib\x.y.z.t\um\x64<br/>
 <br/>
@@ -31,6 +32,7 @@ Next make sure project properties match following values :
     - Runtime library : Multi-threaded (/MT)
     - Security Check : Disable Security Check (/GS-)
 <br/>
+
 ## Main project file
 The main project file should include <windows.h> and <winternl.h> files.<br/>
 WARNING : Not all windows.h direct or indirect included content is usable by the project.<br/>
@@ -45,3 +47,4 @@ A native project entry function MUST be :
 ```
 extern "C" void NTAPI NtProcessStartup(PPEB peb) ...
 ```
+<br/>
