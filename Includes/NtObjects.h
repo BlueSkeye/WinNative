@@ -25,13 +25,9 @@ extern "C" {
         _Out_ PHANDLE DebugHandle,
         _In_ ACCESS_MASK DesiredAccess,
         _In_ POBJECT_ATTRIBUTES ObjectAttributes,
+        // Flags = BOOLEAN KillProcessOnExit according to
+        // http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
         _In_ ULONG Flags);
-    // http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
-    NTSYSAPI NTSTATUS NTAPI NtCreateDebugObject(
-        OUT PHANDLE             DebugObjectHandle,
-        IN ACCESS_MASK          DesiredAccess,
-        IN POBJECT_ATTRIBUTES   ObjectAttributes OPTIONAL,
-        IN BOOLEAN              KillProcessOnExit);
     //ZwCreateDebugObject
 
     // http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
@@ -145,7 +141,13 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntqueryobject
     // See winternl.h
-    // NtQueryObject
+    // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
+    NTSYSCALLAPI NTSTATUS NTAPI ZwQueryObject(
+        _In_ HANDLE Handle,
+        _In_ OBJECT_INFORMATION_CLASS ObjectInformationClass,
+        _Out_writes_bytes_opt_(ObjectInformationLength) PVOID ObjectInformation,
+        _In_ ULONG ObjectInformationLength,
+        _Out_opt_ PULONG ReturnLength);
     // ZwQueryObject
 
     // https://learn.microsoft.com/en-us/windows/win32/devnotes/ntquerysymboliclinkobject

@@ -58,18 +58,14 @@ extern "C" {
 	//ZwCreateEnclave
 
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
+	// https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
 	NTSYSCALLAPI NTSTATUS NTAPI NtCreatePagingFile(
 		_In_ PUNICODE_STRING PageFileName,
 		_In_ PLARGE_INTEGER MinimumSize,
 		_In_ PLARGE_INTEGER MaximumSize,
 		_In_ ULONG Priority);
-
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtCreatePagingFile(
-		_In_ PUNICODE_STRING PageFileName,
-		_In_ PLARGE_INTEGER MinSize,
-		_In_ PLARGE_INTEGER MaxSize,
-		_Out_opt_ PLARGE_INTEGER ActualSize);
+	// Defines last parameter as : _Out_opt_ PLARGE_INTEGER ActualSize
 	//ZwCreatePagingFile
 
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
@@ -150,6 +146,7 @@ extern "C" {
 		_Inout_ PVOID* BaseAddress,
 		_Inout_ PSIZE_T RegionSize,
 		_In_ ULONG MapType);
+	//ZwLockVirtualMemory
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtMapUserPhysicalPages(

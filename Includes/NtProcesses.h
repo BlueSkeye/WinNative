@@ -20,6 +20,11 @@ extern "C" {
 		_Out_ PULONG pSuspendCount);
 	//ZwAlertResumeThread
 
+    // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
+    NTSYSCALLAPI NTSTATUS NTAPI ZwAlertThread(
+        _In_ HANDLE ThreadHandle);
+    //ZwAlertThread
+
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtAlertThreadByThreadId(
 		_In_ ULONG ThreadId);
@@ -130,6 +135,12 @@ extern "C" {
 		_In_ PLARGE_INTEGER DelayInterval);
 	//ZwDelayExecution
 
+    // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
+    NTSYSCALLAPI NTSTATUS NTAPI ZwGetContextThread(
+        _In_ HANDLE ThreadHandle,
+        _Inout_ PCONTEXT ThreadContext);
+    //ZwGetContextThread
+
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtGetNextProcess(
         HANDLE ProcessHandle,
@@ -166,10 +177,24 @@ extern "C" {
     //ZwOpenThread
 
     // See winternl.h
-    // NtQueryInformationProcess
+    // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
+    NTSYSCALLAPI NTSTATUS NTAPI ZwQueryInformationProcess(
+        _In_ HANDLE ProcessHandle,
+        _In_ PROCESSINFOCLASS ProcessInformationClass,
+        _Out_writes_bytes_(ProcessInformationLength) PVOID ProcessInformation,
+        _In_ ULONG ProcessInformationLength,
+        _Out_opt_ PULONG ReturnLength);
+    //ZwQueryInformationProcess
 
     // See winternl.h
-    // NtQueryInformationThread
+    // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
+    NTSYSCALLAPI NTSTATUS NTAPI ZwQueryInformationThread(
+        _In_ HANDLE ThreadHandle,
+        _In_ THREADINFOCLASS ThreadInformationClass,
+        _Out_writes_bytes_(ThreadInformationLength) PVOID ThreadInformation,
+        _In_ ULONG ThreadInformationLength,
+        _Out_opt_ PULONG ReturnLength);
+    //ZwQueryInformationThread
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtQueryInformationWorkerFactory(
@@ -264,7 +289,12 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntsetinformationthread
     // See winternl.h
-    // NtSetInformationThread
+    // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
+    NTSYSCALLAPI NTSTATUS NTAPI ZwSetInformationThread(
+        _In_ HANDLE ThreadHandle,
+        _In_ THREADINFOCLASS ThreadInformationClass,
+        _In_reads_bytes_(ThreadInformationLength) PVOID ThreadInformation,
+        _In_ ULONG ThreadInformationLength);
     // ZwSetInformationThread
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg

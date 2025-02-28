@@ -1,83 +1,166 @@
 #pragma once
 
 #ifndef _NTDLL_
+#define _NTDLL_
 
 #include "NTCRuntime.h"
-#include "NTRuntimeLib.h"
+#include "NtAtoms.h"
+#include "NtDebugging.h"
+#include "NtDevices.h"
+#include "NtEnvironment.h"
+#include "NtEvents.h"
 #include "NtFile.h"
+#include "NtIo.h"
+#include "NtLocalProcedureCalls.h"
+#include "NtMemory.h"
+#include "NtNotification.h"
+#include "NtObjects.h"
+#include "NtPartition.h"
+#include "NtRegisry.h"
+#include "NtRuntimeLib.h"
+#include "NtSection.h"
+#include "NtSecurity.h"
+#include "NtTime.h"
+#include "NtTransaction.h"
 
-//A_SHAFinal
-//A_SHAInit
-//A_SHAUpdate
-//AlpcAdjustCompletionListConcurrencyCount
-//AlpcFreeCompletionListMessage
-//AlpcGetCompletionListLastMessageInformation
-//AlpcGetCompletionListMessageAttributes
-//AlpcGetHeaderSize
-//AlpcGetMessageAttribute
-//AlpcGetMessageFromCompletionList
-//AlpcGetOutstandingCompletionListMessageCount
-//AlpcInitializeMessageAttribute
-//AlpcMaxAllowedMessageLength
-//AlpcRegisterCompletionList
-//AlpcRegisterCompletionListWorkerThread
-//AlpcRundownCompletionList
-//AlpcUnregisterCompletionList
-//AlpcUnregisterCompletionListWorkerThread
-//ApiSetQueryApiSetPresence
-//ApiSetQueryApiSetPresenceEx
-//CsrAllocateCaptureBuffer
-//CsrAllocateMessagePointer
-//CsrCaptureMessageBuffer
-//CsrCaptureMessageMultiUnicodeStringsInPlace
+extern "C"
+{
+
+	// https://learn.microsoft.com/fr-fr/windows/win32/seccrypto/a-shafinal
+	NTSYSCALLAPI VOID RSA32API A_SHAFinal(
+		_Inout_ A_SHA_CTX* Context,
+		_Out_   UNSIGNED CHAR Result);
+
+	// https://learn.microsoft.com/fr-fr/windows/win32/seccrypto/a-shainit
+	NTSYSCALLAPI void RSA32API A_SHAInit(
+		_Inout_ A_SHA_CTX* Context);
+	
+	//https://learn.microsoft.com/fr-fr/windows/win32/seccrypto/a-shaupdate
+	NTSYSCALLAPI void RSA32API A_SHAUpdate(
+		_Inout_ A_SHA_CTX* Context,
+		_In_    UNSIGNED CHAR* Buffer,
+		UNSIGNED INT  BufferSize);
+
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI NTSTATUS NTAPI AlpcAdjustCompletionListConcurrencyCount(
+		_In_ HANDLE PortHandle,
+		_In_ ULONG ConcurrencyCount);
+
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI VOID NTAPI AlpcFreeCompletionListMessage(
+		_Inout_ PVOID CompletionList,
+		_In_ PPORT_MESSAGE Message);
+
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI VOID NTAPI AlpcGetCompletionListLastMessageInformation(
+		_In_ PVOID CompletionList,
+		_Out_ PULONG LastMessageId,
+		_Out_ PULONG LastCallbackId);
+
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI PALPC_MESSAGE_ATTRIBUTES NTAPI AlpcGetCompletionListMessageAttributes(
+		_In_ PVOID CompletionList,
+		_In_ PPORT_MESSAGE Message);
+
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI ULONG NTAPI AlpcGetHeaderSize(
+		_In_ ULONG Flags);
+
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI PVOID NTAPI AlpcGetMessageAttribute(
+		_In_ PALPC_MESSAGE_ATTRIBUTES 	Buffer,
+		_In_ ULONG 	AttributeFlag);
+
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI PPORT_MESSAGE NTAPI AlpcGetMessageFromCompletionList(
+		_In_ PVOID CompletionList,
+		_Out_opt_ PALPC_MESSAGE_ATTRIBUTES* MessageAttributes);
+
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI ULONG NTAPI AlpcGetOutstandingCompletionListMessageCount(
+		_In_ PVOID CompletionList);
+
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI NTSTATUS NTAPI AlpcInitializeMessageAttribute(
+		_In_ ULONG 	AttributeFlags,
+		_Out_opt_ PALPC_MESSAGE_ATTRIBUTES 	Buffer,
+		_In_ ULONG 	BufferSize,
+		_Out_ PULONG 	RequiredBufferSize);
+		
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI ULONG NTAPI AlpcMaxAllowedMessageLength(VOID);
+
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI NTSTATUS NTAPI AlpcRegisterCompletionList(
+		_In_ HANDLE 	PortHandle,
+		_Out_ PALPC_COMPLETION_LIST_HEADER 	Buffer,
+		_In_ ULONG 	Size,
+		_In_ ULONG 	ConcurrencyCount,
+		_In_ ULONG 	AttributeFlags);
+
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI BOOLEAN NTAPI AlpcRegisterCompletionListWorkerThread(
+		_Inout_ PVOID CompletionList);
+
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI NTSTATUS NTAPI AlpcRundownCompletionList(
+		_In_ HANDLE PortHandle);
+		
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI NTSTATUS NTAPI AlpcUnregisterCompletionList(
+		_In_ HANDLE PortHandle);
+
+	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+	NTSYSAPI BOOLEAN NTAPI AlpcUnregisterCompletionListWorkerThread(
+		_Inout_ PVOID CompletionList);
+
+	// https://www.sstic.org/media/SSTIC2019/SSTIC-actes/dll_shell_game_and_other_misdirections/SSTIC2019-Article-dll_shell_game_and_other_misdirections-georges.pdf
+	// https://learn.microsoft.com/en-us/windows/win32/sysinfo/apisetqueryapisetpresence
+	NTSYSAPI BOOL WINAPI ApiSetQueryApiSetPresence(
+		_In_  PCUNICODE_STRING Namespace,
+		_Out_ PBOOLEAN         Present);
+
+	//https://learn.microsoft.com/en-us/windows/win32/sysinfo/apisetqueryapisetpresenceex
+	NTSYSAPI BOOL WINAPI ApiSetQueryApiSetPresenceEx(
+		_In_ PCUNICODE_STRING Namespace,
+		_Out_ PBOOLEAN IsInSchema,
+		_Out_ PBOOLEAN Present);
+
+	//https://www.geoffchappell.com/studies/windows/win32/ntdll/api/csrutil/allocatecapturebuffer.htm
+	NTSYSAPI PVOID WINAPI CsrAllocateCaptureBuffer(
+		ULONG MaxMessagePointers,
+		ULONG Size);
+
+	//https://www.geoffchappell.com/studies/windows/win32/ntdll/api/csrutil/allocatemessagepointer.htm
+	NTSYSAPI ULONG WINAPI CsrAllocateMessagePointer(
+		PVOID CaptureBuffer,
+		ULONG Size,
+		PVOID* Pointer);
+
+	//https://www.geoffchappell.com/studies/windows/win32/ntdll/api/csrutil/capturemessagebuffer.htm
+	NTSYSAPI ULONG WINAPI CsrCaptureMessageBuffer(
+		PVOID CaptureBuffer,
+		PVOID Data,
+		ULONG Size,
+		PVOID* Pointer);
+
+	//CsrCaptureMessageMultiUnicodeStringsInPlace
 //CsrCaptureMessageString
 //CsrCaptureTimeout
-//CsrClientCallServer
-//CsrClientConnectToServer
+
+	//https://www.geoffchappell.com/studies/windows/win32/ntdll/api/csrutil/clientcallserver.htm
+	NTSYSAPI NTSTATUS WINAPI CsrClientCallServer(
+		CSR_API_MSG* ApiMsg,
+		PVOID CaptureBuffer,
+		ULONG ApiNumber,
+		LONG ApiMessageDataSize);
+
+	//CsrClientConnectToServer
 //CsrFreeCaptureBuffer
 //CsrGetProcessId
 //CsrIdentifyAlertableThread
 //CsrSetPriorityClass
 //CsrVerifyRegion
-//DbgBreakPoint
-//DbgPrint
-//DbgPrintEx
-//DbgPrintReturnControlC
-//DbgPrompt
-//DbgQueryDebugFilterState
-//DbgSetDebugFilterState
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSTATUS WINAPI DbgUiConnectToDbg(void);
-
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSTATUS WINAPI DbgUiContinue(CLIENT_ID* client, NTSTATUS status);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSTATUS WINAPI DbgUiConvertStateChangeStructure(DBGUI_WAIT_STATE_CHANGE* state, DEBUG_EVENT* event);
-
-	//DbgUiConvertStateChangeStructureEx
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSTATUS WINAPI DbgUiDebugActiveProcess(HANDLE process);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	HANDLE WINAPI DbgUiGetThreadDebugObject(void);
-
-	//DbgUiIssueRemoteBreakin
-//DbgUiRemoteBreakin
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	void WINAPI DbgUiSetThreadDebugObject(HANDLE handle);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSTATUS WINAPI DbgUiStopDebugging(HANDLE process);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSTATUS WINAPI DbgUiWaitStateChange(DBGUI_WAIT_STATE_CHANGE* state, LARGE_INTEGER* timeout);
-
-	//DbgUserBreakPoint
 //EtwCheckCoverage
 //EtwCreateTraceInstanceId
 //EtwDeliverDataBlock
@@ -197,24 +280,6 @@
 //NlsAnsiCodePage
 //NlsMbCodePageTag
 //NlsMbOemCodePageTag
-//NtAccessCheck
-//NtAccessCheckAndAuditAlarm
-//NtAccessCheckByType
-//NtAccessCheckByTypeAndAuditAlarm
-//NtAccessCheckByTypeResultList
-//NtAccessCheckByTypeResultListAndAuditAlarm
-//NtAccessCheckByTypeResultListAndAuditAlarmByHandle
-//NtAcquireCrossVmMutant
-
-//NtAdjustGroupsToken
-//NtAdjustPrivilegesToken
-//NtAdjustTokenClaimsAndDeviceGroups
-
-//NtAlertThread
-
-	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtAllocateLocallyUniqueId(
-		_Out_ PLUID Luid);
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtAllocateUuids(
@@ -223,8 +288,6 @@
 		_Out_ PULONG UuidSequenceNumber,
 		_Out_ PUCHAR UuidSeed);
 	//ZwAllocateUuids
-
-//NtAlpcSetInformation
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtCallEnclave(
@@ -241,104 +304,10 @@
 		_In_ NTSTATUS Status);
 	//ZwCallbackReturn
 
-//NtCancelTimer
-//NtCancelTimer2
-
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntclose
 	// See winternl.h
 	// NtClose
-
-	//NtCloseObjectAuditAlarm
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcommitcomplete
-	NTSYSCALLAPI NTSTATUS NtCommitComplete(
-		[in]           HANDLE         EnlistmentHandle,
-		[in, optional] PLARGE_INTEGER TmVirtualClock);
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcommitenlistment
-	NTSYSCALLAPI NTSTATUS NtCommitEnlistment(
-		[in]           HANDLE         EnlistmentHandle,
-		[in, optional] PLARGE_INTEGER TmVirtualClock);
-	//ZwCommitEnlistment
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcommittransaction
-	NTSYSCALLAPI NTSTATUS NtCommitTransaction(
-		[in] HANDLE  TransactionHandle,
-		[in] BOOLEAN Wait);
-	//ZwCommitTransaction
-
-//NtCompareSigningLevels
-//NtCompareTokens
-//NtConvertBetweenAuxiliaryCounterAndPerformanceCounter
-//NtCreateCrossVmMutant
-
-
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcreateenlistment
-	NTSYSCALLAPI NTSTATUS NtCreateEnlistment(
-		[out]          PHANDLE            EnlistmentHandle,
-		[in]           ACCESS_MASK        DesiredAccess,
-		[in]           HANDLE             ResourceManagerHandle,
-		[in]           HANDLE             TransactionHandle,
-		[in, optional] POBJECT_ATTRIBUTES ObjectAttributes,
-		[in, optional] ULONG              CreateOptions,
-		[in]           NOTIFICATION_MASK  NotificationMask,
-		[in, optional] PVOID              EnlistmentKey);
-	//ZwCreateEnlistment
-
-	//NtCreateIRTimer
-//NtCreateIoCompletion
-
-//NtCreateLowBoxToken
-//NtCreateMutant
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcreateresourcemanager
-	NTSYSCALLAPI NTSTATUS NtCreateResourceManager(
-		[out]          PHANDLE            ResourceManagerHandle,
-		[in]           ACCESS_MASK        DesiredAccess,
-		[in]           HANDLE             TmHandle,
-		[in]           LPGUID             RmGuid,
-		[in, optional] POBJECT_ATTRIBUTES ObjectAttributes,
-		[in, optional] ULONG              CreateOptions,
-		[in, optional] PUNICODE_STRING    Description);
-	//ZwCreateResourceManager
-
-	//NtCreateSemaphore
-//NtCreateTimer
-//NtCreateTimer2
-//NtCreateToken
-//NtCreateTokenEx
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcreatetransaction
-	NTSYSCALLAPI NTSTATUS NtCreateTransaction(
-		[out]          PHANDLE            TransactionHandle,
-		[in]           ACCESS_MASK        DesiredAccess,
-		[in, optional] POBJECT_ATTRIBUTES ObjectAttributes,
-		[in, optional] LPGUID             Uow,
-		[in, optional] HANDLE             TmHandle,
-		[in, optional] ULONG              CreateOptions,
-		[in, optional] ULONG              IsolationLevel,
-		[in, optional] ULONG              IsolationFlags,
-		[in, optional] PLARGE_INTEGER     Timeout,
-		[in, optional] PUNICODE_STRING    Description);
-	//ZwCreateTransaction
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcreatetransactionmanager
-	NTSYSCALLAPI NTSTATUS NtCreateTransactionManager(
-		[out]          PHANDLE            TmHandle,
-		[in]           ACCESS_MASK        DesiredAccess,
-		[in, optional] POBJECT_ATTRIBUTES ObjectAttributes,
-		[in, optional] PUNICODE_STRING    LogFileName,
-		[in, optional] ULONG              CreateOptions,
-		[in, optional] ULONG              CommitStrength);
-	//ZwCreateTransactionManager
-
-//NtCreateWnfStateName
-
-	//NtDeleteObjectAuditAlarm
-
-	//NtDeleteWnfStateData
-//NtDeleteWnfStateName
+	// ZwClose
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSAPI NTSTATUS NTAPI NtDirectGraphicsCall(
@@ -359,38 +328,11 @@
 		_In_ PUNICODE_STRING Text);
 	//ZwDrawText
 
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntduplicatetoken
-	NTSYSCALLAPI NTSTATUS NtDuplicateToken(
-		_In_ HANDLE ExistingTokenHandle,
-		_In_ ACCESS_MASK DesiredAccess,
-		_In_ POBJECT_ATTRIBUTES ObjectAttributes,
-		_In_ BOOLEAN EffectiveOnly,
-		_In_ TOKEN_TYPE TokenType,
-		_Out_ PHANDLE NewTokenHandle);
-	//ZwDuplicateToken
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntenumeratetransactionobject
-	NTSYSCALLAPI NTSTATUS NtEnumerateTransactionObject(
-		[in, optional] HANDLE            RootObjectHandle,
-		[in]           KTMOBJECT_TYPE    QueryType,
-		[in, out]      PKTMOBJECT_CURSOR ObjectCursor,
-		[in]           ULONG             ObjectCursorLength,
-		[out]          PULONG            ReturnLength);
-	//ZwEnumerateTransactionObject
-
-	//NtFilterBootOption
-//NtFilterToken
-//NtFilterTokenEx
-
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSAPI NTSTATUS NTAPI NtFlushInstallUILanguage(
 		_In_ ULONG InstallUILanguage,
 		_In_ ULONG SetComittedFlag);
 	//ZwFlushInstallUILanguage
-
-//NtFreezeTransactions
-//NtGetCachedSigningLevel
-//NtGetCompleteWnfStateSubscription
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtGetMUIRegistryInfo(
@@ -399,23 +341,8 @@
 		_Out_ PVOID Buffer);
 	//ZwGetMUIRegistryInfo
 
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntgetnotificationresourcemanager
-	NTSYSCALLAPI NTSTATUS NtGetNotificationResourceManager(
-		[in]            HANDLE                    ResourceManagerHandle,
-		[out]           PTRANSACTION_NOTIFICATION TransactionNotification,
-		[in]            ULONG                     NotificationLength,
-		[in]            PLARGE_INTEGER            Timeout,
-		[out, optional] PULONG                    ReturnLength,
-		[in]            ULONG                     Asynchronous,
-		[in, optional]  ULONG_PTR                 AsynchronousContext);
-	//ZwGetNotificationResourceManager
-
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtGetTickCount();
-
-	//NtImpersonateAnonymousToken
-//NtImpersonateThread
-//NtIsProcessInJob
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtIsUILanguageComitted();
@@ -426,8 +353,6 @@
 		_In_ PULONG ProductBuild,
 		_In_ PULONG SafeMode);
 	//ZwLockProductActivationKeys
-
-//NtLockVirtualMemory
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtManageHotPatch(
@@ -459,171 +384,12 @@
 		_In_ ULONG BufferSize);
 	//ZwNotifyChangeSession
 
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntopenenlistment
-	NTSYSCALLAPI NTSTATUS NtOpenEnlistment(
-		[out]          PHANDLE            EnlistmentHandle,
-		[in]           ACCESS_MASK        DesiredAccess,
-		[in]           HANDLE             ResourceManagerHandle,
-		[in]           LPGUID             EnlistmentGuid,
-		[in, optional] POBJECT_ATTRIBUTES ObjectAttributes);
-	//ZwOpenEnlistment
-
-//NtOpenMutant
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntopenprocesstoken
-	NTSYSCALLAPI NTSTATUS NtOpenProcessToken(
-		_In_ HANDLE ProcessHandle,
-		_In_ ACCESS_MASK DesiredAccess,
-		_Out_ PHANDLE TokenHandle);
-	//ZwOpenProcessToken
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntopenprocesstokenex
-	NTSYSCALLAPI NTSTATUS NtOpenProcessTokenEx(
-		_In_ HANDLE ProcessHandle,
-		_In_ ACCESS_MASK DesiredAccess,
-		_In_ ULONG HandleAttributes,
-		_Out_ PHANDLE TokenHandle);
-	//ZwOpenProcessTokenEx
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntopenresourcemanager
-	NTSYSCALLAPI NTSTATUS NtOpenResourceManager(
-		[out]          PHANDLE            ResourceManagerHandle,
-		[in]           ACCESS_MASK        DesiredAccess,
-		[in]           HANDLE             TmHandle,
-		[in]           LPGUID             ResourceManagerGuid,
-		[in, optional] POBJECT_ATTRIBUTES ObjectAttributes);
-	//ZwOpenResourceManager
-
-	//NtOpenSemaphore
-
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtOpenSession(
 		_Out_ PHANDLE SessionHandle,
 		_In_ ACCESS_MASK DesiredAccess,
 		_In_ POBJECT_ATTRIBUTES ObjectAttributes);
 	//ZwOpenSession
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntopenthreadtoken
-	NTSYSCALLAPI NTSTATUS NtOpenThreadToken(
-		_In_ HANDLE ThreadHandle,
-		_In_ ACCESS_MASK DesiredAccess,
-		_In_ BOOLEAN OpenAsSelf,
-		_Out_ PHANDLE TokenHandle);
-	//ZwOpenThreadToken
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntopenthreadtokenex
-	NTSYSCALLAPI NTSTATUS NtOpenThreadTokenEx(
-		_In_ HANDLE      ThreadHandle,
-		_In_ ACCESS_MASK DesiredAccess,
-		_In_ BOOLEAN     OpenAsSelf,
-		_In_ ULONG       HandleAttributes,
-		_Out_ PHANDLE     TokenHandle);
-	//ZwOpenThreadTokenEx
-
-	//NtOpenTimer
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntopentransaction
-	NTSYSCALLAPI NTSTATUS NtOpenTransaction(
-		[out]          PHANDLE            TransactionHandle,
-		[in]           ACCESS_MASK        DesiredAccess,
-		[in, optional] POBJECT_ATTRIBUTES ObjectAttributes,
-		[in]           LPGUID             Uow,
-		[in, optional] HANDLE             TmHandle);
-	//ZwOpenTransaction
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntopentransactionmanager
-	NTSYSCALLAPI NTSTATUS NtOpenTransactionManager(
-		[out]          PHANDLE            TmHandle,
-		[in]           ACCESS_MASK        DesiredAccess,
-		[in, optional] POBJECT_ATTRIBUTES ObjectAttributes,
-		[in, optional] PUNICODE_STRING    LogFileName,
-		[in, optional] LPGUID             TmIdentity,
-		[in, optional] ULONG              OpenOptions);
-	//ZwOpenTransactionManager
-
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntprepreparecomplete
-	NTSYSCALLAPI NTSTATUS NtPrePrepareComplete(
-		[in]           HANDLE         EnlistmentHandle,
-		[in, optional] PLARGE_INTEGER TmVirtualClock);
-	//ZwPrePrepareComplete
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntpreprepareenlistment
-	NTSYSCALLAPI NTSTATUS NtPrePrepareEnlistment(
-		[in]           HANDLE         EnlistmentHandle,
-		[in, optional] PLARGE_INTEGER TmVirtualClock);
-	//ZwPrePrepareEnlistment
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntpreparecomplete
-	NTSYSCALLAPI NTSTATUS NtPrepareComplete(
-		[in]           HANDLE         EnlistmentHandle,
-		[in, optional] PLARGE_INTEGER TmVirtualClock);
-	//ZwPrepareComplete
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntprepareenlistment
-	NTSYSCALLAPI NTSTATUS NtPrepareEnlistment(
-		[in]           HANDLE         EnlistmentHandle,
-		[in, optional] PLARGE_INTEGER TmVirtualClock);
-	//ZwPrepareEnlistment
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntprivilegecheck
-	NTSYSCALLAPI NTSTATUS NtPrivilegeCheck(
-		_In_ HANDLE ClientToken,
-		_Inout_ PPRIVILEGE_SET RequiredPrivileges,
-		_Out_ PBOOLEAN Result);
-	//ZwPrivilegeCheck
-
-//NtPrivilegeObjectAuditAlarm
-//NtPrivilegedServiceAuditAlarm
-//NtPropagationComplete
-//NtPropagationFailed
-
-	//NtQueryAuxiliaryCounterFrequency
-	
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntqueryinformationenlistment
-	NTSYSCALLAPI NTSTATUS NtQueryInformationEnlistment(
-		[in]            HANDLE                       EnlistmentHandle,
-		[in]            ENLISTMENT_INFORMATION_CLASS EnlistmentInformationClass,
-		[out]           PVOID                        EnlistmentInformation,
-		[in]            ULONG                        EnlistmentInformationLength,
-		[out, optional] PULONG                       ReturnLength);
-	//ZwQueryInformationEnlistment
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntqueryinformationresourcemanager
-	NTSYSCALLAPI NTSTATUS NtQueryInformationResourceManager(
-		[in]            HANDLE                            ResourceManagerHandle,
-		[in]            RESOURCEMANAGER_INFORMATION_CLASS ResourceManagerInformationClass,
-		[out]           PVOID                             ResourceManagerInformation,
-		[in]            ULONG                             ResourceManagerInformationLength,
-		[out, optional] PULONG                            ReturnLength);
-	//ZwQueryInformationResourceManager
-
-	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntqueryinformationtoken
-	NTSYSCALLAPI NTSTATUS NtQueryInformationToken(
-		[in]  HANDLE                  TokenHandle,
-		[in]  TOKEN_INFORMATION_CLASS TokenInformationClass,
-		[out] PVOID                   TokenInformation,
-		[in]  ULONG                   TokenInformationLength,
-		[out] PULONG                  ReturnLength);
-	//ZwQueryInformationToken
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntqueryinformationtransaction
-	NTSYSCALLAPI NTSTATUS NtQueryInformationTransaction(
-		[in]            HANDLE                        TransactionHandle,
-		[in]            TRANSACTION_INFORMATION_CLASS TransactionInformationClass,
-		[out]           PVOID                         TransactionInformation,
-		[in]            ULONG                         TransactionInformationLength,
-		[out, optional] PULONG                        ReturnLength);
-	//ZwQueryInformationTransaction
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntqueryinformationtransactionmanager
-	NTSYSCALLAPI NTSTATUS NtQueryInformationTransactionManager(
-		[in]            HANDLE                               TransactionManagerHandle,
-		[in]            TRANSACTIONMANAGER_INFORMATION_CLASS TransactionManagerInformationClass,
-		[out]           PVOID                                TransactionManagerInformation,
-		[in]            ULONG                                TransactionManagerInformationLength,
-		[out, optional] PULONG                               ReturnLength);
-	//ZwQueryInformationTransactionManager
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtQueryLicenseValue(
@@ -634,137 +400,9 @@
 		_Out_ PULONG ReturnedLength);
 	//ZwQueryLicenseValue
 
-//NtQueryMutant
-
-//NtQuerySecurityAttributesToken
-
-	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntquerysecurityobject
-	NTSYSCALLAPI NTSTATUS NtQuerySecurityObject(
-		[in]  HANDLE               Handle,
-		[in]  SECURITY_INFORMATION SecurityInformation,
-		[out] PSECURITY_DESCRIPTOR SecurityDescriptor,
-		[in]  ULONG                Length,
-		[out] PULONG               LengthNeeded);
-	//ZwQuerySecurityObject
-
-	//NtQuerySecurityPolicy
-//NtQuerySemaphore
-
-	// See winternl.h
-	// NtQuerySystemTime
-
-//NtQueryTimer
-
-	// See winternl.h
-	// NtQueryTimerResolution
-
-//NtQueryWnfStateData
-//NtQueryWnfStateNameInformation
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntreadonlyenlistment
-	NTSYSCALLAPI NTSTATUS NtReadOnlyEnlistment(
-		[in]           HANDLE         EnlistmentHandle,
-		[in, optional] PLARGE_INTEGER TmVirtualClock);
-	//ZwReadOnlyEnlistment
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrecoverenlistment
-	NTSYSCALLAPI NTSTATUS NtRecoverEnlistment(
-		[in]           HANDLE EnlistmentHandle,
-		[in, optional] PVOID  EnlistmentKey);
-	//ZwRecoverEnlistment
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrecoverresourcemanager
-	NTSYSCALLAPI NTSTATUS NtRecoverResourceManager(
-		[in] HANDLE ResourceManagerHandle);
-	//ZwRecoverResourceManager
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrecovertransactionmanager
-	NTSYSCALLAPI NTSTATUS NtRecoverTransactionManager(
-		[in] HANDLE TransactionManagerHandle);
-	//ZwRecoverTransactionManager
-
-	//NtRegisterProtocolAddressInformation
-//NtReleaseMutant
-//NtReleaseSemaphore
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrenametransactionmanager
-	NTSYSCALLAPI NTSTATUS NtRenameTransactionManager(
-		[in] PUNICODE_STRING LogFileName,
-		[in] LPGUID          ExistingTransactionManagerGuid);
-	//ZwRenameTransactionManager
-
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtRevertContainerImpersonation();
 	//ZwRevertContainerImpersonation
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrollbackcomplete
-	NTSYSCALLAPI NTSTATUS NtRollbackComplete(
-		[in]           HANDLE         EnlistmentHandle,
-		[in, optional] PLARGE_INTEGER TmVirtualClock);
-	//ZwRollbackComplete
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrollbackenlistment
-	NTSYSCALLAPI NTSTATUS NtRollbackEnlistment(
-		[in]           HANDLE         EnlistmentHandle,
-		[in, optional] PLARGE_INTEGER TmVirtualClock);
-	//ZwRollbackEnlistment
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrollbacktransaction
-	NTSYSCALLAPI NTSTATUS NtRollbackTransaction(
-		[in] HANDLE  TransactionHandle,
-		[in] BOOLEAN Wait);
-	//ZwRollbackTransaction
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrollforwardtransactionmanager
-	NTSYSCALLAPI NTSTATUS NtRollforwardTransactionManager(
-		[in]           HANDLE         TransactionManagerHandle,
-		[in, optional] PLARGE_INTEGER TmVirtualClock);
-	//ZwRollforwardTransactionManager
-
-//NtSetCachedSigningLevel
-//NtSetCachedSigningLevel2
-
-	//NtSetIRTimer
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntsetinformationenlistment
-	NTSYSCALLAPI NTSTATUS NtSetInformationEnlistment(
-		[in] HANDLE                       EnlistmentHandle,
-		[in] ENLISTMENT_INFORMATION_CLASS EnlistmentInformationClass,
-		[in] PVOID                        EnlistmentInformation,
-		[in] ULONG                        EnlistmentInformationLength);
-	//ZwSetInformationEnlistment
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntsetinformationresourcemanager
-	NTSYSCALLAPI NTSTATUS NtSetInformationResourceManager(
-		HANDLE                            ResourceManagerHandle,
-		RESOURCEMANAGER_INFORMATION_CLASS ResourceManagerInformationClass,
-		PVOID                             ResourceManagerInformation,
-		ULONG                             ResourceManagerInformationLength);
-	//ZwSetInformationResourceManager
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntsetinformationtoken
-	NTSYSCALLAPI NTSTATUS NtSetInformationToken(
-		[in] HANDLE                  TokenHandle,
-		[in] TOKEN_INFORMATION_CLASS TokenInformationClass,
-		[in] PVOID                   TokenInformation,
-		[in] ULONG                   TokenInformationLength);
-	//ZwSetInformationToken
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntsetinformationtransaction
-	NTSYSCALLAPI NTSTATUS NtSetInformationTransaction(
-		[in] HANDLE                        TransactionHandle,
-		[in] TRANSACTION_INFORMATION_CLASS TransactionInformationClass,
-		[in] PVOID                         TransactionInformation,
-		[in] ULONG                         TransactionInformationLength);
-	//ZwSetInformationTransaction
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntsetinformationtransactionmanager
-	NTSYSCALLAPI NTSTATUS NtSetInformationTransactionManager(
-		[in, optional] HANDLE                               TmHandle,
-		[in]           TRANSACTIONMANAGER_INFORMATION_CLASS TransactionManagerInformationClass,
-		[in]           PVOID                                TransactionManagerInformation,
-		[in]           ULONG                                TransactionManagerInformationLength);
-	//ZwSetInformationTransactionManager
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtSetLdtEntries(
@@ -775,47 +413,16 @@
 		_In_ ULONG LdtEntry2L,
 		_In_ ULONG LdtEntry2H);
 	//ZwSetLdtEntries
-
-	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntsetsecurityobject
-	NTSYSCALLAPI NTSTATUS NtSetSecurityObject(
-		[in] HANDLE               Handle,
-		[in] SECURITY_INFORMATION SecurityInformation,
-		[in] PSECURITY_DESCRIPTOR SecurityDescriptor);
-	// ZwSetSecurityObject
 	
-//NtSetSystemTime
-//NtSetTimer
-//NtSetTimer2
-//NtSetTimerEx
-//NtSetTimerResolution
-
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSAPI NTSTATUS NTAPI NtSetUuidSeed(
 		_In_ PUCHAR UuidSeed);
 	//ZwSetUuidSeed
 
-//NtSetWnfProcessNotificationEvent
-
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSAPI NTSTATUS NTAPI NtShutdownSystem(
 		_In_ SHUTDOWN_ACTION Action);
 	//ZwShutdownSystem
-
-	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
-	NTSYSAPI NTSTATUS NTAPI NtSignalAndWaitForSingleObject(
-		IN HANDLE               ObjectToSignal,
-		IN HANDLE               WaitableObject,
-		IN BOOLEAN              Alertable,
-		IN PLARGE_INTEGER       Time OPTIONAL);
-	//ZwSignalAndWaitForSingleObject
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntsinglephasereject
-	NTSYSCALLAPI NTSTATUS NtSinglePhaseReject(
-		[in]           HANDLE         EnlistmentHandle,
-		[in, optional] PLARGE_INTEGER TmVirtualClock);
-	//ZwSinglePhaseReject
-
-//NtSubscribeWnfStateChange
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtTerminateEnclave(
@@ -823,28 +430,6 @@
 		_In_ BOOLEAN WaitForThread);
 	//ZwTerminateEnclave
 
-//NtThawTransactions
-//NtTraceEvent
-//NtUnsubscribeWnfStateChange
-//NtUpdateWnfStateData
-
-	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
-	NTSYSAPI NTSTATUS NTAPI NtWaitForMultipleObjects(
-		IN ULONG                ObjectCount,
-		IN PHANDLE              ObjectsArray,
-		IN OBJECT_WAIT_TYPE     WaitType,
-		IN BOOLEAN              Alertable,
-		IN PLARGE_INTEGER       TimeOut OPTIONAL);
-	//ZwWaitForMultipleObjects
-
-	//NtWaitForMultipleObjects32
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwwaitforsingleobject
-	// See winternl.h
-	// NtWaitForSingleObject
-
-	//NtWorkerFactoryWorkerReady
-//NtYieldExecution
 //NtdllDefWindowProc_A
 //NtdllDefWindowProc_W
 //NtdllDialogWndProc_A
@@ -3012,93 +2597,10 @@
 //WinSqmStartSession
 //WinSqmStartSessionForPartner
 //WinSqmStartSqmOptinListener
-//ZwAccessCheck
-//ZwAccessCheckAndAuditAlarm
-//ZwAccessCheckByType
-//ZwAccessCheckByTypeAndAuditAlarm
-//ZwAccessCheckByTypeResultList
-//ZwAccessCheckByTypeResultListAndAuditAlarm
-//ZwAccessCheckByTypeResultListAndAuditAlarmByHandle
-//ZwAcquireCrossVmMutant
-//ZwAdjustGroupsToken
-//ZwAdjustPrivilegesToken
-//ZwAdjustTokenClaimsAndDeviceGroups
-//ZwAlertThread
-//ZwCancelTimer
-//ZwCancelTimer2
-//ZwClose
-//ZwCloseObjectAuditAlarm
 //ZwCommitComplete
-//ZwCompareSigningLevels
-//ZwCompareTokens
-//ZwConvertBetweenAuxiliaryCounterAndPerformanceCounter
-//ZwCreateCrossVmMutant
-//ZwCreateIRTimer
-//ZwCreateIoCompletion
-//ZwCreateLowBoxToken
-//ZwCreateMutant
-//ZwCreateSemaphore
-//ZwCreateTimer
-//ZwCreateTimer2
-//ZwCreateToken
-//ZwCreateTokenEx
-//ZwCreateWnfStateName
-//ZwDeleteObjectAuditAlarm
-//ZwDeleteWnfStateData
-//ZwDeleteWnfStateName
-//ZwFilterBootOption
-//ZwFilterToken
-//ZwFilterTokenEx
-//ZwFreezeTransactions
-//ZwGetCachedSigningLevel
-//ZwGetCompleteWnfStateSubscription
-//ZwGetContextThread
-//ZwImpersonateAnonymousToken
-//ZwImpersonateThread
-//ZwLockVirtualMemory
-//ZwNotifyChangeMultipleKeys
-//ZwOpenMutant
-//ZwOpenSemaphore
-//ZwOpenTimer
-//ZwPrivilegeObjectAuditAlarm
-//ZwPrivilegedServiceAuditAlarm
-//ZwPropagationComplete
-//ZwPropagationFailed
-//ZwQueryAuxiliaryCounterFrequency
-//ZwQueryInformationProcess
-//ZwQueryInformationThread
-//ZwQueryMutant
-//ZwQuerySecurityAttributesToken
-//ZwQuerySecurityPolicy
-//ZwQuerySemaphore
 //ZwQuerySystemInformation
-//ZwQuerySystemTime
-//ZwQueryTimer
-//ZwQueryTimerResolution
-//ZwQueryValueKey
-//ZwQueryWnfStateData
-//ZwQueryWnfStateNameInformation
-//ZwRegisterProtocolAddressInformation
-//ZwReleaseMutant
-//ZwReleaseSemaphore
-//ZwRenameKey
-//ZwSetCachedSigningLevel
-//ZwSetCachedSigningLevel2
-//ZwSetIRTimer
 //ZwSetInformationKey
-//ZwSetSystemTime
-//ZwSetTimer
-//ZwSetTimer2
-//ZwSetTimerEx
-//ZwSetTimerResolution
-//ZwSetWnfProcessNotificationEvent
-//ZwSubscribeWnfStateChange
-//ZwThawRegistry
-//ZwThawTransactions
-//ZwTraceEvent
-//ZwUnsubscribeWnfStateChange
-//ZwUpdateWnfStateData
-//ZwWaitForMultipleObjects32
-//ZwWaitForSingleObject
+
+}
 
 #endif

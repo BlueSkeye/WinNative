@@ -26,12 +26,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Includes", "Includes", "{02
 		Includes\NtIo.h = Includes\NtIo.h
 		Includes\NtLocalProcedureCalls.h = Includes\NtLocalProcedureCalls.h
 		Includes\NtMemory.h = Includes\NtMemory.h
+		Includes\NtNotification.h = Includes\NtNotification.h
 		Includes\NtObjects.h = Includes\NtObjects.h
 		Includes\NtPartition.h = Includes\NtPartition.h
 		Includes\NtProcesses.h = Includes\NtProcesses.h
 		Includes\NtRegistry.h = Includes\NtRegistry.h
 		Includes\NTRuntimeLib.h = Includes\NTRuntimeLib.h
 		Includes\NtSection.h = Includes\NtSection.h
+		Includes\NtSecurity.h = Includes\NtSecurity.h
+		Includes\NtTime.h = Includes\NtTime.h
+		Includes\NtTransaction.h = Includes\NtTransaction.h
 	EndProjectSection
 EndProject
 Global

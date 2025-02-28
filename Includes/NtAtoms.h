@@ -34,7 +34,7 @@ extern "C" {
 		_Out_opt_ PRTL_ATOM Atom);
 	//ZwFindAtom
 
-	//NtQueryInformationAtom
+	// https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
 	NTSYSCALLAPI NTSTATUS NTAPI NtQueryInformationAtom(
 		_In_ RTL_ATOM Atom,
 		_In_ ATOM_INFORMATION_CLASS AtomInformationClass,

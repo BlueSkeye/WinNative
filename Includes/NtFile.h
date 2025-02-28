@@ -74,7 +74,19 @@ extern "C" {
 	
 	// https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntcreatefile
 	// See winternl.h
-	// NtCreateFile
+	// https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
+	NTSYSCALLAPI NTSTATUS NTAPI NtCreateFile(
+		_Out_ PHANDLE FileHandle,
+		_In_ ACCESS_MASK DesiredAccess,
+		_In_ POBJECT_ATTRIBUTES ObjectAttributes,
+		_Out_ PIO_STATUS_BLOCK IoStatusBlock,
+		_In_opt_ PLARGE_INTEGER AllocationSize,
+		_In_ ULONG FileAttributes,
+		_In_ ULONG ShareAccess,
+		_In_ ULONG CreateDisposition,
+		_In_ ULONG CreateOptions,
+		_In_reads_bytes_opt_(EaLength) PVOID EaBuffer,
+		_In_ ULONG EaLength);
 	// ZwCreateFile
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntcreatefile
@@ -228,7 +240,14 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/Winternl/nf-winternl-ntopenfile
 	// See winternl.h
-	// NtOpenFile
+	// https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
+	NTSYSCALLAPI NTSTATUS NTAPI ZwOpenFile(
+		_Out_ PHANDLE FileHandle,
+		_In_ ACCESS_MASK DesiredAccess,
+		_In_ POBJECT_ATTRIBUTES ObjectAttributes,
+		_Out_ PIO_STATUS_BLOCK IoStatusBlock,
+		_In_ ULONG ShareAccess,
+		_In_ ULONG OpenOptions);
 	// ZwOpenFile
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg

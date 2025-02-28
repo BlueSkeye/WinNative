@@ -159,7 +159,21 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows/win32/api/Winternl/nf-winternl-ntnotifychangemultiplekeys
     // See winternl.h
-    // NtNotifyChangeMultipleKeys
+    // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
+    NTSYSCALLAPI NTSTATUS NTAPI ZwNotifyChangeMultipleKeys(
+        _In_ HANDLE MasterKeyHandle,
+        _In_opt_ ULONG Count,
+        _In_reads_opt_(Count) OBJECT_ATTRIBUTES SubordinateObjects[],
+        _In_opt_ HANDLE Event,
+        _In_opt_ PIO_APC_ROUTINE ApcRoutine,
+        _In_opt_ PVOID ApcContext,
+        _Out_ PIO_STATUS_BLOCK IoStatusBlock,
+        _In_ ULONG CompletionFilter,
+        _In_ BOOLEAN WatchTree,
+        _Out_writes_bytes_opt_(BufferSize) PVOID Buffer,
+        _In_ ULONG BufferSize,
+        _In_ BOOLEAN Asynchronous);
+    //ZwNotifyChangeMultipleKeys
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopenkey
     NTSYSAPI NTSTATUS NtOpenKey(
@@ -209,7 +223,14 @@ extern "C" {
         _Out_ PULONG ResultLength);
 
     // See winternl.h
-    // NtQueryMultipleValueKey
+    // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
+    NTSYSCALLAPI NTSTATUS NTAPI ZwQueryMultipleValueKey(
+        _In_ HANDLE KeyHandle,
+        _Inout_updates_(EntryCount) PKEY_VALUE_ENTRY ValueEntries,
+        _In_ ULONG EntryCount,
+        _Out_writes_bytes_(*BufferLength) PVOID ValueBuffer,
+        _Inout_ PULONG BufferLength,
+        _Out_opt_ PULONG RequiredBufferLength);
     //ZwQueryMultipleValueKey
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopenkeytransactedex
@@ -234,10 +255,16 @@ extern "C" {
         _Out_ PVOID KeyValueInformation,
         _In_ ULONG Length,
         _Out_ PULONG ResultLength);
+    //ZwQueryValueKey
+    
     //RtlpNtQueryValueKey
 
     // See winternl.h
-    // NtRenameKey
+    // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
+    NTSYSCALLAPI NTSTATUS NTAPI ZwRenameKey(
+        _In_ HANDLE KeyHandle,
+        _In_ PUNICODE_STRING NewName);
+    //ZwRenameKey
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopenkeytransactedex
     NTSYSAPI NTSTATUS NTAPI NtReplaceKey(
@@ -294,6 +321,7 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopenkeytransactedex
     NTSYSAPI NTSTATUS NTAPI NtThawRegistry();
+    //ZwThawRegistry
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopenkeytransactedex
     NTSYSAPI NTSTATUS NTAPI NtUnloadKey(

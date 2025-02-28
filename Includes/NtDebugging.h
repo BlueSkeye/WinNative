@@ -7,6 +7,95 @@
 
 extern "C" {
 
+    // https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/nf-wdm-dbgbreakpoint
+    NTSYSAPI VOID DbgBreakPoint();
+
+    // https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/nf-wdm-dbgprint
+    NTSYSAPI ULONG DbgPrint(
+        PCSTR Format,
+        ...
+    );
+
+    //https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/nf-wdm-dbgprintex
+    NTSYSAPI ULONG DbgPrintEx(
+        [in] ULONG ComponentId,
+        [in] ULONG Level,
+        [in] PCSTR Format,
+        ...);
+
+    //https://doxygen.reactos.org/d6/dc3/xdk_2kdfuncs_8h.html
+    NTSYSAPI ULONG __cdecl DbgPrintReturnControlC(
+        _In_z_ _Printf_format_string_ PCCH Format,
+        ...);
+
+    //https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-dbgprompt
+    NTSYSAPI ULONG DbgPrompt(
+        [in]  PCCH  Prompt,
+        [out] PCH   Response,
+        ULONG Length);
+
+    //https://doxygen.reactos.org/d6/dc3/xdk_2kdfuncs_8h.html
+    NTSYSAPI ULONG __cdecl DbgPrintReturnControlC(
+        _In_z_ _Printf_format_string_ PCCH Format,
+        ...);
+
+    //https://doxygen.reactos.org/d6/dc3/xdk_2kdfuncs_8h.html
+    NTSYSAPI NTSTATUS NTAPI DbgSetDebugFilterState(
+        _In_ ULONG ComponentId,
+        _In_ ULONG Level,
+        _In_ BOOLEAN State);
+
+    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
+    NTSYSCALLAPI NTSTATUS NTAPI DbgUiConnectToDbg(void);
+
+    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
+    NTSYSCALLAPI NTSTATUS NTAPI DbgUiContinue(
+        CLIENT_ID* client,
+        NTSTATUS status);
+
+    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
+    NTSYSCALLAPI NTSTATUS NTAPI DbgUiConvertStateChangeStructure(
+        DBGUI_WAIT_STATE_CHANGE* state,
+        DEBUG_EVENT* event);
+
+    //DbgUiConvertStateChangeStructureEx
+    //https://unprotect.it/media/archive/2022/06/22/NtSetDebugFilterState.pdf
+    NTSYSCALLAPI NTSTATUS NTAPI DbgSetDebugFilterState(
+        ULONG ComponentId,
+        ULONG Level,
+        BOOLEAN State);
+
+    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
+    NTSYSCALLAPI NTSTATUS WINAPI DbgUiDebugActiveProcess(
+        HANDLE process);
+
+    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
+    NTSYSCALLAPI HANDLE WINAPI DbgUiGetThreadDebugObject(void);
+
+    // https://processhacker.sourceforge.io/doc/ntdbg_8h.html#a6206168ba05b85ebb0cec355eca0e6d3
+    NTSYSAPI NTSTATUS NTAPI DbgUiIssueRemoteBreakin(
+        _In_ HANDLE Process);
+
+    // https://processhacker.sourceforge.io/doc/ntdbg_8h.html#a6206168ba05b85ebb0cec355eca0e6d3
+    NTSYSAPI VOID NTAPI DbgUiRemoteBreakin(
+        _In_ PVOID Context);
+
+    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
+    NTSYSCALLAPI void WINAPI DbgUiSetThreadDebugObject(
+        HANDLE handle);
+
+    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
+    NTSYSCALLAPI NTSTATUS WINAPI DbgUiStopDebugging(
+        HANDLE process);
+
+    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
+    NTSYSCALLAPI NTSTATUS WINAPI DbgUiWaitStateChange(
+        DBGUI_WAIT_STATE_CHANGE* state,
+        LARGE_INTEGER* timeout);
+
+    //https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+    NTSYSAPI VOID NTAPI DbgUserBreakPoint(VOID);
+
     //https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtCreateProfile(
         _Out_ PHANDLE ProfileHandle,
