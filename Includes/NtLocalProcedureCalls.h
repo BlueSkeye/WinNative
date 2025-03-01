@@ -37,6 +37,8 @@ extern "C" {
         _In_ PALPC_CONTEXT_ATTR MessageContext);
     //ZwAlpcCancelMessage
 
+    // https://github.com/Uri3n/Thread-Pool-Injection-PoC/blob/main/include/FunctionPtrs.hpp
+    // https://urien.gitbook.io/diago-lima/a-deep-dive-into-exploiting-windows-thread-pools/attacking-i-o-ports
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtAlpcConnectPort(
         _Out_ PHANDLE PortHandle,
@@ -212,6 +214,7 @@ extern "C" {
         _In_opt_ PLARGE_INTEGER Timeout);
     //ZwAlpcSendWaitReceivePort
 
+    // https://github.com/Uri3n/Thread-Pool-Injection-PoC/blob/main/include/FunctionPtrs.hpp
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtAlpcSetInformation(
         _In_ HANDLE PortHandle,

@@ -7,14 +7,15 @@
 
 extern "C" {
 
+    // NO UNRESOLVED FUNCTIONS
+
     // https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/nf-wdm-dbgbreakpoint
     NTSYSAPI VOID DbgBreakPoint();
 
     // https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/nf-wdm-dbgprint
     NTSYSAPI ULONG DbgPrint(
         PCSTR Format,
-        ...
-    );
+        ...);
 
     //https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/nf-wdm-dbgprintex
     NTSYSAPI ULONG DbgPrintEx(
@@ -207,16 +208,6 @@ extern "C" {
         _In_ ULONG OutputBufferLength,
         _Out_ PULONG ReturnLength);
     //ZwSystemDebugControl
-
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-    NTSYSCALLAPI NTSTATUS NTAPI NtTraceControl(
-        _In_ ULONG CtrlCode,
-        _In_ PVOID InputBuffer,
-        _In_ ULONG InputBufferLength,
-        _Out_ PVOID OutputBuffer,
-        _In_ ULONG OutputBufferLength,
-        _Out_ PULONG ReturnLength);
-    //ZwTraceControl
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtWaitForDebugEvent(

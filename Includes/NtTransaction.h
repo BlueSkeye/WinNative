@@ -11,6 +11,7 @@ extern "C" {
     NTSYSCALLAPI NTSTATUS NtCommitComplete(
         [in]           HANDLE         EnlistmentHandle,
         [in, optional] PLARGE_INTEGER TmVirtualClock);
+    //ZwCommitComplete
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcommitenlistment
     NTSYSCALLAPI NTSTATUS NtCommitEnlistment(

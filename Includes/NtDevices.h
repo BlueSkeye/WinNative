@@ -7,6 +7,8 @@
 
 extern "C" {
 
+    // NO UNRESOLVED FUNCTIONS
+
     //https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtAddBootEntry(
         _In_ PUNICODE_STRING Name,

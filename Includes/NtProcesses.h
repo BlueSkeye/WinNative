@@ -196,6 +196,8 @@ extern "C" {
         _Out_opt_ PULONG ReturnLength);
     //ZwQueryInformationThread
 
+    // https://github.com/Uri3n/Thread-Pool-Injection-PoC/blob/main/include/FunctionPtrs.hpp
+    // https://urien.gitbook.io/diago-lima/a-deep-dive-into-exploiting-windows-thread-pools/attacking-worker-factories
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtQueryInformationWorkerFactory(
         _In_ HANDLE WorkerFactoryHandle,
@@ -297,6 +299,7 @@ extern "C" {
         _In_ ULONG ThreadInformationLength);
     // ZwSetInformationThread
 
+    // https://urien.gitbook.io/diago-lima/a-deep-dive-into-exploiting-windows-thread-pools/attacking-worker-factories
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtSetInformationWorkerFactory(
         _In_ HANDLE WorkerFactoryHandle,

@@ -105,6 +105,7 @@ extern "C" {
         _Out_opt_ PBOOLEAN PreviousState);
     //ZwSetTimer
 
+    // https://github.com/Uri3n/Thread-Pool-Injection-PoC/blob/main/include/FunctionPtrs.hpp
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtSetTimer2(
         _In_ HANDLE TimerHandle,

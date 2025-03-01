@@ -26,21 +26,6 @@
 extern "C"
 {
 
-	// https://learn.microsoft.com/fr-fr/windows/win32/seccrypto/a-shafinal
-	NTSYSCALLAPI VOID RSA32API A_SHAFinal(
-		_Inout_ A_SHA_CTX* Context,
-		_Out_   UNSIGNED CHAR Result);
-
-	// https://learn.microsoft.com/fr-fr/windows/win32/seccrypto/a-shainit
-	NTSYSCALLAPI void RSA32API A_SHAInit(
-		_Inout_ A_SHA_CTX* Context);
-	
-	//https://learn.microsoft.com/fr-fr/windows/win32/seccrypto/a-shaupdate
-	NTSYSCALLAPI void RSA32API A_SHAUpdate(
-		_Inout_ A_SHA_CTX* Context,
-		_In_    UNSIGNED CHAR* Buffer,
-		UNSIGNED INT  BufferSize);
-
 	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
 	NTSYSAPI NTSTATUS NTAPI AlpcAdjustCompletionListConcurrencyCount(
 		_In_ HANDLE PortHandle,
@@ -161,30 +146,8 @@ extern "C"
 //CsrIdentifyAlertableThread
 //CsrSetPriorityClass
 //CsrVerifyRegion
-//EtwCheckCoverage
-//EtwCreateTraceInstanceId
-//EtwDeliverDataBlock
-//EtwEnumerateProcessRegGuids
-//EtwGetTraceEnableFlags
-//EtwGetTraceEnableLevel
-//EtwGetTraceLoggerHandle
-//EtwLogTraceEvent
-//EtwNotificationRegister
-//EtwNotificationUnregister
-//EtwProcessPrivateLoggerRequest
-//EtwRegisterSecurityProvider
-//EtwRegisterTraceGuidsA
-//EtwRegisterTraceGuidsW
-//EtwReplyNotification
-//EtwSendNotification
-//EtwSetMark
-//EtwTraceEventInstance
-//EtwTraceMessage
-//EtwTraceMessageVa
-//EtwUnregisterTraceGuids
-//EtwWriteUMSecurityEvent
-//EtwpCreateEtwThread
-//EtwpGetCpuSpeed
+
+
 //EvtIntReportAuthzEventAndSourceAsync
 //EvtIntReportEventAndSourceAsync
 //ExpInterlockedPopEntrySListEnd
@@ -195,88 +158,8 @@ extern "C"
 //KiUserCallbackDispatcher
 //KiUserExceptionDispatcher
 //KiUserInvertedFunctionTable
-//LdrAccessResource
-//LdrAddDllDirectory
-//LdrAddLoadAsDataTable
-//LdrAddRefDll
-//LdrAppxHandleIntegrityFailure
-//LdrCallEnclave
-//LdrControlFlowGuardEnforced
-//LdrCreateEnclave
-//LdrDeleteEnclave
-//LdrDisableThreadCalloutsForDll
-//LdrEnumResources
-//LdrEnumerateLoadedModules
-//LdrFastFailInLoaderCallout
-//LdrFindEntryForAddress
-//LdrFindResourceDirectory_U
-//LdrFindResourceEx_U
-//LdrFindResource_U
-//LdrFlushAlternateResourceModules
-//LdrGetDllDirectory
-//LdrGetDllFullName
-//LdrGetDllHandle
-//LdrGetDllHandleByMapping
-//LdrGetDllHandleByName
-//LdrGetDllHandleEx
-//LdrGetDllPath
-//LdrGetFailureData
-//LdrGetKnownDllSectionHandle
-//LdrGetProcedureAddress
-//LdrGetProcedureAddressEx
-//LdrGetProcedureAddressForCaller
-//LdrInitShimEngineDynamic
-//LdrInitializeEnclave
-//LdrInitializeThunk
-//LdrIsModuleSxsRedirected
-//LdrLoadAlternateResourceModule
-//LdrLoadAlternateResourceModuleEx
-//LdrLoadDll
-//LdrLoadEnclaveModule
-//LdrLockLoaderLock
-//LdrProcessInitializationComplete
-//LdrProcessRelocationBlock
-//LdrProcessRelocationBlockEx
-//LdrQueryModuleServiceTags
-//LdrQueryOptionalDelayLoadedAPI
-//LdrQueryProcessModuleInformation
-//LdrRegisterDllNotification
-//LdrRemoveDllDirectory
-//LdrRemoveLoadAsDataTable
-//LdrResFindResource
-//LdrResFindResourceDirectory
-//LdrResGetRCConfig
-//LdrResRelease
-//LdrResSearchResource
-//LdrResolveDelayLoadedAPI
-//LdrResolveDelayLoadsFromDll
-//LdrRscIsTypeExist
-//LdrSetAppCompatDllRedirectionCallback
-//LdrSetDefaultDllDirectories
-//LdrSetDllDirectory
-//LdrSetDllManifestProber
-//LdrSetImplicitPathOptions
-//LdrSetMUICacheType
-//LdrShutdownProcess
-//LdrShutdownThread
-//LdrStandardizeSystemPath
-//LdrSystemDllInitBlock
-//LdrUnloadAlternateResourceModule
-//LdrUnloadAlternateResourceModuleEx
-//LdrUnloadDll
-//LdrUnlockLoaderLock
-//LdrUnregisterDllNotification
-//LdrUpdatePackageSearchPath
-//LdrVerifyImageMatchesChecksum
-//LdrVerifyImageMatchesChecksumEx
-//LdrpResGetMappingSize
-//LdrpResGetResourceDirectory
-//MD4Final
-//MD4Init
-//MD4Update
-//MD5Final
-//MD5Init
-//MD5Update
+
+
 //NlsAnsiCodePage
 //NlsMbCodePageTag
 //NlsMbOemCodePageTag
@@ -434,10 +317,12 @@ extern "C"
 //NtdllDefWindowProc_W
 //NtdllDialogWndProc_A
 //NtdllDialogWndProc_W
+
 //PfxFindPrefix
 //PfxInitialize
 //PfxInsertPrefix
 //PfxRemovePrefix
+
 //PssNtCaptureSnapshot
 //PssNtDuplicateSnapshot
 //PssNtFreeRemoteSnapshot
@@ -513,7 +398,14 @@ extern "C"
 //RtlAddVectoredContinueHandler
 //RtlAddVectoredExceptionHandler
 //RtlAddressInSectionTable
-//RtlAdjustPrivilege
+
+	// https://github.com/Uri3n/Thread-Pool-Injection-PoC/blob/main/include/FunctionPtrs.hpp
+	NTSYSAPI NTSTATUS NTAPI RtlAdjustPrivilege(
+		_In_ ULONG Privilege,
+		_In_ BOOLEAN Enable,
+		_In_ BOOLEAN Client,
+		_Out_ PBOOLEAN WasEnabled);
+
 //RtlAllocateActivationContextStack
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlallocateandinitializesid
@@ -548,8 +440,9 @@ extern "C"
 	NTSYSAPI ULONG NTAPI RtlAnsiStringToUnicodeSize(
       PANSI_STRING AnsiString );
 
-//// See winterl.h
-//// RtlAnsiStringToUnicodeString
+// See winterl.h
+// RtlAnsiStringToUnicodeString
+
 //RtlAppendAsciizToString
 //RtlAppendPathElement
 
@@ -1405,9 +1298,16 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlinitunicodestring
 	// See winterl.h
-	// RtlInitUnicodeString
+	// See wdm.h
+	NTSYSAPI VOID NTAPI RtlInitUnicodeString(
+		_Out_ PUNICODE_STRING DestinationString,
+		_In_opt_z_ __drv_aliasesMem PCWSTR SourceString);
 
-	//RtlInitUnicodeStringEx
+	// See wdm.h
+	NTSYSAPI NTSTATUS NTAPI RtlInitUnicodeStringEx(
+		_Out_ PUNICODE_STRING DestinationString,
+		_In_opt_z_ __drv_aliasesMem PCWSTR SourceString);
+
 //RtlInitWeakEnumerationHashTable
 //RtlInitializeBitMap
 //RtlInitializeBitMapEx
@@ -2495,78 +2395,20 @@ extern "C"
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlxunicodestringtooemsize
 	NTSYSAPI ULONG RtlxUnicodeStringToOemSize(
 		PCUNICODE_STRING UnicodeString);
+
 //SbExecuteProcedure
 //SbSelectProcedure
 //ShipAssert
 //ShipAssertGetBufferInfo
 //ShipAssertMsgA
 //ShipAssertMsgW
-//TpAllocAlpcCompletion
-//TpAllocAlpcCompletionEx
-//TpAllocCleanupGroup
-//TpAllocIoCompletion
-//TpAllocJobNotification
-//TpAllocPool
-//TpAllocTimer
-//TpAllocWait
-//TpAllocWork
-//TpAlpcRegisterCompletionList
-//TpAlpcUnregisterCompletionList
-//TpCallbackDetectedUnrecoverableError
-//TpCallbackIndependent
-//TpCallbackLeaveCriticalSectionOnCompletion
-//TpCallbackMayRunLong
-//TpCallbackReleaseMutexOnCompletion
-//TpCallbackReleaseSemaphoreOnCompletion
-//TpCallbackSendAlpcMessageOnCompletion
-//TpCallbackSendPendingAlpcMessage
-//TpCallbackSetEventOnCompletion
-//TpCallbackUnloadDllOnCompletion
-//TpCancelAsyncIoOperation
-//TpCaptureCaller
-//TpCheckTerminateWorker
-//TpDbgDumpHeapUsage
-//TpDbgSetLogRoutine
-//TpDisablePoolCallbackChecks
-//TpDisassociateCallback
-//TpIsTimerSet
-//TpPostWork
-//TpQueryPoolStackInformation
-//TpReleaseAlpcCompletion
-//TpReleaseCleanupGroup
-//TpReleaseCleanupGroupMembers
-//TpReleaseIoCompletion
-//TpReleaseJobNotification
-//TpReleasePool
-//TpReleaseTimer
-//TpReleaseWait
-//TpReleaseWork
-//TpSetDefaultPoolMaxThreads
-//TpSetDefaultPoolStackInformation
-//TpSetPoolMaxThreads
-//TpSetPoolMaxThreadsSoftLimit
-//TpSetPoolMinThreads
-//TpSetPoolStackInformation
-//TpSetPoolThreadBasePriority
-//TpSetPoolThreadCpuSets
-//TpSetPoolWorkerThreadIdleTimeout
-//TpSetTimer
-//TpSetTimerEx
-//TpSetWait
-//TpSetWaitEx
-//TpSimpleTryPost
-//TpStartAsyncIoOperation
-//TpTimerOutstandingCallbackCount
-//TpTrimPools
-//TpWaitForAlpcCompletion
-//TpWaitForIoCompletion
-//TpWaitForJobNotification
-//TpWaitForTimer
-//TpWaitForWait
-//TpWaitForWork
+
+
 //VerSetConditionMask
+
 //WerReportExceptionWorker
 //WerReportSQMEvent
+
 //WinSqmAddToAverageDWORD
 //WinSqmAddToStream
 //WinSqmAddToStreamEx
@@ -2597,9 +2439,6 @@ extern "C"
 //WinSqmStartSession
 //WinSqmStartSessionForPartner
 //WinSqmStartSqmOptinListener
-//ZwCommitComplete
-//ZwQuerySystemInformation
-//ZwSetInformationKey
 
 }
 

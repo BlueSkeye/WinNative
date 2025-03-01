@@ -20,6 +20,8 @@ extern "C" {
 		_In_ PVOID File2MappedAsFile);
 	//ZwAreMappedFilesTheSame
 
+	// https://github.com/Uri3n/Thread-Pool-Injection-PoC/blob/main/include/FunctionPtrs.hpp
+	// https://urien.gitbook.io/diago-lima/a-deep-dive-into-exploiting-windows-thread-pools/attacking-i-o-ports
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtAssociateWaitCompletionPacket(
 		_In_ HANDLE WaitCompletionPacketHandle,
@@ -424,6 +426,7 @@ extern "C" {
 		[in]  FILE_INFORMATION_CLASS FileInformationClass);
 	//ZwSetInformationFile
 
+	// https://github.com/Uri3n/Thread-Pool-Injection-PoC/blob/main/include/FunctionPtrs.hpp
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtSetIoCompletion(
 		_In_ HANDLE IoHandle,

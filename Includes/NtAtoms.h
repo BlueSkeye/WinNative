@@ -7,6 +7,8 @@
 
 extern "C" {
 
+	// NO UNRESOLVED FUNCTIONS
+
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtAddAtom(
 		_In_ PWSTR AtomName,
@@ -43,25 +45,61 @@ extern "C" {
 		_Out_opt_ PULONG ReturnLength);
 	//ZwQueryInformationAtom
 
-	//RtlAddAtomToAtomTable
+	// https://raw.githubusercontent.com/x64dbg/TitanEngine/refs/heads/x64dbg/TitanEngine/ntdll.h
+	NTSYSAPI NTSTATUS NTAPI RtlAddAtomToAtomTable(
+		_In_ PVOID AtomTableHandle,
+		_In_ PWSTR AtomName,
+		_Inout_opt_ PRTL_ATOM Atom);
 
-	//RtlCreateAtomTable
+	// https://raw.githubusercontent.com/x64dbg/TitanEngine/refs/heads/x64dbg/TitanEngine/ntdll.h
+	NTSYSAPI NTSTATUS NTAPI RtlCreateAtomTable(
+		_In_ ULONG NumberOfBuckets,
+		_Out_ PVOID* AtomTableHandle);
 
-	//RtlDeleteAtomFromAtomTable
+	//https://raw.githubusercontent.com/x64dbg/TitanEngine/refs/heads/x64dbg/TitanEngine/ntdll.h
+	NTSYSAPI NTSTATUS NTAPI RtlDeleteAtomFromAtomTable(
+		_In_ PVOID AtomTableHandle,
+		_In_ RTL_ATOM Atom);
 
-	//RtlDestroyAtomTable
+	// https://doxygen.reactos.org/d7/d39/sdk_2lib_2rtl_2atom_8c.html
+	NTSYSAPI NTSTATUS NTAPI RtlDestroyAtomTable(
+		IN PRTL_ATOM_TABLE AtomTable);
 
-	//RtlEmptyAtomTable
+	//https://raw.githubusercontent.com/x64dbg/TitanEngine/refs/heads/x64dbg/TitanEngine/ntdll.h
+	NTSYSAPI NTSTATUS NTAPI RtlEmptyAtomTable(
+		_In_ PVOID AtomTableHandle,
+		_In_ BOOLEAN IncludePinnedAtoms);
 
-	//RtlGetIntegerAtom
+	//https://ntdoc.m417z.com/rtlgetintegeratom
+	NTSYSAPI BOOLEAN NTAPI RtlGetIntegerAtom(
+		_In_ PCWSTR AtomName,
+		_Out_opt_ PUSHORT IntegerAtom);
 
-	//RtlInitializeAtomPackage
+	//https://skanthak.hier-im-netz.de/download/NTDLL.H
+	//https://www.cnblogs.com/ahuo/archive/2011/05/29/2062398.html
+	//https://github.com/mic101/windows/blob/master/WRK-v1.2/base/ntos/rtl/atom.c
+	NTSYSAPI NTSTATUS NTAPI RtlInitializeAtomPackage(
+		IN ULONG AllocationTag);
 
-	//RtlLookupAtomInAtomTable
+	//https://raw.githubusercontent.com/x64dbg/TitanEngine/refs/heads/x64dbg/TitanEngine/ntdll.h
+	NTSYSAPI NTSTATUS NTAPI RtlLookupAtomInAtomTable(
+		_In_ PVOID AtomTableHandle,
+		_In_ PWSTR AtomName,
+		_Out_opt_ PRTL_ATOM Atom);
 
-	//RtlPinAtomInAtomTable
+	// https://doxygen.reactos.org/d7/d39/sdk_2lib_2rtl_2atom_8c.html
+	NTSYSAPI NTSTATUS NTAPI RtlPinAtomInAtomTable(
+		IN PRTL_ATOM_TABLE AtomTable,
+		IN RTL_ATOM Atom);
 
-	//RtlQueryAtomInAtomTable
+	//https://raw.githubusercontent.com/x64dbg/TitanEngine/refs/heads/x64dbg/TitanEngine/ntdll.h
+	NTSYSAPI NTSTATUS NTAPI RtlQueryAtomInAtomTable(
+		_In_ PVOID AtomTableHandle,
+		_In_ RTL_ATOM Atom,
+		_Out_opt_ PULONG AtomUsage,
+		_Out_opt_ PULONG AtomFlags,
+		_Inout_opt_ PWSTR AtomName,
+		_Inout_opt_ PULONG AtomNameLength);
 
 }
 

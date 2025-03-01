@@ -7,26 +7,125 @@
 
 extern "C" {
 
+	// NO UNRESOLVED FUNCTIONS
+
+	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventactivityidcontrol
+	// Forwarded from advapi32.dll:EventActivityIdControl
+	NTSYSAPI ULONG NTAPI EtwEventActivityIdControl(
+		[in]      ULONG  ControlCode,
+		[in, out] LPGUID ActivityId);
+
+	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventenabled
+	// Forwarded from advapi32.dll:EventEnabled
+	NTSYSAPI BOOLEAN NTAPI EtwEventEnabled(
+		[in] REGHANDLE          RegHandle,
+		[in] PCEVENT_DESCRIPTOR EventDescriptor);
+
+	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventproviderenabled
+	// Forwarded from advapi32.dll:EventProviderEnabled
+	NTSYSAPI BOOLEAN NTAPI EtwEventProviderEnabled(
+		[in] REGHANDLE RegHandle,
+		[in] UCHAR     Level,
+		[in] ULONGLONG Keyword);
+
+	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventregister
+	// Forwarded from advapi32.dll:EventRegister
+	NTSYSAPI ULONG NTAPI EtwEventRegister(
+		[in]           LPCGUID         ProviderId,
+		[in, optional] PENABLECALLBACK EnableCallback,
+		[in, optional] PVOID           CallbackContext,
+		[out]          PREGHANDLE      RegHandle);
+
+	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventsetinformation
+	// Forwarded from advapi32.dll:EventSetInformation
+	NTSYSAPI ULONG NTAPI EtwEventSetInformation(
+		[in] REGHANDLE        RegHandle,
+		[in] EVENT_INFO_CLASS InformationClass,
+		[in] PVOID            EventInformation,
+		[in] ULONG            InformationLength);
+
+	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventunregister
+	// Forwarded from advapi32.dll:EventUnregister
+	NTSYSAPI ULONG NTAPI EtwEventUnregister(
+		[in] REGHANDLE RegHandle);
+
+	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventwrite
+	// Forwarded from advapi32.dll:EventWrite
+	NTSYSAPI ULONG NTAPI EtwEventWrite(
+		[in]           REGHANDLE              RegHandle,
+		[in]           PCEVENT_DESCRIPTOR     EventDescriptor,
+		[in]           ULONG                  UserDataCount,
+		[in, optional] PEVENT_DATA_DESCRIPTOR UserData);
+
+	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventwriteex
+	// Forwarded from advapi32.dll:EventWriteEx
+	NTSYSAPI ULONG NTAPI EtwEventWriteEx(
+		[in]           REGHANDLE              RegHandle,
+		[in]           PCEVENT_DESCRIPTOR     EventDescriptor,
+		[in]           ULONG64                Filter,
+		[in]           ULONG                  Flags,
+		[in, optional] LPCGUID                ActivityId,
+		[in, optional] LPCGUID                RelatedActivityId,
+		[in]           ULONG                  UserDataCount,
+		[in, optional] PEVENT_DATA_DESCRIPTOR UserData);
+
+	//https://skanthak.hier-im-netz.de/download/NTDLL.H
+	// Forwarded from advapi32.dll:EventWriteEndScenario
+	NTSYSAPI DWORD NTAPI EtwEventWriteEndScenario(
+		REGHANDLE             RegHandle,
+		EVENT_DESCRIPTOR* EventDescriptor,
+		DWORD                 UserDataCount,
+		EVENT_DATA_DESCRIPTOR* UserData);
+
+	//https://learn.microsoft.com/en-us/windows/win32/devnotes/etweventwritefull
+	NTSYSAPI ULONG NTAPI EtwEventWriteFull(
+		__in REGHANDLE RegHandle,
+		__in PCEVENT_DESCRIPTOR EventDescriptor,
+		__in USHORT EventProperty,
+		__in_opt LPCGUID ActivityId,
+		__in_opt LPCGUID RelatedActivityId,
+		__in ULONG UserDataCount,
+		__in_ecount_opt(UserDataCount) PEVENT_DATA_DESCRIPTOR UserData);
+
+	//https://www.geoffchappell.com/studies/windows/win32/ntdll/api/etw/evntapi/writenoregistration.htm
+	NTSYSAPI ULONG NTAPI EtwEventWriteNoRegistration(
+		GUID const* ProviderId,
+		EVENT_DESCRIPTOR const* EventDescriptor,
+		ULONG UserDataCount,
+		EVENT_DATA_DESCRIPTOR* UserData);
+
+	//https://skanthak.hier-im-netz.de/download/NTDLL.H
+	// Forwarded from advapi32.dll:EventWriteStartScenario
+	NTSYSAPI DWORD NTAPI EtwEventWriteStartScenario(
+		REGHANDLE             RegHandle,
+		EVENT_DESCRIPTOR* EventDescriptor,
+		DWORD                 UserDataCount,
+		EVENT_DATA_DESCRIPTOR* UserData);
+
+	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventwritestring
+	// Forwarded from advapi32.dll:EventWriteString
+	NTSYSAPI ULONG NTAPI EtwEventWriteString(
+		[in] REGHANDLE RegHandle,
+		[in] UCHAR     Level,
+		[in] ULONGLONG Keyword,
+		[in] PCWSTR    String);
+
+	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventwritetransfer
+	// Forwarded from advapi32.dll:EventWriteTransfer
+	NTSYSAPI ULONG NTAPI EtwEventWriteTransfer(
+		[in]           REGHANDLE              RegHandle,
+		[in]           PCEVENT_DESCRIPTOR     EventDescriptor,
+		[in, optional] LPCGUID                ActivityId,
+		[in, optional] LPCGUID                RelatedActivityId,
+		[in]           ULONG                  UserDataCount,
+		[in, optional] PEVENT_DATA_DESCRIPTOR UserData);
+
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtAcquireCrossVmMutant(
 		_In_ HANDLE EventHandle,
 		_In_ PULONGLONG Unknown);
 	//ZwAcquireCrossVmMutant
 
-//EtwEventActivityIdControl
-//EtwEventEnabled
-//EtwEventProviderEnabled
-//EtwEventRegister
-//EtwEventSetInformation
-//EtwEventUnregister
-//EtwEventWrite
-//EtwEventWriteEndScenario
-//EtwEventWriteEx
-//EtwEventWriteFull
-//EtwEventWriteNoRegistration
-//EtwEventWriteStartScenario
-//EtwEventWriteString
-//EtwEventWriteTransfer
 
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtClearEvent(
@@ -241,6 +340,18 @@ extern "C" {
 		IN PLARGE_INTEGER       Time OPTIONAL);
 	//ZwSignalAndWaitForSingleObject
 
+	// https://www.geoffchappell.com/studies/windows/km/ntoskrnl/api/etw/traceapi/control/index.htm?ta=7.839996337890625&tx=27,29,32,41&ts=0,160
+	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+	NTSYSCALLAPI NTSTATUS NTAPI NtTraceControl(
+		_In_ ULONG CtrlCode,
+		_In_ PVOID InputBuffer,
+		_In_ ULONG InputBufferLength,
+		_Out_ PVOID OutputBuffer,
+		_In_ ULONG OutputBufferLength,
+		_Out_ PULONG ReturnLength);
+	//ZwTraceControl
+
+	// https://www.geoffchappell.com/studies/windows/km/ntoskrnl/api/etw/traceapi/event/index.htm?tx=27,29,32,41&ts=0,160
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSAPI NTSTATUS NTAPI NtTraceEvent(
 		_In_ HANDLE TraceHandle,

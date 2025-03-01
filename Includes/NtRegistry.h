@@ -308,6 +308,7 @@ extern "C" {
 
     // See winternl.h
     // NtSetInformationKey
+    //ZwSetInformationKey
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopenkeytransactedex
     NTSYSAPI NTSTATUS NTAPI NtSetValueKey(
