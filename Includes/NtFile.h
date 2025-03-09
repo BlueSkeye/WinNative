@@ -7,12 +7,50 @@
 
 extern "C" {
 
-//LdrGetFileNameFromLoadAsDataTable
+	// NO UNRESOLVED FUNCTIONS
 
-//LdrOpenImageFileOptionsKey
-//LdrQueryImageFileExecutionOptions
-//LdrQueryImageFileExecutionOptionsEx
-//LdrQueryImageFileKeyOption
+	//https://ntdoc.m417z.com/ldrgetfilenamefromloadasdatatable
+	//https://processhacker.sourceforge.io/doc/ntldr_8h_source.html
+	NTSYSAPI NTSTATUS NTAPI LdrGetFileNameFromLoadAsDataTable(
+		_In_ PVOID Module,
+		_Out_ PVOID* pFileNamePrt);
+
+	//https://www.geoffchappell.com/studies/windows/win32/ntdll/api/rtl/rtlexec/openimagefileoptionskey.htm
+	// https://doxygen.reactos.org/d8/d6b/ldrinit_8c.html
+	NTSYSAPI NTSTATUS NTAPI LdrOpenImageFileOptionsKey(
+		_In_ PUNICODE_STRING lpImageFile,
+		_In_ BOOLEAN bWow64,
+		_Out_ PHANDLE phKey);
+
+	//https://www.geoffchappell.com/studies/windows/win32/ntdll/api/ldrinit/queryimagefileexecutionoptions.htm
+	// https://doxygen.reactos.org/d8/d6b/ldrinit_8c.html#a27234a85c34ab9698ba3b7d7439ca69b
+	NTSYSAPI NTSTATUS NTAPI LdrQueryImageFileExecutionOptions(
+		_In_ PUNICODE_STRING lpImageFile,
+		_In_ PCWSTR lpszOption,
+		_In_ ULONG dwType,
+		_Out_ PVOID lpData,
+		_In_ ULONG cbData,
+		_Out_opt_ PULONG lpcbData);
+
+	//https://www.geoffchappell.com/studies/windows/win32/ntdll/api/rtl/rtlexec/queryimagefileexecutionoptionsex.htm
+	// https://doxygen.reactos.org/d8/d6b/ldrinit_8c.html#a27234a85c34ab9698ba3b7d7439ca69b
+	NTSYSAPI NTSTATUS NTAPI LdrQueryImageFileExecutionOptionsEx(
+		_In_ PUNICODE_STRING lpImageFile,
+		_In_ PCWSTR lpszOption,
+		_In_ ULONG dwType,
+		_Out_ PVOID lpData,
+		_In_ ULONG cbData,
+		_Out_opt_ PULONG lpcbData,
+		_In_ BOOLEAN bWow64);
+
+	//https://www.geoffchappell.com/studies/windows/win32/ntdll/api/rtl/rtlexec/queryimagefilekeyoption.htm
+	NTSYSAPI NTSTATUS NTAPI LdrQueryImageFileKeyOption(
+		HANDLE hKey,
+		PCWSTR lpszOption,
+		ULONG dwType,
+		PVOID lpData,
+		ULONG cbData,
+		PULONG lpcbData);
 
 	// https://processhacker.sourceforge.io/doc/ntmmapi_8h.html
 	NTSYSCALLAPI NTSTATUS NTAPI NtAreMappedFilesTheSame(
@@ -75,7 +113,6 @@ extern "C" {
 	//ZwCopyFileChunk
 	
 	// https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntcreatefile
-	// See winternl.h
 	// https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
 	NTSYSCALLAPI NTSTATUS NTAPI NtCreateFile(
 		_Out_ PHANDLE FileHandle,
@@ -138,14 +175,26 @@ extern "C" {
 	//ZwCreateWaitCompletionPacket
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwdeletefile
-	NTSYSCALLAPI NTSYSAPI NTSTATUS NtDeleteFile(
+	NTSYSCALLAPI NTSTATUS NTAPI NtDeleteFile(
 		_In_ POBJECT_ATTRIBUTES ObjectAttributes
 	);
 	//ZwDeleteFile
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntdeviceiocontrolfile
 	// See winternl.h
-	
+	NTSYSCALLAPI NTSTATUS NTAPI NtDeviceIoControlFile(
+		_In_  HANDLE           FileHandle,
+		_In_  HANDLE           Event,
+		_In_  PIO_APC_ROUTINE  ApcRoutine,
+		_In_  PVOID            ApcContext,
+		_Out_ PIO_STATUS_BLOCK IoStatusBlock,
+		_In_  ULONG            IoControlCode,
+		_In_  PVOID            InputBuffer,
+		_In_  ULONG            InputBufferLength,
+		_Out_ PVOID            OutputBuffer,
+		_In_  ULONG            OutputBufferLength);
+	// ZwDeviceIoControlFile
+
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtDeviceIoControlFile(
 		_In_ HANDLE FileHandle,
@@ -241,7 +290,6 @@ extern "C" {
 	//ZwNotifyChangeDirectoryFileEx
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/Winternl/nf-winternl-ntopenfile
-	// See winternl.h
 	// https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
 	NTSYSCALLAPI NTSTATUS NTAPI ZwOpenFile(
 		_Out_ PHANDLE FileHandle,
@@ -296,16 +344,15 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwqueryeafile
 	NTSTATUS NtQueryEaFile(
-		[in]           HANDLE           FileHandle,
-		[out]          PIO_STATUS_BLOCK IoStatusBlock,
-		[out]          PVOID            Buffer,
-		[in]           ULONG            Length,
-		[in]           BOOLEAN          ReturnSingleEntry,
-		[in, optional] PVOID            EaList,
-		[in]           ULONG            EaListLength,
-		[in, optional] PULONG           EaIndex,
-		[in]           BOOLEAN          RestartScan
-	);
+		_In_ HANDLE FileHandle,
+		_Out_ PIO_STATUS_BLOCK IoStatusBlock,
+		_Out_ PVOID Buffer,
+		_In_ ULONG Length,
+		_In_ BOOLEAN ReturnSingleEntry,
+		_In_opt_ PVOID EaList,
+		_In_ ULONG EaListLength,
+		_In_opt_ PULONG EaIndex,
+		_In_ BOOLEAN RestartScan);
 	//ZwQueryEaFile
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -506,35 +553,199 @@ extern "C" {
 		IN PULONG               Key OPTIONAL);
 	//ZwWriteFileGather
 
-//RtlAppxIsFileOwnedByTrustedInstaller
-//RtlCreateBootStatusDataFile
-//RtlDoesFileExists_U
-//RtlDosApplyFileIsolationRedirection_Ustr
-//RtlDoesNameContainWildCards
-//RtlDosLongPathNameToNtPathName_U_WithStatus
-//RtlDosLongPathNameToRelativeNtPathName_U_WithStatus
-//RtlDosPathNameToNtPathName_U
-//RtlDosPathNameToNtPathName_U_WithStatus
-//RtlDosPathNameToRelativeNtPathName_U
-//RtlDosPathNameToRelativeNtPathName_U_WithStatus
-//RtlDosSearchPath_U
-//RtlDosSearchPath_Ustr
-//RtlGetFileMUIPath
-//RtlGetFullPathName_U
-//RtlGetFullPathName_UEx
-//RtlGetFullPathName_UstrEx
-//RtlGetLocaleFileMappingAddress
-//RtlGetLengthWithoutLastFullDosOrNtPathElement
-//RtlGetLengthWithoutTrailingPathSeperators
-//RtlGetLongestNtPathLength
-//RtlIsCloudFilesPlaceholder
-//RtlIsNameInExpression
-//RtlIsNameInUnUpcasedExpression
+	//https://github.com/winsiderss/phnt/blob/master/ntrtl.h
+	NTSYSAPI NTSTATUS NTAPI RtlAppxIsFileOwnedByTrustedInstaller(
+		_In_ HANDLE FileHandle,
+		_Out_ PBOOLEAN IsFileOwnedByTrustedInstaller);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI NTSTATUS NTAPI RtlCreateBootStatusDataFile(VOID);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI BOOLEAN NTAPI RtlDoesFileExists_U(
+		_In_ PCWSTR FileName);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI NTSTATUS NTAPI RtlDosApplyFileIsolationRedirection_Ustr(
+		_In_ ULONG                  Flags,
+		_In_ PUNICODE_STRING        OriginalName,
+		_In_ PUNICODE_STRING        Extension,
+		_In_opt_ PUNICODE_STRING    StaticString,
+		_In_opt_ PUNICODE_STRING    DynamicString,
+		_In_opt_ PUNICODE_STRING* NewName,
+		_In_ PULONG                 NewFlags,
+		_In_ PSIZE_T                FileNameSize,
+		_In_ PSIZE_T                RequiredLength);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI BOOLEAN NTAPI RtlDoesNameContainWildCards(
+		_In_ PUNICODE_STRING Expression);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI NTSTATUS NTAPI RtlDosLongPathNameToNtPathName_U_WithStatus(
+		_In_ PCWSTR DosFileName,
+		_Out_ PUNICODE_STRING NtFileName,
+		_Out_opt_ PWSTR* FilePart,
+		_Out_opt_ PRTL_RELATIVE_NAME_U RelativeName);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI NTSTATUS NTAPI RtlDosLongPathNameToRelativeNtPathName_U_WithStatus(
+		_In_ PCWSTR DosFileName,
+		_Out_ PUNICODE_STRING NtFileName,
+		_Out_opt_ PWSTR* FilePart,
+		_Out_opt_ PRTL_RELATIVE_NAME_U RelativeName);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI BOOLEAN NTAPI RtlDosPathNameToNtPathName_U(
+		_In_ PCWSTR DosFileName,
+		_Out_ PUNICODE_STRING NtFileName,
+		_Out_opt_ PWSTR* FilePart,
+		_Out_opt_ PRTL_RELATIVE_NAME_U RelativeName);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI NTSTATUS NTAPI RtlDosPathNameToNtPathName_U_WithStatus(
+		_In_ PCWSTR DosFileName,
+		_Out_ PUNICODE_STRING NtFileName,
+		_Out_opt_ PWSTR* FilePart,
+		_Out_opt_ PRTL_RELATIVE_NAME_U RelativeName);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI BOOLEAN NTAPI RtlDosPathNameToRelativeNtPathName_U(
+		_In_ PCWSTR DosFileName,
+		_Out_ PUNICODE_STRING NtFileName,
+		_Out_opt_ PWSTR* FilePart,
+		_Out_opt_ PRTL_RELATIVE_NAME_U RelativeName);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI NTSTATUS NTAPI RtlDosPathNameToRelativeNtPathName_U_WithStatus(
+		_In_ PCWSTR DosFileName,
+		_Out_ PUNICODE_STRING NtFileName,
+		_Out_opt_ PWSTR* FilePart,
+		_Out_opt_ PRTL_RELATIVE_NAME_U RelativeName);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI ULONG NTAPI RtlDosSearchPath_U(
+		_In_ PCWSTR Path,
+		_In_ PCWSTR FileName,
+		_In_opt_ PCWSTR Extension,
+		_In_ ULONG BufferLength,
+		_Out_writes_bytes_(BufferLength) PWSTR Buffer,
+		_Out_opt_ PWSTR* FilePart);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI NTSTATUS NTAPI RtlDosSearchPath_Ustr(
+		_In_ ULONG Flags,
+		_In_ PUNICODE_STRING Path,
+		_In_ PUNICODE_STRING FileName,
+		_In_opt_ PUNICODE_STRING DefaultExtension,
+		_Out_opt_ PUNICODE_STRING StaticString,
+		_Out_opt_ PUNICODE_STRING DynamicString,
+		_Out_opt_ PCUNICODE_STRING* FullFileNameOut,
+		_Out_opt_ SIZE_T* FilePartPrefixCch,
+		_Out_opt_ SIZE_T* BytesRequired);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI NTSTATUS NTAPI RtlGetFileMUIPath(
+		_In_ ULONG Flags,
+		_In_ PCWSTR FilePath,
+		_Inout_opt_ PCWSTR Language,
+		_Inout_ PULONG LanguageLength,
+		_Out_opt_ PWSTR FileMUIPath,
+		_Inout_ PULONG FileMUIPathLength,
+		_Inout_ PULONGLONG Enumerator);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI ULONG NTAPI RtlGetFullPathName_U(
+		_In_ PCWSTR FileName,
+		_In_ ULONG BufferLength,
+		_Out_writes_bytes_(BufferLength) PWSTR Buffer,
+		_Out_opt_ PWSTR* FilePart);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI NTSTATUS NTAPI RtlGetFullPathName_UEx(
+		_In_ PCWSTR FileName,
+		_In_ ULONG BufferLength,
+		_Out_writes_bytes_(BufferLength) PWSTR Buffer,
+		_Out_opt_ PWSTR* FilePart,
+		_Out_opt_ PULONG BytesRequired);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI NTSTATUS NTAPI RtlGetFullPathName_UstrEx(
+		_In_ PUNICODE_STRING FileName,
+		_Inout_ PUNICODE_STRING StaticString,
+		_Out_opt_ PUNICODE_STRING DynamicString,
+		_Out_opt_ PUNICODE_STRING* StringUsed,
+		_Out_opt_ SIZE_T* FilePartPrefixCch,
+		_Out_opt_ PBOOLEAN NameInvalid,
+		_Out_ RTL_PATH_TYPE* InputPathType,
+		_Out_opt_ SIZE_T* BytesRequired);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI NTSTATUS NTAPI RtlGetLocaleFileMappingAddress(
+		_Out_ PVOID* BaseAddress,
+		_Out_ PLCID DefaultLocaleId,
+		_Out_ PLARGE_INTEGER DefaultCasingTableSize,
+		_Out_opt_ PULONG CurrentNLSVersion);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI NTSTATUS NTAPI RtlGetLengthWithoutLastFullDosOrNtPathElement(
+		_Reserved_ ULONG Flags,
+		_In_ PUNICODE_STRING PathString,
+		_Out_ PULONG Length);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI NTSTATUS NTAPI RtlGetLengthWithoutTrailingPathSeperators(
+		_Reserved_ ULONG Flags,
+		_In_ PUNICODE_STRING PathString,
+		_Out_ PULONG Length);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI ULONG NTAPI RtlGetLongestNtPathLength(VOID);
+
+	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtliscloudfilesplaceholder
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI BOOLEAN NTAPI RtlIsCloudFilesPlaceholder(
+		_In_ ULONG FileAttributes,
+		_In_ ULONG ReparseTag);
+
+	//https://learn.microsoft.com/fr-fr/windows/win32/devnotes/rtlisnameinexpression
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI BOOLEAN NTAPI RtlIsNameInExpression(
+		_In_ PUNICODE_STRING Expression,
+		_In_ PUNICODE_STRING Name,
+		_In_ BOOLEAN IgnoreCase,
+		_In_opt_ PWCH UpcaseTable);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI BOOLEAN NTAPI RtlIsNameInUnUpcasedExpression(
+		_In_ PUNICODE_STRING Expression,
+		_In_ PUNICODE_STRING Name,
+		_In_ BOOLEAN IgnoreCase,
+		_In_opt_ PWCH UpcaseTable);
+
+	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlisnamelegaldos8dot3
 	// See winternl.h
-	// RtlIsNameLegalDOS8Dot3
-//RtlIsPartialPlaceholderFileHandle
-//RtlIsPartialPlaceholderFileInfo
-//RtlPcToFileHeader
+	NTSYSAPI BOOLEAN NTAPI RtlIsNameLegalDOS8Dot3(
+		_In_ PCUNICODE_STRING Name,
+		_Inout_ POEM_STRING      OemName,
+		_Out_opt_ PBOOLEAN         NameContainsSpaces
+	);
+
+	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlispartialplaceholderfilehandle
+	NTSYSAPI NTSTATUS NTAPI RtlIsPartialPlaceholderFileHandle(
+		_In_ HANDLE FileHandle,
+		_Out_ PBOOLEAN IsPartialPlaceholder);
+
+	//https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlispartialplaceholderfileinfo
+	NTSYSAPI NTSTATUS NTAPI RtlIsPartialPlaceholderFileInfo(
+		_In_ PVOID InfoBuffer,
+		_In_ FILE_INFORMATION_CLASS InfoClass,
+		_Out_ PBOOLEAN IsPartialPlaceholder);
+
+	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	NTSYSAPI PVOID NTAPI RtlPcToFileHeader(
+		_In_ PVOID PcValue,
+		_Out_ PVOID* BaseOfImage);
 
 }
 

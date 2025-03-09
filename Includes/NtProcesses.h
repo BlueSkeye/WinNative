@@ -7,6 +7,36 @@
 
 extern "C" {
 
+    // UNRESOLVED FUNCTIONS
+//RtlCloneUserProcess
+//RtlCompleteProcessCloning
+//RtlCreateProcessParameters
+//RtlCreateProcessParametersEx
+//RtlCreateProcessParametersWithTemplate
+//RtlCreateProcessReflection
+//RtlCreateUserProcessEx
+//RtlDeNormalizeProcessParams
+//RtlDestroyProcessParameters
+//RtlExitUserProcess
+//RtlExitUserThread
+//RtlGetCurrentProcessorNumber
+//RtlGetProcessPreferredUILanguages
+//RtlNormalizeProcessParams
+//RtlPrepareForProcessCloning
+//RtlQueryProcessBackTraceInformation
+//RtlQueryProcessDebugInformation
+//RtlQueryProcessLockInformation
+//RtlReportSilentProcessExit
+//RtlSetProcessDebugInformation
+//RtlSetProcessIsCritical
+//RtlSetProcessPreferredUILanguages
+//RtlWow64SuspendProcess
+//RtlpCreateProcessRegistryInfo
+//RtlpQueryProcessDebugInformationFromWow64
+//RtlpQueryProcessDebugInformationRemote
+    // END OF UNRESOLVED FUNCTIONS
+    // Also see remark for PssWalkSnapshot
+
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtAcquireProcessActivityReference(
 		_Out_ PHANDLE pHandle,
@@ -20,11 +50,6 @@ extern "C" {
 		_Out_ PULONG pSuspendCount);
 	//ZwAlertResumeThread
 
-    // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
-    NTSYSCALLAPI NTSTATUS NTAPI ZwAlertThread(
-        _In_ HANDLE ThreadHandle);
-    //ZwAlertThread
-
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtAlertThreadByThreadId(
 		_In_ ULONG ThreadId);
@@ -35,18 +60,6 @@ extern "C" {
 		_In_ ULONG ServiceClass,
 		_In_ PUNICODE_STRING ServiceData);
 	//ZwApphelpCacheControl
-
-	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtContinue(
-		_In_ PCONTEXT Context,
-		_In_ BOOLEAN bTest);
-	//ZwContinue
-
-	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtContinueEx(
-		_In_ PCONTEXT Context,
-		_In_ BOOLEAN bTest);
-	//ZwContinueEx
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtCreateProcess(
@@ -238,13 +251,6 @@ extern "C" {
     //ZwQueueApcThreadEx2
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-    NTSYSCALLAPI NTSTATUS NTAPI NtRaiseException(
-        _In_ PEXCEPTION_RECORD Record,
-        _In_ PCONTEXT Context,
-        _In_ BOOL SearchFrames);
-    //ZwRaiseException
-
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtRaiseHardError(
         _In_ NTSTATUS ErrorStatus,
         _In_ ULONG NumberOfParameters,
@@ -366,6 +372,96 @@ extern "C" {
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtYieldExecution();
     //ZwYieldExecution
+
+    //https://github.com/fortra/nanodump/blob/main/include/handle.h
+    NTSYSAPI NTSTATUS NTAPI PssNtCaptureSnapshot(
+        PHANDLE SnapshotHandle,
+        HANDLE ProcessHandle,
+        DWORD CaptureFlags,
+        DWORD ThreadContextFlags);
+
+    //https://github.com/winsiderss/systeminformer/blob/master/phnt/include/ntpsapi.h
+    NTSYSAPI NTSTATUS NTAPI PssNtDuplicateSnapshot(
+        _In_ HANDLE SourceProcessHandle,
+        _In_ HANDLE SnapshotHandle,
+        _In_ HANDLE TargetProcessHandle,
+        _Out_ PHANDLE TargetSnapshotHandle,
+        _In_opt_ PSSNT_DUPLICATE_FLAGS Flags);
+
+    //https://github.com/winsiderss/systeminformer/blob/master/phnt/include/ntpsapi.h
+    NTSYSAPI NTSTATUS NTAPI PssNtFreeRemoteSnapshot(
+        _In_ HANDLE ProcessHandle,
+        _In_ HANDLE SnapshotHandle);
+
+    //https://github.com/fortra/nanodump/blob/main/include/handle.h
+    NTSYSAPI NTSTATUS NTAPI PssNtFreeSnapshot(
+        _In_ HANDLE SnapshotHandle);
+    
+    // Reversed
+    typedef struct _WALKMARKER {
+        PVOID BaseAddress;
+        PVOID Unknown;
+    } WALKMARKER, *PWALKMARKER;
+    NTSYSAPI NTSTATUS PssNtFreeWalkMarker(
+        _In_ PWALKMARKER pMarker);
+
+    //https://github.com/fortra/nanodump/blob/main/include/handle.h
+    NTSYSAPI NTSTATUS PssNtQuerySnapshot(
+        _In_ HANDLE SnapshotHandle,
+        _In_ DWORD InformationClass,
+        _In_ PVOID Buffer,
+        _In_ DWORD BufferLength);
+    
+    // Reversed
+    NTSYSAPI NTSTATUS NTAPI PssNtValidateDescriptor(
+        _In_ HANDLE SnapshotHandle,
+        // What are we missing here ? The RDX register is the callers caller return address.
+        _In_ PVOID Unknown);
+    
+    // https://learn.microsoft.com/en-us/windows/win32/api/processsnapshot/nf-processsnapshot-psswalksnapshot
+    // This is the definition from kernel32 which directly forwards (jump) to 
+    // api-ms-win-core-processsnapshot-l1-1-0.dll:__imp_PssWalkSnapshot
+    // See this article for name resolution
+    // https://stackoverflow.com/questions/47529106/what-are-api-ms-win-lx-x-x-dll-umbrella-libraries
+    // TODO : Resolve virtual DLL name and make sure the implementation is the one provided by
+    // NTDLL.DLL
+    NTSYSAPI NTSTATUS NTAPI PssWalkSnapshot(
+        [in]  HPSS                       SnapshotHandle,
+        [in]  PSS_WALK_INFORMATION_CLASS InformationClass,
+        [in]  HPSSWALK                   WalkMarkerHandle,
+        [out] void* Buffer,
+        [in]  DWORD                      BufferLength);
+
+    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
+    NTSTATUS WINAPI RtlCreateUserProcess(UNICODE_STRING* path, ULONG attributes,
+        RTL_USER_PROCESS_PARAMETERS* params,
+        SECURITY_DESCRIPTOR* process_descr,
+        SECURITY_DESCRIPTOR* thread_descr,
+        HANDLE parent, BOOLEAN inherit, HANDLE debug, HANDLE token,
+        RTL_USER_PROCESS_INFORMATION* info);
+
+    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
+    NTSYSAPI BOOLEAN WINAPI RtlIsCurrentProcess(
+        _In_ HANDLE handle);
+
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlqueryprocessplaceholdercompatibilitymode
+    NTSYSAPI CHAR RtlQueryProcessPlaceholderCompatibilityMode();
+
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlsetprocessplaceholdercompatibilitymode
+    NTSYSAPI CHAR RtlSetProcessPlaceholderCompatibilityMode(
+        CHAR Mode);
+
+    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
+    NTSYSAPI NTSTATUS WINAPI RtlWow64GetProcessMachines(
+        HANDLE process,
+        USHORT* current_ret,
+        USHORT* native_ret);
+
+    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
+    NTSYSAPI NTSTATUS WINAPI RtlWow64GetSharedInfoProcess(
+        HANDLE process,
+        BOOLEAN* is_wow64,
+        WOW64INFO* info);
 
 }
 

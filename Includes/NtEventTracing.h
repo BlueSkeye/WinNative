@@ -7,6 +7,33 @@
 
 extern "C" {
 
+	// UNRESOLVED FUNCTIONS
+
+	//EtwDeliverDataBlock
+	// Invoked from :
+	//   |- EtwpNotificationThread
+	//   |- EtwpSendSessionNotification
+	//      |- EtwpStartUmLogger
+	//         |- EtwProcessPrivateLoggerRequest
+	//            |- EtwProcessNotification
+	//               |- DeliverDataBlock (LOOPING)
+	//      |- EtwpLogger
+	//         |- EtwpStartUmLogger (SEE ABOVE)
+	//      |- EtwpStopLoggerInstance
+	//         |- EtwpStopUmLogger
+	//            |-EtwpStopUmLogger
+	//              |- EtwProcessPrivateLoggerRequest (EXPORTED)
+	//              |- EtwpShutdownPrivateLoggers
+	//                 |- RtlExitUserProcess (EXPORTED)
+	//            |- EtwpLogger (LOOPING SEE ABOVE)
+	//      |- EtwpFlushActiveBuffers
+	//         |- EtwpLogger (LOOPING SEE ABOVE)
+
+	// EtwProcessPrivateLoggerRequest
+	// (SECHOST) |- unsigned int __stdcall __high EtwpSendUmLogRequest(enum ETWTRACECONTROLCODE, struct _WMI_LOGGER_INFORMATION *, unsigned int, struct _EVENT_FILTER_DESCRIPTOR *)
+
+	// END OF UNRESOLVED FUNCTIONS
+
 	// https://docs.rs/phnt/latest/phnt/ffi/fn.EtwCheckCoverage.html
 	//EtwCheckCoverage
 	NTSYSAPI BOOL NTAPI EtwCheckCoverage(
@@ -17,8 +44,6 @@ extern "C" {
 	NTSYSAPI ULONG WMIAPI EtwCreateTraceInstanceId(
 		[in]  HANDLE               RegHandle,
 		[out] PEVENT_INSTANCE_INFO InstInfo);
-	
-	//EtwDeliverDataBlock
 
 	// https://ntdoc.m417z.com/etwenumerateprocessregguids
 	// https://docs.rs/phnt/latest/phnt/ffi/fn.EtwEnumerateProcessRegGuids.html
@@ -56,9 +81,10 @@ extern "C" {
 		PVOID Context,
 		PREGHANDLE RegHandle);
 
-	//EtwNotificationUnregister
-	
-	//EtwProcessPrivateLoggerRequest
+	//https://github.com/winsiderss/systeminformer/blob/b0526bc41f7536bb9e71ecdc5d74f05572d703a5/phnt/include/ntwmi.h#L5854
+	NTSYSAPI ULONG NTAPI EtwNotificationUnregister(
+		_In_ REGHANDLE RegHandle,
+		_Out_opt_ PVOID* Context);
 	
 	// https://www.geoffchappell.com/studies/windows/win32/ntdll/api/etw/registersecurityprovider.htm
 	NTSYSAPI ULONG NTAPI EtwRegisterSecurityProvider(VOID);
@@ -89,7 +115,13 @@ extern "C" {
 	NTSYSAPI ULONG NTAPI EtwReplyNotification(
 		_In_ PETW_NOTIFICATION_HEADER Notification);
 
-	//EtwSendNotification
+	//https://github.com/winsiderss/systeminformer/blob/b0526bc41f7536bb9e71ecdc5d74f05572d703a5/phnt/include/ntwmi.h#L5862
+	NTSYSAPI ULONG NTAPI EtwSendNotification(
+		_In_ PETW_NOTIFICATION_HEADER DataBlock,
+		_In_ ULONG ReceiveDataBlockSize,
+		_Inout_ PVOID ReceiveDataBlock,
+		_Out_ PULONG ReplyReceived,
+		_Out_ PULONG ReplySizeNeeded);
 
 	// https://ntdoc.m417z.com/etwsetmark
 	NTSYSAPI ULONG NTAPI EtwSetMark(
@@ -143,7 +175,9 @@ extern "C" {
 		PVOID entryPoint,
 		PVOID undefined);
 
-	//EtwpGetCpuSpeed
+	// Reverse engineered. Result in Mhz.
+	NTSYSAPI NTSTATUS NTAPI EtwpGetCpuSpeed(
+		_Out_ PDWORD pResult);
 
 }
 

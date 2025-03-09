@@ -7,7 +7,10 @@
 
 extern "C" {
 
-	// NO UNRESOLVED FUNCTIONS
+	// UNRESOLVED FUNCTIONS
+//EvtIntReportAuthzEventAndSourceAsync
+//EvtIntReportEventAndSourceAsync
+	// END OF UNRESOLVED FUNCTIONS
 
 	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventactivityidcontrol
 	// Forwarded from advapi32.dll:EventActivityIdControl

@@ -7,6 +7,8 @@
 
 extern "C" {
 
+    // NO UNRESOLVED FUNCTION
+
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtAcceptConnectPort(
         _Out_ PHANDLE PortHandle,

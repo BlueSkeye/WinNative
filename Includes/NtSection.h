@@ -7,6 +7,8 @@
 
 extern "C" {
 
+	// NO UNRESOLVED FUNCTIONS
+
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntcreatesection
 	NTSYSCALLAPI NTSTATUS NTAPI NtCreateSection(
 		_Out_ PHANDLE SectionHandle,
@@ -42,9 +44,9 @@ extern "C" {
 		_In_ PVOID ContextData,
 		_Out_ PPVOID SectionPointer,
 		_Out_ PULONG SectionSize);
-
 	//ZwGetNlsSectionPtr
 
+	// https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/nf-wdm-zwmapviewofsection
 	NTSYSCALLAPI NTSTATUS NTAPI NtMapViewOfSection(
 		_In_ HANDLE SectionHandle,
 		_In_ HANDLE ProcessHandle,
@@ -71,12 +73,14 @@ extern "C" {
 		[in]                ULONG                   ExtendedParameterCount);
 	//ZwMapViewOfSectionEx
 
+	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtOpenSection(
 		_Out_ PHANDLE SectionHandle,
 		_In_ ACCESS_MASK DesiredAccess,
 		_In_ POBJECT_ATTRIBUTES ObjectAttributes);
 	//ZwOpenSection
 
+	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtQuerySection(
 		_In_ HANDLE SectionHandle,
 		_In_ SECTION_INFORMATION_CLASS SectionInformationClass,
@@ -90,6 +94,7 @@ extern "C" {
 		_In_opt_ PVOID BaseAddress);
 	//ZwUnmapViewOfSection
 
+	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtUnmapViewOfSectionEx(
 		_In_ HANDLE ProcessHandle,
 		_In_opt_ PVOID BaseAddress,

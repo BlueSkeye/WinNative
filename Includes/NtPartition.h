@@ -7,6 +7,8 @@
 
 extern "C" {
 
+	// NO UNRESOLVED FUNCTIONS
+
 	// https://www.geoffchappell.com/studies/windows/km/ntoskrnl/api/mm/partition/create.htm?ta=8.199996948242188&tx=91;90&ts=0,57
 	NTSYSCALLAPI NTSTATUS NTAPI NtCreatePartition(
 		_Out_ PHANDLE PartitionHandle,

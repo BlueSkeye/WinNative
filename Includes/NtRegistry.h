@@ -7,6 +7,8 @@
 
 extern "C" {
 
+    // NO UNRESOLVED FUNCTIONS
+
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtCommitRegistryTransaction(
         HANDLE RegistryHandle,
@@ -257,7 +259,13 @@ extern "C" {
         _Out_ PULONG ResultLength);
     //ZwQueryValueKey
     
-    //RtlpNtQueryValueKey
+    // https://raw.githubusercontent.com/x-tinkerer/WRK/refs/heads/master/public/sdk/inc/ntrtl.h
+    NTSYSAPI NTSTATUS NTAPI RtlpNtQueryValueKey(
+        _In_ HANDLE KeyHandle,
+        _Out_ PULONG KeyValueType,
+        _Out_ PVOID KeyValue,
+        _Out_ PULONG KeyValueLength,
+        _Out_ PLARGE_INTEGER LastWriteTime);
 
     // See winternl.h
     // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
@@ -306,8 +314,13 @@ extern "C" {
         _In_ HANDLE FileHandle);
     //ZwSaveMergedKeys
 
+    // https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntsetinformationkey
     // See winternl.h
-    // NtSetInformationKey
+    NTSYSAPI NTSTATUS NTAPI NtSetInformationKey(
+        [in] HANDLE                    KeyHandle,
+        [in] KEY_SET_INFORMATION_CLASS KeySetInformationClass,
+        [in] PVOID                     KeySetInformation,
+        [in] ULONG                     KeySetInformationLength);
     //ZwSetInformationKey
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopenkeytransactedex

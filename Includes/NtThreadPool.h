@@ -7,6 +7,22 @@
 
 extern "C" {
 
+	// UNRESOLVED FUNCTIONS
+
+	//TpCallbackIndependent
+	//TpCallbackSendPendingAlpcMessage
+	//TpDbgDumpHeapUsage
+
+	//TpDisablePoolCallbackChecks
+
+	//TpSetDefaultPoolStackInformation
+	//TpSetPoolMaxThreadsSoftLimit
+	//TpSetPoolThreadCpuSets
+	//TpSetPoolWorkerThreadIdleTimeout
+	//TpTimerOutstandingCallbackCount
+
+	// END OF UNRESOLVED FUNCTIONS
+
 	// https://processhacker.sourceforge.io/doc/nttp_8h.html
 	NTSYSAPI NTSTATUS NTAPI TpAllocAlpcCompletion(
 		_Out_ PTP_ALPC* AlpcReturn,
@@ -77,6 +93,10 @@ extern "C" {
 	NTSYSAPI NTSTATUS NTAPI TpAlpcUnregisterCompletionList(
 			_Inout_ PTP_ALPC Alpc);
 
+	// Reversed. Not invoked from other NTDLL.DLL functions
+	NTSYSAPI VOID NTAPI TpCallbackDetectedUnrecoverableError(
+		_In_ PVOID unidentified);
+
 	// https://processhacker.sourceforge.io/doc/nttp_8h.html
 	NTSYSAPI VOID NTAPI TpCallbackLeaveCriticalSectionOnCompletion(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance,
@@ -86,7 +106,7 @@ extern "C" {
 	NTSYSAPI NTSTATUS NTAPI TpCallbackMayRunLong(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance);
 
-	//// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://processhacker.sourceforge.io/doc/nttp_8h.html
 	//NTSYSAPI NTSTATUS NTAPI TpQueryPoolStackInformation(
 	//	_In_ PTP_POOL Pool,
 	//	_Out_ PTP_POOL_STACK_INFORMATION PoolStackInformation);
@@ -124,6 +144,9 @@ extern "C" {
 	NTSYSAPI VOID NTAPI TpCheckTerminateWorker(
 		_In_ HANDLE Thread);
 
+	// Reversed. Empty function always returning 0. Arguments unknown may not be VOID.
+	NTSYSAPI NTSTATUS NTAPI TpDbgSetLogRoutine(VOID);
+
 	// https://processhacker.sourceforge.io/doc/nttp_8h.html
 	NTSYSAPI VOID NTAPI TpDisassociateCallback(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance);
@@ -153,6 +176,10 @@ extern "C" {
 	// https://processhacker.sourceforge.io/doc/nttp_8h.html
 	NTSYSAPI VOID NTAPI TpReleaseIoCompletion(
 		_Inout_ PTP_IO Io);
+
+	// Reversed. Not invoked from inside NTDLL.DLL
+	NTSYSAPI NTSTATUS NTAPI TpReleaseJobNotification(
+		_In_ PFULL_TP_JOB Job);
 
 	// https://processhacker.sourceforge.io/doc/nttp_8h.html
 	NTSYSAPI VOID NTAPI TpReleasePool(
@@ -213,6 +240,9 @@ extern "C" {
 	NTSYSAPI VOID NTAPI TpStartAsyncIoOperation(
 		_Inout_ PTP_IO Io);
 
+	// Reversed. Invoked from LdrShutdownThread.
+	NTSYSAPI VOID NTAPI TpTrimPools();
+
 	// https://processhacker.sourceforge.io/doc/nttp_8h.html
 	NTSYSAPI VOID NTAPI TpWaitForIoCompletion(
 		_Inout_ PTP_IO Io,
@@ -233,26 +263,44 @@ extern "C" {
 		_Inout_ PTP_WORK Work,
 		_In_ LOGICAL CancelPendingCallbacks);
 
-	//TpCallbackDetectedUnrecoverableError
-	//TpCallbackIndependent
-	//TpCallbackSendAlpcMessageOnCompletion
-	//TpCallbackSendPendingAlpcMessage
-	//TpDbgDumpHeapUsage
-	//TpDbgSetLogRoutine
-	//TpDisablePoolCallbackChecks
-	//TpReleaseIoCompletion
-	//TpReleaseJobNotification
-	//TpSetDefaultPoolMaxThreads
-	//TpSetDefaultPoolStackInformation
-	//TpSetPoolMaxThreadsSoftLimit
-	//TpSetPoolThreadBasePriority
-	//TpSetPoolThreadCpuSets
-	//TpSetPoolWorkerThreadIdleTimeout
-	//TpSetTimerEx
-	//TpSetWaitEx
-	//TpTimerOutstandingCallbackCount
-	//TpTrimPools
-	//TpWaitForJobNotification
+	// https://raw.githubusercontent.com/hakril/PythonForWindows/refs/heads/master/windows/generated_def/winfuncs.py
+	NTSYSAPI NTSTATUS NTAPI TpCallbackSendAlpcMessageOnCompletion(
+		HANDLE TpHandle,
+		HANDLE PortHandle,
+		ULONG Flags,
+		PPORT_MESSAGE SendMessage);
+	
+	//https://docs.rs/phnt/latest/src/phnt/ffi/x86_64_bindgen.rs.html#80957
+	NTSYSAPI VOID NTAPI TpReleaseIoCompletion(
+		_In_ PTP_IO Io);
+
+	//https://docs.rs/phnt/latest/phnt/ffi/fn.TpSetPoolMaxThreads.html
+	NTSYSAPI VOID NTAPI TpSetPoolMaxThreads(
+		_In_ PTP_POOL Pool,
+		_In_ ULONG MaxThreads);
+	
+	//https://docs.rs/phnt/latest/phnt/ffi/fn.TpSetPoolThreadBasePriority.html
+	NTSYSAPI NTSTATUS NTAPI TpSetPoolThreadBasePriority(
+		_In_ PTP_POOL Pool,
+		_In_ ULONG BasePriority(: ULONG);
+	
+	//https://docs.rs/phnt/latest/phnt/ffi/fn.TpSetTimerEx.html
+	NTSYSAPI NTSTATUS NTAPI TpSetTimerEx(
+		_In_ PTP_TIMER Timer,
+		_In_ PLARGE_INTEGER DueTime,
+		_In_ ULONG Period,
+		_In_ ULONG WindowLength);
+
+	//https://docs.rs/phnt/latest/phnt/ffi/fn.TpSetWaitEx.html
+	NTSYSAPI NTSTATUS NTAPI TpSetWaitEx(
+		_In_ PTP_WAIT Wait,
+		_In_ HANDLE Handle,
+		_In_ PLARGE_INTEGER Timeout,
+		_In_ PVOID Reserved);
+
+	// Reversed. Not invoked from inside NTDLL.DLL
+	NTSYSAPI VOID NTAPI TpWaitForJobNotification(
+		_In_ PFULL_TP_JOB Job);
 
 }
 

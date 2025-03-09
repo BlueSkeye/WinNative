@@ -7,6 +7,8 @@
 
 extern "C" {
 
+    // NO UNRESOLVED FUNCTIONS
+
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtCancelTimer(
         _In_ HANDLE TimerHandle,
@@ -79,7 +81,10 @@ extern "C" {
     //ZwQueryTimer
 
     // See winternl.h
-    // NtQueryTimerResolution
+    NTSYSAPI NTSTATUS NTAPI NtQueryTimerResolution(
+        _Out_ PULONG MinimumResolution,
+        _Out_ PULONG MaximumResolution,
+        _Out_ PULONG CurrentResolution);
     //ZwQueryTimerResolution
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg

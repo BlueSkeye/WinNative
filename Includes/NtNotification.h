@@ -7,6 +7,8 @@
 
 extern "C" {
 
+    // NO UNRESOLVED FUNCTIONS
+
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcommitcomplete
     NTSYSCALLAPI NTSTATUS NTAPI NtCreateWnfStateName(
         _Out_ PCWNF_STATE_NAME StateName,

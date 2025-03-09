@@ -1,0 +1,4 @@
+
+https://www.x86matthew.com/view_post?id=lognt32_p2
+Return-address hijacking implemented to improve efficiency
+Interesting for an explanation of the benefits from using fastcall convention.
