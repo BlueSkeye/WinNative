@@ -7,7 +7,24 @@
 
 extern "C" {
 
-    // NO UNRESOLVED FUNCTIONS
+    // UNRESOLVED FUNCTIONS
+    //RtlGetInterruptTimePrecise
+    //RtlGetMultiTimePrecise
+    //RtlGetSystemTimeAndBias
+    //RtlGetSystemTimePrecise
+    // RtlLocalTimeToSystemTime
+    //RtlQueryDynamicTimeZoneInformation
+    //RtlQueryTimeZoneInformation
+    //RtlQueryUnbiasedInterruptTime
+    //RtlSetDynamicTimeZoneInformation
+    //RtlSetTimeZoneInformation
+    //RtlSystemTimeToLocalTime
+    //RtlTimeToElapsedTimeFields
+    //RtlpCheckDynamicTimeZoneInformation
+    //RtlpFreezeTimeBias
+    //RtlpTimeFieldsToTime
+    //RtlpTimeToTimeFields
+    // END OF UNRESOLVED FUNCTIONS
 
     // https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/nf-wdm-dbgbreakpoint
     NTSYSAPI VOID DbgBreakPoint();
@@ -216,6 +233,39 @@ extern "C" {
         _In_opt_ PLARGE_INTEGER Timeout,
         _Out_ PULONG Result);
     //ZwWaitForDebugEvent
+
+    // Reversed. Empty function always returning 0. Arguments unknown may not be VOID.
+    NTSYSAPI NTSTATUS NTAPI RtlDebugPrintTimes(VOID);
+
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlsecondssince1970totime
+    NTSYSAPI VOID RtlSecondsSince1970ToTime(
+        [in]  ULONG          ElapsedSeconds,
+        [out] PLARGE_INTEGER Time);
+
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlsecondssince1980totime
+    NTSYSAPI VOID RtlSecondsSince1980ToTime(
+        [in]  ULONG          ElapsedSeconds,
+        [out] PLARGE_INTEGER Time);
+
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtltimefieldstotime
+    NTSYSAPI BOOLEAN RtlTimeFieldsToTime(
+        [in]  PTIME_FIELDS   TimeFields,
+        [out] PLARGE_INTEGER Time);
+
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtltimetosecondssince1970
+    // See winternl.h
+    // RtlTimeToSecondsSince1970
+
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtltimetosecondssince1980
+    NTSYSAPI BOOLEAN RtlTimeToSecondsSince1980(
+        [in]  PLARGE_INTEGER Time,
+        [out] PULONG         ElapsedSeconds);
+
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtltimetotimefields
+    NTSYSAPI VOID RtlTimeToTimeFields(
+        [in]  PLARGE_INTEGER Time,
+        [out] PTIME_FIELDS   TimeFields);
+
 }
 
 #endif // _NTDEBUGGING_

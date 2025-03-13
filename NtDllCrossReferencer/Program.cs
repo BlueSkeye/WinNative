@@ -1,36 +1,34 @@
 ﻿using System.IO.MemoryMappedFiles;
+using System.Reflection.PortableExecutable;
 using System.Text;
 
 namespace NtDllCrossReferencer
 {
     public static class Program
     {
-        private static Dictionary<string, List<FileInfo>> _referencersByFunctionName =
-            new Dictionary<string, List<FileInfo>>();
+        private static Dictionary<string, Dictionary<string, List<FileInfo>>> _referencersByFunctionNameByExporter =
+            new Dictionary<string, Dictionary<string, List<FileInfo>>>();
+        private static string[] ExcludedDirectories = {
+            "Installer", "Servicing", "SysWOW64", "WinSxS"
+        };
 
         public static int Main(string[] args)
         {
             int totalCandidateFiles = 0;
             DateTime startTime = DateTime.UtcNow;
-            foreach(FileInfo candidate in WalkCandidates()) {
+            // FindDllImports(new FileInfo(@"C:\Windows\System32\tcblaunch.exe"));
+
+            foreach (FileInfo candidate in WalkCandidates()) {
                 totalCandidateFiles++;
-                FindNtDllImports(candidate);
+                FindDllImports(candidate);
             }
             DateTime endTime = DateTime.UtcNow;
             Console.WriteLine($"{totalCandidateFiles} files found in {(int)((endTime - startTime).TotalSeconds)} sec.");
             return 0;
         }
 
-        private static void FindNtDllImports(FileInfo candidate)
+        private static void FindDllImports(FileInfo candidate)
         {
-            const int elfanewDosHeaderOffset = 60;
-            const int imageFileHeaderSize = 20;
-            const int optionalHeader64OffsetInNtHeader64 = sizeof(uint) + imageFileHeaderSize;
-            const int dataDirectoryCountOffsetInOptionalHeader64 = 108;
-            const int firstDataDirectoryOffsetInOptionalHeader64 = 112;
-            const int importTableOffsetInOptionalHeader64 = firstDataDirectoryOffsetInOptionalHeader64 + (1 * 8);
-            const int numberOfNamesOffsetInImportDirectory = 24;
-            const int sectionsCountOffsetInNtHeader64 = 6;
             // const int addressOfNamesOffsetInExportDirectory = 32;
             MemoryMappedFile? mapping;
 
@@ -46,36 +44,87 @@ namespace NtDllCrossReferencer
                 // Some drivers may be found offending from an EDR pow.
                 return;
             }
-            MemoryMappedViewAccessor reader = mapping.CreateViewAccessor(0, candidate.Length,
-                MemoryMappedFileAccess.Read);
-            // NT header offsets are computed assuming the header includes the magic 'PE\0\0' marker.
-            uint ntHeader64Offset = reader.ReadUInt32(elfanewDosHeaderOffset);
-            ushort sectionsCount = reader.ReadUInt16(ntHeader64Offset + sectionsCountOffsetInNtHeader64); // Valid
-            uint optionalHeader64FileOffset = ntHeader64Offset + optionalHeader64OffsetInNtHeader64; // Valid
-            long readPosition = optionalHeader64FileOffset + dataDirectoryCountOffsetInOptionalHeader64;
-            uint dataDirectoryCount = reader.ReadUInt32(readPosition);
-            uint sectionTableFileOffset = optionalHeader64FileOffset +
-                firstDataDirectoryOffsetInOptionalHeader64 + (dataDirectoryCount * 8);
-            uint importTable64FileOffset = optionalHeader64FileOffset + importTableOffsetInOptionalHeader64;
-            uint importDataDirectoryRVA = reader.ReadUInt32(importTable64FileOffset);
-            uint importDataDirectoryFileOffset = ResolveRVAToFileOffset(reader, sectionTableFileOffset,
-                sectionsCount, importDataDirectoryRVA);
+            try {
+                int importedFunctionsCount = 0;
+                using (MemoryMappedViewAccessor reader = mapping.CreateViewAccessor(0, candidate.Length,
+                    MemoryMappedFileAccess.Read))
+                {
+                    PEDescriptor peDescriptor;
 
-            readPosition = importDataDirectoryFileOffset;
+                    // NT header offsets are computed assuming the header includes the magic 'PE\0\0' marker.
+                    peDescriptor.ntHeader64Offset = reader.ReadUInt32(PEDescriptor.ElfanewDosHeaderOffset);
+                    peDescriptor.sectionsCount = reader.ReadUInt16(
+                        peDescriptor.ntHeader64Offset + PEDescriptor.SectionsCountOffsetInNtHeader64);
+                    peDescriptor.optionalHeader64FileOffset = 
+                        peDescriptor.ntHeader64Offset + PEDescriptor.OptionalHeader64OffsetInNtHeader64;
+                    peDescriptor.peHeaderMagic = reader.ReadUInt16(peDescriptor.optionalHeader64FileOffset);
+                    if (0x20B != peDescriptor.peHeaderMagic) {
+                        // We don't handle anything else than PE32+ files (i.e. 64 bits executables). 
+                        return;
+                    }
+                    Console.WriteLine($"{candidate.Name} =============================");
+                    long readPosition = peDescriptor.optionalHeader64FileOffset +
+                        PEDescriptor.DataDirectoryCountOffsetInOptionalHeader64;
+                    peDescriptor.dataDirectoryCount = reader.ReadUInt32(readPosition);
+                    peDescriptor.sectionTableFileOffset = peDescriptor.optionalHeader64FileOffset +
+                        PEDescriptor.FirstDataDirectoryOffsetInOptionalHeader64 +
+                        (peDescriptor.dataDirectoryCount * 8);
+
+                    HandleImportTable(candidate, reader, peDescriptor, ref importedFunctionsCount);
+
+                    // Delay-load import table
+                    HandleDelayImportTable(candidate, reader, peDescriptor, ref importedFunctionsCount);
+
+                    if (0 == importedFunctionsCount) {
+                        int i = 1;
+                    }
+                }
+            }
+            finally { mapping.Dispose(); }
+        }
+
+        private static void HandleDelayImportTable(FileInfo candidate, MemoryMappedViewAccessor reader,
+            PEDescriptor peDescriptor, ref int importedFunctionsCount)
+        {
+            uint delayImportTable64FileOffset = peDescriptor.optionalHeader64FileOffset +
+                PEDescriptor.DelayImportTableOffsetInOptionalHeader64;
+            uint delayImportDataDirectoryRVA = reader.ReadUInt32(delayImportTable64FileOffset);
+            if (0 == delayImportDataDirectoryRVA) {
+                // No delay import found.
+                return;
+            }
+            uint delayImportDataDirectoryFileOffset = ResolveRVAToFileOffset(reader,
+                peDescriptor.sectionTableFileOffset, peDescriptor.sectionsCount, delayImportDataDirectoryRVA);
+
+            long readPosition = delayImportDataDirectoryFileOffset;
+            if (0 != reader.ReadInt32(readPosition)) {
+                throw new ApplicationException($"Invalid delay-load table attribute at 0x{readPosition:X8}");
+            }
+            readPosition += sizeof(int);
+
             const int directoryEntrySize = 20;
             const int dllNameOffsetInDirectoryEntry = 12;
             while (true) {
                 uint lookupTableRVA = reader.ReadUInt32(readPosition);
                 uint dllNameRVA = reader.ReadUInt32(readPosition + dllNameOffsetInDirectoryEntry);
                 if (0 == lookupTableRVA) {
-                    // Technically we should check the other directory entry fields to be zero also.
+                    // Technically we should check the other directory entry fields to be
+                    // zero also.
                     break;
                 }
-                uint dllNameFileOffset = ResolveRVAToFileOffset(reader, sectionTableFileOffset,
-                    sectionsCount, dllNameRVA);
+                uint dllNameFileOffset = ResolveRVAToFileOffset(reader,
+                    peDescriptor.sectionTableFileOffset, peDescriptor.sectionsCount, dllNameRVA);
                 string dllName = ReadAnsiNTBString(reader, dllNameFileOffset).ToUpper();
-                uint lookupTableFileOffset = ResolveRVAToFileOffset(reader, sectionTableFileOffset,
-                    sectionsCount, lookupTableRVA);
+                Console.WriteLine($"  importing from {dllName}");
+                Dictionary<string, List<FileInfo>> referencersByFunctionName;
+                if (!_referencersByFunctionNameByExporter.TryGetValue(dllName,
+                    out referencersByFunctionName))
+                {
+                    referencersByFunctionName = new Dictionary<string, List<FileInfo>>();
+                    _referencersByFunctionNameByExporter.Add(dllName, referencersByFunctionName);
+                }
+                uint lookupTableFileOffset = ResolveRVAToFileOffset(reader,
+                    peDescriptor.sectionTableFileOffset, peDescriptor.sectionsCount, lookupTableRVA);
                 while (true) {
                     ulong lookupTableEntryValue = reader.ReadUInt64(lookupTableFileOffset);
                     if (0 == lookupTableEntryValue) {
@@ -84,23 +133,95 @@ namespace NtDllCrossReferencer
                     if (0 == (0x8000000000000000 & lookupTableEntryValue)) {
                         // Ignore imports by ordinal
                         uint functionNameRVA = (uint)lookupTableEntryValue;
-                        uint functionNameFileOffset = ResolveRVAToFileOffset(reader, sectionTableFileOffset,
-                            sectionsCount, functionNameRVA);
+                        uint functionNameFileOffset = ResolveRVAToFileOffset(reader,
+                            peDescriptor.sectionTableFileOffset, peDescriptor.sectionsCount,
+                            functionNameRVA);
+                        // Skip hint value.
+                        functionNameFileOffset += sizeof(ushort);
                         string functionName = ReadAnsiNTBString(reader, functionNameFileOffset);
-                        string compositeName = $"{dllName}::{functionName}";
+                        // No need to consume the additional null byte after name (if any)
+                        // Console.WriteLine("  " + functionName);
                         List<FileInfo> referencers;
-                        if (!_referencersByFunctionName.TryGetValue(compositeName, out referencers)) {
+                        if (!referencersByFunctionName.TryGetValue(functionName,
+                            out referencers))
+                        {
                             referencers = new List<FileInfo>();
-                            _referencersByFunctionName.Add(compositeName, referencers);
+                            referencersByFunctionName.Add(functionName, referencers);
                         }
                         referencers.Add(candidate);
                     }
-                    lookupTableFileOffset += sizeof(uint);
+                    lookupTableFileOffset += sizeof(ulong);
                 }
                 readPosition += directoryEntrySize;
             }
-            reader.Dispose();
-            mapping.Dispose();
+        }
+
+        private static void HandleImportTable(FileInfo candidate, MemoryMappedViewAccessor reader,
+            PEDescriptor peDescriptor, ref int importedFunctionsCount)
+        {
+            uint importTable64FileOffset = peDescriptor.optionalHeader64FileOffset +
+                PEDescriptor.ImportTableOffsetInOptionalHeader64;
+            uint importDataDirectoryRVA = reader.ReadUInt32(importTable64FileOffset);
+            if (0 == importDataDirectoryRVA) {
+                // No import found. See C:\Windows\System32\tcblaunch.exe for example
+                return;
+            }
+            uint importDataDirectoryFileOffset = ResolveRVAToFileOffset(reader,
+                peDescriptor.sectionTableFileOffset, peDescriptor.sectionsCount, importDataDirectoryRVA);
+
+            long readPosition = importDataDirectoryFileOffset;
+            const int directoryEntrySize = 20;
+            const int dllNameOffsetInDirectoryEntry = 12;
+            while (true) {
+                uint lookupTableRVA = reader.ReadUInt32(readPosition);
+                uint dllNameRVA = reader.ReadUInt32(readPosition + dllNameOffsetInDirectoryEntry);
+                if (0 == lookupTableRVA) {
+                    // Technically we should check the other directory entry fields to be
+                    // zero also.
+                    break;
+                }
+                uint dllNameFileOffset = ResolveRVAToFileOffset(reader,
+                    peDescriptor.sectionTableFileOffset, peDescriptor.sectionsCount, dllNameRVA);
+                string dllName = ReadAnsiNTBString(reader, dllNameFileOffset).ToUpper();
+                Console.WriteLine($"  importing from {dllName}");
+                Dictionary<string, List<FileInfo>> referencersByFunctionName;
+                if (!_referencersByFunctionNameByExporter.TryGetValue(dllName,
+                    out referencersByFunctionName))
+                {
+                    referencersByFunctionName = new Dictionary<string, List<FileInfo>>();
+                    _referencersByFunctionNameByExporter.Add(dllName, referencersByFunctionName);
+                }
+                uint lookupTableFileOffset = ResolveRVAToFileOffset(reader,
+                    peDescriptor.sectionTableFileOffset, peDescriptor.sectionsCount, lookupTableRVA);
+                while (true) {
+                    ulong lookupTableEntryValue = reader.ReadUInt64(lookupTableFileOffset);
+                    if (0 == lookupTableEntryValue) {
+                        break;
+                    }
+                    if (0 == (0x8000000000000000 & lookupTableEntryValue)) {
+                        // Ignore imports by ordinal
+                        uint functionNameRVA = (uint)lookupTableEntryValue;
+                        uint functionNameFileOffset = ResolveRVAToFileOffset(reader,
+                            peDescriptor.sectionTableFileOffset, peDescriptor.sectionsCount,
+                            functionNameRVA);
+                        // Skip hint value.
+                        functionNameFileOffset += sizeof(ushort);
+                        string functionName = ReadAnsiNTBString(reader, functionNameFileOffset);
+                        // No need to consume the additional null byte after name (if any)
+                        // Console.WriteLine("  " + functionName);
+                        List<FileInfo> referencers;
+                        if (!referencersByFunctionName.TryGetValue(functionName,
+                            out referencers))
+                        {
+                            referencers = new List<FileInfo>();
+                            referencersByFunctionName.Add(functionName, referencers);
+                        }
+                        referencers.Add(candidate);
+                    }
+                    lookupTableFileOffset += sizeof(ulong);
+                }
+                readPosition += directoryEntrySize;
+            }
         }
 
         private static string ReadAnsiNTBString(MemoryMappedViewAccessor reader, uint fileOffset)
@@ -116,8 +237,8 @@ namespace NtDllCrossReferencer
         }
 
         // Doesn't work when there is no in file data for the searched VA. 
-        private static uint ResolveRVAToFileOffset(MemoryMappedViewAccessor reader, uint sectionTableFileOffset,
-            ushort sectionsCount, uint searchedVA)
+        private static uint ResolveRVAToFileOffset(MemoryMappedViewAccessor reader,
+            uint sectionTableFileOffset, ushort sectionsCount, uint searchedVA)
         {
             const int vaSectionOffset = 12;
             const int sizeOfRawDataSectionOffset = 16;
@@ -147,12 +268,31 @@ namespace NtDllCrossReferencer
         private static IEnumerable<FileInfo> WalkCandidates()
         {
             Stack<DirectoryInfo> pendingDirectories = new Stack<DirectoryInfo>();
-            pendingDirectories.Push(new DirectoryInfo(Environment.SystemDirectory));
+            DirectoryInfo sysInternalsDirectory =
+                new DirectoryInfo(Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                    "sysinternals"));
+            if (sysInternalsDirectory.Exists) {
+                pendingDirectories.Push(sysInternalsDirectory);
+            }
+            DirectoryInfo baseDirectory = new DirectoryInfo(
+                Environment.GetFolderPath(Environment.SpecialFolder.Windows));
+            pendingDirectories.Push(baseDirectory);
 
             while (0 < pendingDirectories.Count) {
                 DirectoryInfo currentDirectory = pendingDirectories.Pop();
                 try {
                     foreach (DirectoryInfo subDirectory in currentDirectory.GetDirectories()) {
+                        bool excluded = false;
+                        foreach(string excludedName in ExcludedDirectories) {
+                            if (0 == string.Compare(subDirectory.Name, excludedName, true)) {
+                                excluded = true;
+                                break;
+                            }
+                        }
+                        if (excluded) {
+                            continue;
+                        }
                         pendingDirectories.Push(subDirectory);
                     }
                 }
@@ -171,6 +311,34 @@ namespace NtDllCrossReferencer
                     }
                 }
             }
+        }
+
+        private struct PEDescriptor
+        {
+            internal const int DataDirectoryEntrySize = 8;
+            internal const int DelayImportTableEntryIndex = 13;
+            internal const int ImportTableEntryIndex = 1;
+            internal const int ElfanewDosHeaderOffset = 60;
+            internal const int ImageFileHeaderSize = 20;
+            internal const int OptionalHeader64OffsetInNtHeader64 =
+                sizeof(uint) + ImageFileHeaderSize;
+            internal const int DataDirectoryCountOffsetInOptionalHeader64 = 108;
+            internal const int FirstDataDirectoryOffsetInOptionalHeader64 = 112;
+            internal const int ImportTableOffsetInOptionalHeader64 =
+                FirstDataDirectoryOffsetInOptionalHeader64 +
+                (ImportTableEntryIndex * DataDirectoryEntrySize);
+            internal const int DelayImportTableOffsetInOptionalHeader64 =
+                FirstDataDirectoryOffsetInOptionalHeader64 +
+                (DelayImportTableEntryIndex * DataDirectoryEntrySize);
+            internal const int NumberOfNamesOffsetInImportDirectory = 24;
+            internal const int SectionsCountOffsetInNtHeader64 = 6;
+
+            internal uint ntHeader64Offset;
+            internal ushort sectionsCount;
+            internal uint optionalHeader64FileOffset;
+            internal ushort peHeaderMagic;
+            internal uint dataDirectoryCount;
+            internal uint sectionTableFileOffset;
         }
     }
 }

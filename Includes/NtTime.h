@@ -7,7 +7,14 @@
 
 extern "C" {
 
-    // NO UNRESOLVED FUNCTIONS
+    // UNRESOLVED FUNCTIONS
+    //RtlCreateTimer
+    //RtlCreateTimerQueue
+    //RtlCutoverTimeToSystemTime
+    //RtlDeleteTimer
+    //RtlDeleteTimerQueueEx
+    //RtlUpdateTimer
+    // END OF UNRESOLVED FUNCTIONS
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtCancelTimer(
@@ -133,6 +140,25 @@ extern "C" {
         _In_ BOOLEAN SetResolution,
         _Out_ PULONG ActualTime);
     //ZwSetTimerResolution
+
+    // https://doxygen.reactos.org/dd/d63/sdk_2lib_2rtl_2timerqueue_8c.html
+    NTSYSAPI NTSTATUS NTAPI RtlCancelTimer(
+        HANDLE TimerQueue,
+        HANDLE Timer);
+
+    // https://doxygen.reactos.org/dd/d63/sdk_2lib_2rtl_2timerqueue_8c.html
+    NTSYSAPI NTSTATUS NTAPI RtlDeleteTimerQueue(
+        HANDLE TimerQueue);
+
+    // https://doxygen.reactos.org/dd/d63/sdk_2lib_2rtl_2timerqueue_8c.html
+    NTSYSAPI NTSTATUS WINAPI RtlSetTimer(
+        HANDLE TimerQueue,
+        PHANDLE NewTimer,
+        WAITORTIMERCALLBACKFUNC Callback,
+        PVOID Parameter,
+        DWORD DueTime,
+        DWORD Period,
+        ULONG Flags);
 
 }
 

@@ -852,6 +852,10 @@ extern "C" {
     NTSYSAPI BOOLEAN NTAPI RtlIsCapabilitySid(
         _In_ PSID Sid);
 
+    // https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L3403
+    NTSYSAPI BOOLEAN NTAPI RtlIsElevatedRid(
+        _In_ PSID_AND_ATTRIBUTES SidAttr);
+
     // https://github.com/winsiderss/systeminformer/blob/daf4737ce0399fa92d17df118bcb3aba5cdc794f/phnt/include/ntrtl.h#L10189
     NTSYSAPI BOOLEAN NTAPI RtlIsPackageSid(
         _In_ PSID Sid);

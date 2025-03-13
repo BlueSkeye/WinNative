@@ -1,0 +1,41 @@
+A list of functions that are yet to be resolved after firt search
+
+RtlAllocateActivationContextStack
+RtlAllocateWnfSerializationGroup
+RtlAreBitsClearEx
+// https://www.geoffchappell.com/studies/windows/km/ntoskrnl/inc/shared/ntdef/rtl_balanced_node.htm
+RtlAvlInsertNodeEx
+RtlAvlRemoveNode
+RtlCallEnclaveReturn
+RtlCanonicalizeDomainName
+// https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Cyber-Security/SiSyPHuS/AP9/Workpackage9_Analysis_Universal_Windows_Apps_and_Windows_Information_Protection_Part1.pdf?__blob=publicationFile&v=3
+RtlCapabilityCheckForSingleSessionSku
+
+
+
+RtlCheckSystemBootStatusIntegrity
+
+RtlClearBitsEx
+RtlClearThreadWorkOnBehalfTicket
+
+RtlConstructCrossVmEventPath
+RtlConstructCrossVmMutexPath
+
+RtlCreateUmsCompletionList
+RtlCreateUmsThreadContext
+// https://i.blackhat.com/asia-19/Thu-March-28/bh-asia-Sun-How-to-Survive-the-Hardware-Assisted-Control-Flow-Integrity-Enforcement.pdf
+RtlCreateUserFiberShadowStack
+RtlDeleteUmsCompletionList
+RtlDeleteUmsThreadContext
+
+RtlQueryResourcePolicy
+RtlQueryWnfMetaNotification
+RtlQueryWnfStateDataWithExplicitScope
+RtlRegisterForWnfMetaNotification
+RtlReportSqmEscalation
+RtlDequeueUmsCompletionListItems
+RtlEnterUmsSchedulingMode
+RtlFindClearBitsEx
+RtlRestoreThreadPreferredUILanguages
+RtlSetAllBitsEx
+RtlSetBitsEx

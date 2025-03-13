@@ -131,6 +131,12 @@ extern "C" {
 		_In_ PUNICODE_STRING CharSet,
 		_Out_ PUSHORT NonInclusivePrefixLength);
 
+	// https://gitee.com/AbstractFactory/NativeLib-R/blob/master/ntrtl.h
+	_Must_inspect_result_ NTSYSAPI PWCHAR NTAPI RtlFindUnicodeSubstring(
+		_In_ PUNICODE_STRING FullString,
+		_In_ PUNICODE_STRING SearchString,
+		_In_ BOOLEAN CaseInSensitive);
+
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfreeansistring
 	// See winterl.h
 	NTSYSAPI VOID RtlFreeAnsiString(
@@ -233,6 +239,12 @@ extern "C" {
 		_In_ PCWSTR 	SourceString,
 		_In_ LONG 	SourceStringLength,
 		_Out_ PBOOLEAN 	Normalized);
+
+	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+	NTSYSAPI BOOLEAN NTAPI RtlIsTextUnicode(
+		_In_ PVOID Buffer,
+		_In_ ULONG Size,
+		_Inout_opt_ PULONG Result);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI NTSTATUS NTAPI RtlLargeIntegerToChar(
