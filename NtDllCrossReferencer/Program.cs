@@ -1,5 +1,4 @@
 ﻿using System.IO.MemoryMappedFiles;
-using System.Reflection.PortableExecutable;
 using System.Text;
 
 namespace NtDllCrossReferencer
@@ -24,6 +23,7 @@ namespace NtDllCrossReferencer
             }
             DateTime endTime = DateTime.UtcNow;
             Console.WriteLine($"{totalCandidateFiles} files found in {(int)((endTime - startTime).TotalSeconds)} sec.");
+            SerializeResults();
             return 0;
         }
 
@@ -74,10 +74,6 @@ namespace NtDllCrossReferencer
 
                     // Delay-load import table
                     HandleDelayImportTable(candidate, reader, peDescriptor, ref importedFunctionsCount);
-
-                    if (0 == importedFunctionsCount) {
-                        int i = 1;
-                    }
                 }
             }
             finally { mapping.Dispose(); }
@@ -94,24 +90,20 @@ namespace NtDllCrossReferencer
                 return;
             }
             uint delayImportDataDirectoryFileOffset = ResolveRVAToFileOffset(reader,
-                peDescriptor.sectionTableFileOffset, peDescriptor.sectionsCount, delayImportDataDirectoryRVA);
-
+                peDescriptor.sectionTableFileOffset, peDescriptor.sectionsCount,
+                delayImportDataDirectoryRVA);
             long readPosition = delayImportDataDirectoryFileOffset;
-            if (0 != reader.ReadInt32(readPosition)) {
-                throw new ApplicationException($"Invalid delay-load table attribute at 0x{readPosition:X8}");
-            }
-            readPosition += sizeof(int);
-
-            const int directoryEntrySize = 20;
-            const int dllNameOffsetInDirectoryEntry = 12;
             while (true) {
-                uint lookupTableRVA = reader.ReadUInt32(readPosition);
-                uint dllNameRVA = reader.ReadUInt32(readPosition + dllNameOffsetInDirectoryEntry);
+                uint attributes = reader.ReadUInt32(readPosition);
+                uint lookupTableRVA = reader.ReadUInt32(readPosition +
+                    PEDescriptor.DelayImportNameTableOffset);
                 if (0 == lookupTableRVA) {
                     // Technically we should check the other directory entry fields to be
                     // zero also.
                     break;
                 }
+                uint dllNameRVA = reader.ReadUInt32(readPosition +
+                    PEDescriptor.DelayLoadDllNameOffsetInDirectoryEntry);
                 uint dllNameFileOffset = ResolveRVAToFileOffset(reader,
                     peDescriptor.sectionTableFileOffset, peDescriptor.sectionsCount, dllNameRVA);
                 string dllName = ReadAnsiNTBString(reader, dllNameFileOffset).ToUpper();
@@ -149,10 +141,11 @@ namespace NtDllCrossReferencer
                             referencersByFunctionName.Add(functionName, referencers);
                         }
                         referencers.Add(candidate);
+                        importedFunctionsCount++;
                     }
                     lookupTableFileOffset += sizeof(ulong);
                 }
-                readPosition += directoryEntrySize;
+                readPosition += PEDescriptor.DelayLoadDirectoryEntrySize;
             }
         }
 
@@ -170,16 +163,15 @@ namespace NtDllCrossReferencer
                 peDescriptor.sectionTableFileOffset, peDescriptor.sectionsCount, importDataDirectoryRVA);
 
             long readPosition = importDataDirectoryFileOffset;
-            const int directoryEntrySize = 20;
-            const int dllNameOffsetInDirectoryEntry = 12;
             while (true) {
                 uint lookupTableRVA = reader.ReadUInt32(readPosition);
-                uint dllNameRVA = reader.ReadUInt32(readPosition + dllNameOffsetInDirectoryEntry);
                 if (0 == lookupTableRVA) {
                     // Technically we should check the other directory entry fields to be
                     // zero also.
                     break;
                 }
+                uint dllNameRVA = reader.ReadUInt32(readPosition +
+                    PEDescriptor.DllNameOffsetInDirectoryEntry);
                 uint dllNameFileOffset = ResolveRVAToFileOffset(reader,
                     peDescriptor.sectionTableFileOffset, peDescriptor.sectionsCount, dllNameRVA);
                 string dllName = ReadAnsiNTBString(reader, dllNameFileOffset).ToUpper();
@@ -217,10 +209,11 @@ namespace NtDllCrossReferencer
                             referencersByFunctionName.Add(functionName, referencers);
                         }
                         referencers.Add(candidate);
+                        importedFunctionsCount++;
                     }
                     lookupTableFileOffset += sizeof(ulong);
                 }
-                readPosition += directoryEntrySize;
+                readPosition += PEDescriptor.DirectoryEntrySize;
             }
         }
 
@@ -263,6 +256,12 @@ namespace NtDllCrossReferencer
                 return (searchedVA - currentSectionVA) + currentSectionDataFileOffset;
             }
             throw new ApplicationException("VA not found.");
+        }
+
+        private static void SerializeResults()
+        {
+            string timeTag = DateTime.UtcNow.ToString();
+            string outputFileName = $"ExportsXRefs-{timeTag}";
         }
 
         private static IEnumerable<FileInfo> WalkCandidates()
@@ -332,6 +331,11 @@ namespace NtDllCrossReferencer
                 (DelayImportTableEntryIndex * DataDirectoryEntrySize);
             internal const int NumberOfNamesOffsetInImportDirectory = 24;
             internal const int SectionsCountOffsetInNtHeader64 = 6;
+            internal const int DirectoryEntrySize = 20;
+            internal const int DllNameOffsetInDirectoryEntry = 12;
+            internal const int DelayLoadDirectoryEntrySize = 32;
+            internal const int DelayLoadDllNameOffsetInDirectoryEntry = 4;
+            internal const int DelayImportNameTableOffset = 16;
 
             internal uint ntHeader64Offset;
             internal ushort sectionsCount;

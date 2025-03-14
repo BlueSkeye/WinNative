@@ -121,12 +121,12 @@ extern "C"
 
 	// https://www.sstic.org/media/SSTIC2019/SSTIC-actes/dll_shell_game_and_other_misdirections/SSTIC2019-Article-dll_shell_game_and_other_misdirections-georges.pdf
 	// https://learn.microsoft.com/en-us/windows/win32/sysinfo/apisetqueryapisetpresence
-	NTSYSAPI BOOL WINAPI ApiSetQueryApiSetPresence(
+	NTSYSAPI BOOL NTAPI ApiSetQueryApiSetPresence(
 		_In_  PCUNICODE_STRING Namespace,
 		_Out_ PBOOLEAN         Present);
 
 	//https://learn.microsoft.com/en-us/windows/win32/sysinfo/apisetqueryapisetpresenceex
-	NTSYSAPI BOOL WINAPI ApiSetQueryApiSetPresenceEx(
+	NTSYSAPI BOOL NTAPI ApiSetQueryApiSetPresenceEx(
 		_In_ PCUNICODE_STRING Namespace,
 		_Out_ PBOOLEAN IsInSchema,
 		_Out_ PBOOLEAN Present);
@@ -352,7 +352,7 @@ extern "C"
 		_Out_opt_ PULONG HandleIndex);
 
 	// https://undoc.airesoft.co.uk/ntdll.dll/RtlAppendPathElement.php
-	NTSYSAPI NTSTATUS WINAPI RtlAppendPathElement(
+	NTSYSAPI NTSTATUS NTAPI RtlAppendPathElement(
 		ULONG flags,
 		PRTL_UNICODE_STRING_BUFFER pStrBuffer,
 		PCUNICODE_STRING pAddend);
@@ -529,7 +529,7 @@ extern "C"
 		[in]  PVOID  WorkSpace);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	NTSYSAPI DWORD WINAPI RtlComputeCrc32(
+	NTSYSAPI DWORD NTAPI RtlComputeCrc32(
 		DWORD dwInitial,
 		const PBYTE pData,
 		INT iLen);
@@ -557,7 +557,7 @@ extern "C"
 		OUT PULONG Unknown);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	NTSYSAPI DWORD WINAPI RtlConvertDeviceFamilyInfoToString(
+	NTSYSAPI DWORD NTAPI RtlConvertDeviceFamilyInfoToString(
 		PDWORD device_family_size,
 		PDWORD device_form_size,
 		WCHAR* device_family,
@@ -774,11 +774,11 @@ extern "C"
 		_Inout_ PRTL_RESOURCE Resource);
 
 	// https://github.com/rpodgorny/wine/blob/master/dlls/ntdll/threadpool.c
-	NTSYSAPI NTSTATUS WINAPI RtlDeregisterWait(
+	NTSYSAPI NTSTATUS NTAPI RtlDeregisterWait(
 		_In_ HANDLE WaitHandle);
 
 	// https://github.com/rpodgorny/wine/blob/master/dlls/ntdll/threadpool.c
-	NTSYSAPI NTSTATUS WINAPI RtlDeregisterWaitEx(
+	NTSYSAPI NTSTATUS NTAPI RtlDeregisterWaitEx(
 		_In_ HANDLE WaitHandle,
 		_In_opt_ HANDLE CompletionEvent);
 
@@ -838,7 +838,7 @@ extern "C"
 		_Out_ PVOID* PerformanceDataHandle);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	NTSYSAPI PVOID WINAPI RtlEncodePointer(PVOID ptr);
+	NTSYSAPI PVOID NTAPI RtlEncodePointer(PVOID ptr);
 
 	// https://i.blackhat.com/USA-19/Thursday/us-19-Kotler-Process-Injection-Techniques-Gotta-Catch-Them-All-wp.pdf
 	NTSYSAPI NTSTATUS RtlEncodeRemotePointer(
@@ -1051,14 +1051,16 @@ extern "C"
 		_In_ PRTL_HANDLE_TABLE HandleTable,
 		_In_ PRTL_HANDLE_TABLE_ENTRY Handle);
 
-//RtlFreeUserFiberShadowStack
+	// https://i.blackhat.com/asia-19/Thu-March-28/bh-asia-Sun-How-to-Survive-the-Hardware-Assisted-Control-Flow-Integrity-Enforcement.pdf
+	NTSYSAPI VOID NTAPI DeleteFiber(
+		_In_ LPVOID lpFiber);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L3426C1-L3431C7
 	NTSYSAPI NTSTATUS NTAPI RtlFreeUserStack(
 		_In_ PVOID AllocationBase);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlgenerate8dot3name
-	NTSYSAPI NTSTATUS RtlGenerate8dot3Name(
+	NTSYSAPI NTSTATUS NTAPI RtlGenerate8dot3Name(
 		[in]      PCUNICODE_STRING       Name,
 		[in]      BOOLEAN                AllowExtendedCharacters,
 		[in, out] PGENERATE_NAME_CONTEXT Context,
@@ -1101,29 +1103,29 @@ extern "C"
 		_Out_writes_bytes_(BufferLength) PWSTR Buffer);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI PEB* WINAPI RtlGetCurrentPeb(VOID);
+	NTSYSAPI PEB* NTAPI RtlGetCurrentPeb(VOID);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	NTSYSAPI void WINAPI RtlGetCurrentProcessorNumberEx(
+	NTSYSAPI void NTAPI RtlGetCurrentProcessorNumberEx(
 		_Out_ PROCESSOR_NUMBER* processor);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L9984C1-L9989C7
 	NTSYSAPI ULONG NTAPI RtlGetCurrentServiceSessionId(VOID);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	HANDLE WINAPI RtlGetCurrentTransaction(void);
+	HANDLE NTAPI RtlGetCurrentTransaction(void);
 
 //RtlGetCurrentUmsThread
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	void WINAPI RtlGetDeviceFamilyInfoEnum(ULONGLONG* version, DWORD* family, DWORD* form);
+	void NTAPI RtlGetDeviceFamilyInfoEnum(ULONGLONG* version, DWORD* family, DWORD* form);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlgetenabledextendedfeatures
 	NTSYSAPI ULONG64 RtlGetEnabledExtendedFeatures(
 		[in] ULONG64 FeatureMask);
 
 	// https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/loader.c
-	NTSYSAPI NTSTATUS WINAPI RtlGetExePath(
+	NTSYSAPI NTSTATUS NTAPI RtlGetExePath(
 		PCWSTR name,
 		PWSTR* path);
 
@@ -1438,7 +1440,7 @@ extern "C"
 		_In_ ULONG64 EnabledExtendedFeatures); // RtlGetEnabledExtendedFeatures(-1)
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	NTSTATUS WINAPI RtlInitializeNtUserPfn(const void* client_procsA, ULONG procsA_size,
+	NTSTATUS NTAPI RtlInitializeNtUserPfn(const void* client_procsA, ULONG procsA_size,
 		const void* client_procsW, ULONG procsW_size,
 		const void* client_workers, ULONG workers_size);
 
@@ -1483,7 +1485,7 @@ extern "C"
 		_In_ ULONG Count);
 	
 	// https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/sync.c
-	NTSYSAPI PSLIST_ENTRY WINAPI RtlInterlockedPushListSListEx(
+	NTSYSAPI PSLIST_ENTRY NTAPI RtlInterlockedPushListSListEx(
 		PSLIST_HEADER list,
 		PSLIST_ENTRY first,
 		PSLIST_ENTRY last,
@@ -1703,7 +1705,7 @@ extern "C"
 		_In_ ULONG 	Flags);
 
 	// https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/thread.c
-	NTSYSAPI void WINAPI RtlPopFrame(
+	NTSYSAPI void NTAPI RtlPopFrame(
 		PTEB_ACTIVE_FRAME frame);
 
 	// https://ntquery.wordpress.com/2014/03/29/anti-debug-fiber-local-storage-fls/#more-18
@@ -1719,7 +1721,7 @@ extern "C"
 		_In_opt_ const VOID* ExplicitScope);
 
 	// https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/thread.c
-	NTSYSAPI VOID WINAPI RtlPushFrame(TEB_ACTIVE_FRAME* frame);
+	NTSYSAPI VOID NTAPI RtlPushFrame(TEB_ACTIVE_FRAME* frame);
 
 	// https://docs.rs/phnt/latest/phnt/ffi/fn.RtlPublishWnfStateData.html
 	NTSYSAPI NTSTATUS NTAPI RtlPublishWnfStateData(
@@ -1949,7 +1951,7 @@ extern "C"
 		_In_ ULONG 	Flags);
 
 	// https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/loader.c
-	NTSYSAPI VOID WINAPI RtlReleasePath(
+	NTSYSAPI VOID NTAPI RtlReleasePath(
 		_In_ PWSTR path);
 
 	// https://github.com/reactos/reactos/blob/master/sdk/include/ndk/rtlfuncs.h#L2819
@@ -1989,7 +1991,7 @@ extern "C"
 		_In_ BOOLEAN IncludePathSeperator);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	NTSYSAPI NTSTATUS WINAPI RtlResetNtUserPfn(void);
+	NTSYSAPI NTSTATUS NTAPI RtlResetNtUserPfn(void);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI VOID NTAPI RtlResetRtlTranslations(
@@ -2012,7 +2014,7 @@ extern "C"
 	NTSYSAPI NTSTATUS NTAPI RtlRestoreSystemBootStatusDefaults(VOID);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	NTSYSAPI NTSTATUS WINAPI RtlRetrieveNtUserPfn(const void** client_procsA,
+	NTSYSAPI NTSTATUS NTAPI RtlRetrieveNtUserPfn(const void** client_procsA,
 		const void** client_procsW,
 		const void** client_workers);
 
@@ -2079,7 +2081,7 @@ extern "C"
 		_Out_opt_ PVOID* PreviousEnvironment);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	BOOL WINAPI RtlSetCurrentTransaction(HANDLE new_transaction);
+	BOOL NTAPI RtlSetCurrentTransaction(HANDLE new_transaction);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI NTSTATUS NTAPI RtlSetEnvironmentStrings(
@@ -2376,51 +2378,51 @@ extern "C"
 //RtlWow64CallFunction64
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS WINAPI RtlWow64EnableFsRedirection(BOOLEAN enable);
+	NTSYSAPI NTSTATUS NTAPI RtlWow64EnableFsRedirection(BOOLEAN enable);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS WINAPI RtlWow64EnableFsRedirectionEx(ULONG disable, ULONG* old_value);
+	NTSYSAPI NTSTATUS NTAPI RtlWow64EnableFsRedirectionEx(ULONG disable, ULONG* old_value);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS WINAPI RtlWow64GetCpuAreaInfo(WOW64_CPURESERVED* cpu, ULONG reserved, WOW64_CPU_AREA_INFO* info);
+	NTSYSAPI NTSTATUS NTAPI RtlWow64GetCpuAreaInfo(WOW64_CPURESERVED* cpu, ULONG reserved, WOW64_CPU_AREA_INFO* info);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS WINAPI RtlWow64GetCurrentCpuArea(USHORT* machine, void** context, void** context_ex);
+	NTSYSAPI NTSTATUS NTAPI RtlWow64GetCurrentCpuArea(USHORT* machine, void** context, void** context_ex);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI USHORT WINAPI RtlWow64GetCurrentMachine(void);
+	NTSYSAPI USHORT NTAPI RtlWow64GetCurrentMachine(void);
 
 //RtlWow64GetEquivalentMachineCHPE
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS WINAPI RtlWow64GetThreadContext(HANDLE handle, WOW64_CONTEXT* context);
+	NTSYSAPI NTSTATUS NTAPI RtlWow64GetThreadContext(HANDLE handle, WOW64_CONTEXT* context);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS WINAPI RtlWow64GetThreadSelectorEntry(HANDLE handle, THREAD_DESCRIPTOR_INFORMATION* info,
+	NTSYSAPI NTSTATUS NTAPI RtlWow64GetThreadSelectorEntry(HANDLE handle, THREAD_DESCRIPTOR_INFORMATION* info,
 		ULONG size, ULONG* retlen);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS WINAPI RtlWow64IsWowGuestMachineSupported(USHORT machine, BOOLEAN* supported);
+	NTSYSAPI NTSTATUS NTAPI RtlWow64IsWowGuestMachineSupported(USHORT machine, BOOLEAN* supported);
 
 //RtlWow64LogMessageInEventLogger
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI CROSS_PROCESS_WORK_ENTRY* WINAPI RtlWow64PopAllCrossProcessWorkFromWorkList(CROSS_PROCESS_WORK_HDR* list, BOOLEAN* flush);
+	NTSYSAPI CROSS_PROCESS_WORK_ENTRY* NTAPI RtlWow64PopAllCrossProcessWorkFromWorkList(CROSS_PROCESS_WORK_HDR* list, BOOLEAN* flush);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI CROSS_PROCESS_WORK_ENTRY* WINAPI RtlWow64PopCrossProcessWorkFromFreeList(CROSS_PROCESS_WORK_HDR* list);
+	NTSYSAPI CROSS_PROCESS_WORK_ENTRY* NTAPI RtlWow64PopCrossProcessWorkFromFreeList(CROSS_PROCESS_WORK_HDR* list);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI BOOLEAN WINAPI RtlWow64PushCrossProcessWorkOntoFreeList(CROSS_PROCESS_WORK_HDR* list, CROSS_PROCESS_WORK_ENTRY* entry);
+	NTSYSAPI BOOLEAN NTAPI RtlWow64PushCrossProcessWorkOntoFreeList(CROSS_PROCESS_WORK_HDR* list, CROSS_PROCESS_WORK_ENTRY* entry);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI BOOLEAN WINAPI RtlWow64PushCrossProcessWorkOntoWorkList(CROSS_PROCESS_WORK_HDR* list, CROSS_PROCESS_WORK_ENTRY* entry, void** unknown);
+	NTSYSAPI BOOLEAN NTAPI RtlWow64PushCrossProcessWorkOntoWorkList(CROSS_PROCESS_WORK_HDR* list, CROSS_PROCESS_WORK_ENTRY* entry, void** unknown);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI BOOLEAN WINAPI RtlWow64RequestCrossProcessHeavyFlush(CROSS_PROCESS_WORK_HDR* list);
+	NTSYSAPI BOOLEAN NTAPI RtlWow64RequestCrossProcessHeavyFlush(CROSS_PROCESS_WORK_HDR* list);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS WINAPI RtlWow64SetThreadContext(HANDLE handle, const WOW64_CONTEXT* context);
+	NTSYSAPI NTSTATUS NTAPI RtlWow64SetThreadContext(HANDLE handle, const WOW64_CONTEXT* context);
 
 //RtlWow64SuspendThread
 
@@ -2484,7 +2486,7 @@ extern "C"
 //RtlpWow64SetContextOnAmd64
 
 	// https://undoc.airesoft.co.uk/ntdll.dll/SbExecuteProcedure.php
-	NTSYSAPI PVOID WINAPI SbExecuteProcedure(
+	NTSYSAPI PVOID NTAPI SbExecuteProcedure(
 		ULONG signature,
 		ULONG unk,
 		const SWITCHBRANCH_SCENARIO_TABLE* pScenarioTable,
@@ -2492,7 +2494,7 @@ extern "C"
 		PVOID pCtx);
 
 	// https://undoc.airesoft.co.uk/ntdll.dll/SbSelectProcedure.php
-	NTSYSAPI FARPROC WINAPI SbSelectProcedure(
+	NTSYSAPI FARPROC NTAPI SbSelectProcedure(
 		ULONG signature,
 		ULONG unk,
 		const SWITCHBRANCH_SCENARIO_TABLE* pScenarioTable,
