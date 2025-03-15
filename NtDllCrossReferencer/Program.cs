@@ -1,5 +1,6 @@
 ﻿using System.IO.MemoryMappedFiles;
 using System.Text;
+using System.Text.Json;
 
 namespace NtDllCrossReferencer
 {
@@ -7,15 +8,19 @@ namespace NtDllCrossReferencer
     {
         private static Dictionary<string, Dictionary<string, List<FileInfo>>> _referencersByFunctionNameByExporter =
             new Dictionary<string, Dictionary<string, List<FileInfo>>>();
-        private static string[] ExcludedDirectories = {
+        private static readonly string[] DefaultExcludedDirectories = {
             "Installer", "Servicing", "SysWOW64", "WinSxS"
         };
+        private static string[] ExcludedDirectories = DefaultExcludedDirectories;
 
         public static int Main(string[] args)
         {
             int totalCandidateFiles = 0;
             DateTime startTime = DateTime.UtcNow;
-            // FindDllImports(new FileInfo(@"C:\Windows\System32\tcblaunch.exe"));
+            // FindDllImports(new FileInfo(@""));
+            PlatformID platformId = System.Environment.OSVersion.Platform;
+            string serviePack = System.Environment.OSVersion.ServicePack;
+            string versionString = System.Environment.OSVersion.VersionString;
 
             foreach (FileInfo candidate in WalkCandidates()) {
                 totalCandidateFiles++;
@@ -260,8 +265,47 @@ namespace NtDllCrossReferencer
 
         private static void SerializeResults()
         {
-            string timeTag = DateTime.UtcNow.ToString();
-            string outputFileName = $"ExportsXRefs-{timeTag}";
+            ResultData toBeSerialized = new ResultData() {
+                CollectedAt = DateTime.UtcNow,
+                OsVersion = Environment.OSVersion.Version,
+                ReferencersByFunctionNameByExporter =
+                    new SortedDictionary<string, SortedDictionary<string, List<string>>>()
+            };
+            foreach(KeyValuePair<string, Dictionary<string, List<FileInfo>>> mainPair in
+                _referencersByFunctionNameByExporter)
+            {
+                SortedDictionary<string, List<string>> convertedDictionary =
+                    new SortedDictionary<string, List<string>>();
+                toBeSerialized.ReferencersByFunctionNameByExporter.Add(mainPair.Key,
+                    convertedDictionary);
+                foreach (KeyValuePair<string, List<FileInfo>> secondaryPair in mainPair.Value) {
+                    List<string> convertedList = new List<string>();
+                    foreach (FileInfo fileInfo in secondaryPair.Value) {
+                        convertedList.Add(fileInfo.Name);
+                    }
+                    convertedDictionary.Add(secondaryPair.Key, convertedList);
+                }
+            }
+            // Sort innermost referencers lists.
+            foreach(SortedDictionary<string, List<string>> scannedDictionary in
+                toBeSerialized.ReferencersByFunctionNameByExporter.Values)
+            {
+                foreach (List<string> scannedList in scannedDictionary.Values) {
+                    scannedList.Sort();
+                }
+            }
+
+            string timeTag = toBeSerialized.CollectedAt.ToString("yyyyMMddHHmmss");
+            FileInfo outputFile = new FileInfo($"ExportsXRefs-{toBeSerialized.OsVersion}-{timeTag}");
+            JsonSerializerOptions options = new JsonSerializerOptions() {
+                IndentCharacter = ' ',
+                IndentSize = 2,
+                WriteIndented = true,
+            };
+            using (Stream outputStream = File.OpenWrite(outputFile.FullName)) {
+                JsonSerializer.Serialize<ResultData>(outputStream, toBeSerialized, options);
+            }
+            Console.WriteLine($"Result successfully serialized in '{outputFile.FullName}'");
         }
 
         private static IEnumerable<FileInfo> WalkCandidates()
@@ -343,6 +387,14 @@ namespace NtDllCrossReferencer
             internal ushort peHeaderMagic;
             internal uint dataDirectoryCount;
             internal uint sectionTableFileOffset;
+        }
+
+        public class ResultData
+        {
+            public DateTime CollectedAt { get; set; }
+            public Version OsVersion { get; set; }
+            public SortedDictionary<string, SortedDictionary<string, List<string>>>
+                ReferencersByFunctionNameByExporter { get; set; }
         }
     }
 }

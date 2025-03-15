@@ -1,41 +1,34 @@
 A list of functions that are yet to be resolved after firt search
 
-RtlAllocateActivationContextStack
+RtlAllocateActivationContextStack -> invoked by KernelBase.dll only
 RtlAllocateWnfSerializationGroup
-RtlAreBitsClearEx
+RtlAreBitsClearEx -> invoked by vmwp.exe only
 // https://www.geoffchappell.com/studies/windows/km/ntoskrnl/inc/shared/ntdef/rtl_balanced_node.htm
 RtlAvlInsertNodeEx
 RtlAvlRemoveNode
-RtlCallEnclaveReturn
+RtlCallEnclaveReturn -> No caller found in 10.0.19045.0 version
 RtlCanonicalizeDomainName
 // https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Cyber-Security/SiSyPHuS/AP9/Workpackage9_Analysis_Universal_Windows_Apps_and_Windows_Information_Protection_Part1.pdf?__blob=publicationFile&v=3
-RtlCapabilityCheckForSingleSessionSku
-
-
-
-RtlCheckSystemBootStatusIntegrity
-
-RtlClearBitsEx
+RtlCapabilityCheckForSingleSessionSku -> Rarely invoked. See wininit.
+RtlCheckSystemBootStatusIntegrity -> Rarely used. See diagtrack.dll
+RtlClearBitsEx -> invoked by vmwp.exe only
 RtlClearThreadWorkOnBehalfTicket
-
-RtlConstructCrossVmEventPath
-RtlConstructCrossVmMutexPath
-
-RtlCreateUmsCompletionList
-RtlCreateUmsThreadContext
+RtlConstructCrossVmEventPath -> No caller found in 10.0.19045.0 version
+RtlConstructCrossVmMutexPath -> No caller found in 10.0.19045.0 version
+RtlCreateUmsCompletionList -> invoked by kernel32.dll only
+RtlCreateUmsThreadContext -> invoked by kernel32.dll only
 // https://i.blackhat.com/asia-19/Thu-March-28/bh-asia-Sun-How-to-Survive-the-Hardware-Assisted-Control-Flow-Integrity-Enforcement.pdf
-RtlCreateUserFiberShadowStack
-RtlDeleteUmsCompletionList
-RtlDeleteUmsThreadContext
-
+RtlCreateUserFiberShadowStack -> invoked by kernelbase.dll only
+RtlDeleteUmsCompletionList -> invoked by kernel32.dll only
+RtlDeleteUmsThreadContext -> invoked by kernel32.dll only
 RtlQueryResourcePolicy
 RtlQueryWnfMetaNotification
-RtlQueryWnfStateDataWithExplicitScope
-RtlRegisterForWnfMetaNotification
-RtlReportSqmEscalation
-RtlDequeueUmsCompletionListItems
-RtlEnterUmsSchedulingMode
-RtlFindClearBitsEx
-RtlRestoreThreadPreferredUILanguages
-RtlSetAllBitsEx
-RtlSetBitsEx
+RtlQueryWnfStateDataWithExplicitScope -> invoked by appsruprov.dll only
+RtlRegisterForWnfMetaNotification -> invoked by bisrv.dll only
+RtlReportSqmEscalation -> No caller found in 10.0.19045.0 version
+RtlDequeueUmsCompletionListItems -> invoked by kernel32.dll only
+RtlEnterUmsSchedulingMode -> invoked by kernel32.dll only
+RtlFindClearBitsEx -> invoked by vid.sys only
+RtlRestoreThreadPreferredUILanguages -> invoked by KernelBase.dll only
+RtlSetAllBitsEx -> invoked by vmwp.exe only
+RtlSetBitsEx -> invoked by vmwp.exe only
