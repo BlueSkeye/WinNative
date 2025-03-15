@@ -1,35 +1,49 @@
 ﻿using System.IO.MemoryMappedFiles;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace NtDllCrossReferencer
 {
     public static class Program
     {
-        private static Dictionary<string, Dictionary<string, List<FileInfo>>> _referencersByFunctionNameByExporter =
-            new Dictionary<string, Dictionary<string, List<FileInfo>>>();
         private static readonly string[] DefaultExcludedDirectories = {
             "Installer", "Servicing", "SysWOW64", "WinSxS"
         };
         private static string[] ExcludedDirectories = DefaultExcludedDirectories;
+        private static Dictionary<string, Dictionary<string, List<FileInfo>>> _referencersByFunctionNameByExporter =
+            new Dictionary<string, Dictionary<string, List<FileInfo>>>();
+        private static Verb _verb;
 
         public static int Main(string[] args)
         {
+            int resultCode = ParseArgs(args);
+            if (0 != resultCode) {
+                return resultCode;
+            }
             int totalCandidateFiles = 0;
             DateTime startTime = DateTime.UtcNow;
-            // FindDllImports(new FileInfo(@""));
-            PlatformID platformId = System.Environment.OSVersion.Platform;
-            string serviePack = System.Environment.OSVersion.ServicePack;
-            string versionString = System.Environment.OSVersion.VersionString;
+            switch (_verb) {
+                case Verb.CollectLocal:
+                    // FindDllImports(new FileInfo(@""));
+                    PlatformID platformId = System.Environment.OSVersion.Platform;
+                    string serviePack = System.Environment.OSVersion.ServicePack;
+                    string versionString = System.Environment.OSVersion.VersionString;
 
-            foreach (FileInfo candidate in WalkCandidates()) {
-                totalCandidateFiles++;
-                FindDllImports(candidate);
+                    foreach (FileInfo candidate in WalkCandidates()) {
+                        totalCandidateFiles++;
+                        FindDllImports(candidate);
+                    }
+                    DateTime endTime = DateTime.UtcNow;
+                    Console.WriteLine($"{totalCandidateFiles} files found in {(int)((endTime - startTime).TotalSeconds)} sec.");
+                    SerializeResults();
+                    break;
+                default:
+                    Console.WriteLine($"BUG : Unexpected unknown verb {(int)_verb}");
+                    resultCode = -2;
+                    break;
             }
-            DateTime endTime = DateTime.UtcNow;
-            Console.WriteLine($"{totalCandidateFiles} files found in {(int)((endTime - startTime).TotalSeconds)} sec.");
-            SerializeResults();
-            return 0;
+            return resultCode;
         }
 
         private static void FindDllImports(FileInfo candidate)
@@ -222,6 +236,15 @@ namespace NtDllCrossReferencer
             }
         }
 
+        private static int ParseArgs(string[] args)
+        {
+            if (0 == args.Length) {
+                _verb = Verb.CollectLocal;
+                return 0;
+            }
+            return -1;
+        }
+        
         private static string ReadAnsiNTBString(MemoryMappedViewAccessor reader, uint fileOffset)
         {
             StringBuilder builder = new StringBuilder();
@@ -391,10 +414,25 @@ namespace NtDllCrossReferencer
 
         public class ResultData
         {
+            private const int CurrentSchemaVersion = 1;
+            private int _schemaVersion = CurrentSchemaVersion;
+
+            [JsonPropertyOrder(-1)]
+            public int SchemaVersion
+            {
+                get { return _schemaVersion; }
+                set { _schemaVersion = value; }
+            }
             public DateTime CollectedAt { get; set; }
             public Version OsVersion { get; set; }
             public SortedDictionary<string, SortedDictionary<string, List<string>>>
                 ReferencersByFunctionNameByExporter { get; set; }
+        }
+
+        private enum Verb
+        {
+            CollectLocal = 0,
+
         }
     }
 }
