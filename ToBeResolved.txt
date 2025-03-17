@@ -21,6 +21,7 @@ RtlCreateUmsThreadContext -> invoked by kernel32.dll only
 RtlCreateUserFiberShadowStack -> invoked by kernelbase.dll only
 RtlDeleteUmsCompletionList -> invoked by kernel32.dll only
 RtlDeleteUmsThreadContext -> invoked by kernel32.dll only
+RtlGetSystemBootStatusEx -> No caller found in 10.0.19045.0 version
 RtlQueryResourcePolicy
 RtlQueryWnfMetaNotification
 RtlQueryWnfStateDataWithExplicitScope -> invoked by appsruprov.dll only
@@ -32,3 +33,40 @@ RtlFindClearBitsEx -> invoked by vid.sys only
 RtlRestoreThreadPreferredUILanguages -> invoked by KernelBase.dll only
 RtlSetAllBitsEx -> invoked by vmwp.exe only
 RtlSetBitsEx -> invoked by vmwp.exe only
+RtlSetSystemBootStatusEx -> No caller found in 10.0.19045.0 version
+RtlSetThreadPreferredUILanguages
+RtlSetThreadPreferredUILanguages2
+RtlTestAndPublishWnfStateData
+RtlTryConvertSRWLockSharedToExclusiveOrRelease -> No caller found in 10.0.19045.0 version
+RtlUnsubscribeWnfNotificationWaitForCompletion
+RtlUnsubscribeWnfNotificationWithCompletionCallback
+RtlWow64CallFunction64
+RtlWow64GetEquivalentMachineCHPE
+RtlWow64LogMessageInEventLogger
+RtlWow64SuspendThread
+RtlpCleanupRegistryKeys
+RtlpConvertAbsoluteToRelativeSecurityAttribute
+RtlpConvertRelativeToAbsoluteSecurityAttribute
+RtlpExecuteUmsThread
+RtlpGetLCIDFromLangInfoNode
+RtlpGetNameFromLangInfoNode
+RtlpGetUserOrMachineUILanguage4NLS
+RtlpIsQualifiedLanguage
+RtlpLoadMachineUIByPolicy
+RtlpLoadUserUIByPolicy
+RtlpMergeSecurityAttributeInformation
+RtlpMuiFreeLangRegistryInfo
+RtlpMuiRegCreateRegistryInfo
+RtlpMuiRegFreeRegistryInfo
+RtlpMuiRegLoadRegistryInfo
+RtlpQueryDefaultUILanguage
+RtlpRefreshCachedUILanguage
+RtlpSetInstallLanguage
+RtlpSetPreferredUILanguages
+RtlpSetUserPreferredUILanguages
+RtlpUmsExecuteYieldThreadEnd
+RtlpUmsThreadYield
+RtlpVerifyAndCommitUILanguageSettings
+RtlpWow64CtxFromAmd64
+RtlpWow64GetContextOnAmd64
+RtlpWow64SetContextOnAmd64

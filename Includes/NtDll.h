@@ -1113,12 +1113,17 @@ extern "C"
 	NTSYSAPI ULONG NTAPI RtlGetCurrentServiceSessionId(VOID);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	HANDLE NTAPI RtlGetCurrentTransaction(void);
+	NTSYSAPI HANDLE NTAPI RtlGetCurrentTransaction(VOID);
 
-//RtlGetCurrentUmsThread
+	// Reversed
+	NTSYSAPI NTSTATUS NTAPI RtlGetCurrentUmsThread(
+		_Inout_ PHANDLE pHandle);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	void NTAPI RtlGetDeviceFamilyInfoEnum(ULONGLONG* version, DWORD* family, DWORD* form);
+	NSTSYAPI void NTAPI RtlGetDeviceFamilyInfoEnum(
+		ULONGLONG* version,
+		DWORD* family,
+		DWORD* form);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlgetenabledextendedfeatures
 	NTSYSAPI ULONG64 RtlGetEnabledExtendedFeatures(
@@ -1160,7 +1165,10 @@ extern "C"
 		_In_ ULONG InformationLength,
 		_Out_opt_ PULONG ReturnLength);
 
-//RtlGetNextUmsListItem
+	// Reversed
+	NTSYSAPI NTSTATUS NTAPI RtlGetNextUmsListItem(
+		_Inout_ PVOID* CurrentItem,
+		_Out_ PVOID* NextItem);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L8865C1-L8871C1
 	NTSYSAPI ULONG NTAPI RtlGetNtGlobalFlags(VOID);
@@ -1204,7 +1212,8 @@ extern "C"
 		[in]  DWORD  dwSpMinorVersion,
 		[out] PDWORD pdwReturnedProductType);
 
-//RtlGetReturnAddressHijackTarget
+	// https://learn.microsoft.com/en-us/windows/win32/devnotes/rtlgetreturnaddresshijacktarget
+	NTSYSAPI ULONG_PTR NTAPI RtlGetReturnAddressHijackTarget(VOID);
 
 	// https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/loader.c
 	NTSYSAPI NTSTATUS NTAPI RtlGetSearchPath(
@@ -1234,8 +1243,6 @@ extern "C"
 		_In_ ULONG DataLength,
 		_Out_opt_ PULONG ReturnLength);
 
-//RtlGetSystemBootStatusEx
-
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L2870C1-L2880C1
 	NTSYSAPI NTSTATUS NTAPI RtlGetSystemPreferredUILanguages(
 		_In_ ULONG Flags, // MUI_LANGUAGE_NAME
@@ -1247,7 +1254,13 @@ extern "C"
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L6506C1-L6512C1
 	NTSYSAPI ULONG NTAPI RtlGetThreadErrorMode(VOID);
 
-//RtlGetThreadLangIdByIndex
+	// Reversed
+	// Invoked by USER32.DLL and UXTHEME.DLL in 10.0.19045.0 version
+	NTSYSAPI NTSTSTATUS NTAPI RtlGetThreadLangIdByIndex(
+		_In_ DWORD ArgECX,
+		_In_ DWORD ArgEDX,
+		_Out_ PVOID ArgR8,
+		_Out_ PVOID ArgR9);
 	
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L2848C1-L2857C1
 	NTSYSAPI NTSTATUS NTAPI RtlGetThreadPreferredUILanguages(
@@ -1256,7 +1269,10 @@ extern "C"
 		_Out_writes_opt_(*ReturnLength) PZZWSTR Languages,
 		_Inout_ PULONG ReturnLength);
 
-//RtlGetThreadWorkOnBehalfTicket
+	// Reversed
+	NTSYSAPI NTSTATUS NTAPI RtlGetThreadWorkOnBehalfTicket(
+		_Out_ PVOID pResult,
+		_In_ DWORD Flags);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L10050C1-L10057C7
 	NTSYSAPI NTSTATUS NTAPI RtlGetTokenNamedObjectPath(
@@ -1272,7 +1288,14 @@ extern "C"
 		_Inout_opt_ PULONG NumberOfFallbackLanguages,
 		_Out_ PULONG Attributes);
 
-//RtlGetUmsCompletionListEvent
+	// Reversed. Invoked by KERNEL32.DLL in 10.0.19045.0 version
+	typedef struct _COMPLETION_LIST {
+		PVOID Unknown;
+
+	} COMPLETION_LIST, *PCOMPLETION_LIST;
+	NTSYSAPI NTSTATUS NTAPI RtlGetUmsCompletionListEvent(
+		_In_ PCOMPLETION_LIST ArgRCX,
+		_Out_ PHANDLE* pEvent);
 	
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI VOID NTAPI RtlGetUnloadEventTraceEx(
@@ -1445,7 +1468,7 @@ extern "C"
 		const void* client_workers, ULONG workers_size);
 
 //RtlInitializeRXact
-	
+
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI VOID NTAPI RtlInitializeResource(
 		_Out_ PRTL_RESOURCE Resource);
@@ -1716,7 +1739,7 @@ extern "C"
 	NTSYSAPI NTSTATUS NTAPI RtlPublishWnfStateData(
 		_In_ WNF_STATE_NAME StateName,
 		_In_opt_ PCWNF_TYPE_ID TypeId,
-		_In_reads_bytes_opt_(Length) const VOID* Buffer,
+		_In_reads_bytes_opt_(Length) const PVOID Buffer,
 		_In_opt_ ULONG Length,
 		_In_opt_ const VOID* ExplicitScope);
 
@@ -1855,11 +1878,11 @@ extern "C"
 
 	//RtlQueryRegistryValuesEx
 	NTSYSAPI NTSTATUS NTAPI RtlQueryRegistryValuesEx(
-			_In_ ULONG RelativeTo,
-			_In_ PCWSTR Path,
-			_Inout_ _At_(*(*QueryTable).EntryContext, _Pre_unknown_) PRTL_QUERY_REGISTRY_TABLE QueryTable,
-			_In_opt_ PVOID Context,
-			_In_opt_ PVOID Environment);
+		_In_ ULONG RelativeTo,
+		_In_ PCWSTR Path,
+		_Inout_ _At_(*(*QueryTable).EntryContext, _Pre_unknown_) PRTL_QUERY_REGISTRY_TABLE QueryTable,
+		_In_opt_ PVOID Context,
+		_In_opt_ PVOID Environment);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlquerythreadplaceholdercompatibilitymode
 	NTSYSAPI CHAR RtlQueryThreadPlaceholderCompatibilityMode();
@@ -2081,7 +2104,8 @@ extern "C"
 		_Out_opt_ PVOID* PreviousEnvironment);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	BOOL NTAPI RtlSetCurrentTransaction(HANDLE new_transaction);
+	NTSYSAPI BOOL NTAPI RtlSetCurrentTransaction(
+		HANDLE new_transaction);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI NTSTATUS NTAPI RtlSetEnvironmentStrings(
@@ -2098,7 +2122,7 @@ extern "C"
 
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FExecutable%20Images%2FEnvironment%2FRtlSetEnvironmentVariable.html
 	NTSYSAPI NTSTATUS NTAPI RtlSetEnvironmentVariable(
-		IN OUT PVOID* Environment OPTIONAL,
+		_Inout_ PVOID* Environment OPTIONAL,
 		IN PUNICODE_STRING      VariableName,
 		IN PUNICODE_STRING      VariableValue);
 
@@ -2157,8 +2181,6 @@ extern "C"
 		_In_ ULONG DataLength,
 		_Out_opt_ PULONG ReturnLength);
 
-//RtlSetSystemBootStatusEx
-
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L6513C1-L6519C7
 	NTSYSAPI NTSTATUS NTAPI RtlSetThreadErrorMode(
 		_In_ ULONG NewMode,
@@ -2179,15 +2201,21 @@ extern "C"
 		_In_ PRTL_START_POOL_THREAD StartPoolThread,
 		_In_ PRTL_EXIT_POOL_THREAD ExitPoolThread);
 
-//RtlSetThreadPreferredUILanguages
-//RtlSetThreadPreferredUILanguages2
-	
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L3326C1-L3331C7
 	NTSYSAPI PVOID NTAPI RtlSetThreadSubProcessTag(
 		_In_ PVOID SubProcessTag);
 
-//RtlSetThreadWorkOnBehalfTicket
-//RtlSetUmsThreadInformation
+	// Reversed
+	NTSYSAPI NTSTATUS NTAPI RtlSetThreadWorkOnBehalfTicket(
+		_In_ __int64* ThreadWork);
+
+	// Reversed
+	// Invoked by KERNEL32.DLL in 10.0.19045.0 version
+	NTSYSAPI NTSTATUS NTAPI RtlSetUmsThreadInformation(
+		_In_ PVOID pUmsThread,
+		_In_ DWORD UmsThreadInformationKind,
+		_In_ PVOID pBuffer,
+		_In_ DWORD bufferLength);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L1326C1-L1333C7
 	NTSYSAPI NTSTATUS NTAPI RtlSleepConditionVariableCS(
@@ -2202,8 +2230,21 @@ extern "C"
 		_In_opt_ PLARGE_INTEGER Timeout,
 		_In_ ULONG Flags);
 
-//RtlStartRXact
-	
+	// Reversed
+	typedef struct _REGISTRY_TRANSACTION_STATE {
+		DWORD Unknown1;
+		DWORD StateSize;
+		DWORD Unknwon2;
+	} REGISTRY_TRANSACTION_STATE, *PREGISTRY_TRANSACTION_STATE;
+	typedef struct _REGISTRY_TRANSACTION {
+		PVOID Unknown1;
+		PVOID Unknown2;
+		PVOID Unknown3;
+		PREGISTRY_TRANSACTION_STATE State;
+	} REGISTRY_TRANSACTION, *PREGISTRY_TRANSACTION;
+	NTSYSAPI NTSTATUS NTAPI RtlStartRXact(
+		_In_ PREGISTRY_TRANSACTION Transaction);
+
 	// https://github.com/winsiderss/systeminformer/blob/bc71c2c1962be178e13cd0f84f63348f468a0701/phnt/include/ntrtl.h#L11252C1-L11258C7
 	NTSYSAPI NTSTATUS NTAPI RtlSubscribeForFeatureUsageNotification(
 		_In_reads_(SubscriptionCount) PRTL_FEATURE_USAGE_SUBSCRIPTION_DETAILS SubscriptionDetails,
@@ -2220,8 +2261,11 @@ extern "C"
 		size_t,
 		size_t);
 
-//RtlSwitchedVVI
-//RtlTestAndPublishWnfStateData
+	// https://codemachine.com/downloads/win10.1511/winnt.h
+	NTSYSAPI DWORD NTAPI RtlSwitchedVVI(
+		_In_ PRTL_OSVERSIONINFOEXW VersionInfo,
+		_In_ DWORD TypeMask,
+		_In_ ULONGLONG  ConditionMask);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtltestbit
 	NTSYSAPI BOOLEAN RtlTestBit(
@@ -2238,14 +2282,49 @@ extern "C"
 		_In_ PS_PROTECTION Source,
 		_In_ PS_PROTECTION Target);
 
-//RtlTraceDatabaseAdd
-//RtlTraceDatabaseCreate
-//RtlTraceDatabaseDestroy
-//RtlTraceDatabaseEnumerate
-//RtlTraceDatabaseFind
-//RtlTraceDatabaseLock
-//RtlTraceDatabaseUnlock
-//RtlTraceDatabaseValidate
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseAdd.php
+	NTSYSAPI BOOLEAN NTAPI RtlTraceDatabaseAdd(
+		PRTL_TRACE_DATABASE pDatabase,
+		ULONG numFrames,
+		PVOID* ppFrames,
+		PRTL_TRACE_BLOCK* ppBlock);
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseCreate.php
+	NTSYSAPI PRTL_TRACE_DATABASE NTAPI RtlTraceDatabaseCreate(
+		ULONG buckets,
+		SIZE_T maximumSize,
+		ULONG flags,
+		ULONG tag,
+		PRTL_TRACE_HASH_FUNCTION pfnHash);
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseDestroy.php
+	NTSYSAPI BOOLEAN WINAPI RtlTraceDatabaseDestroy(
+		PRTL_TRACE_DATABASE pDatabase);
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseEnumerate.php
+	NTSYSAPI BOOLEAN WINAPI RtlTraceDatabaseEnumerate(
+		PRTL_TRACE_DATABASE pDatabase,
+		PRTL_TRACE_ENUM pEnumData,
+		PRTL_TRACE_BLOCK* ppBlock);
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseFind.php
+	NTSYSAPI BOOLEAN WINAPI RtlTraceDatabaseFind(
+		PRTL_TRACE_DATABASE pDatabase,
+		ULONG numFrames,
+		PVOID* ppFrames,
+		PRTL_TRACE_BLOCK* ppBlock);
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseLock.php
+	NTSYSAPI BOOLEAN WINAPI RtlTraceDatabaseLock(
+		PRTL_TRACE_DATABASE pDatabase);
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseUnlock.php
+	NTSYSAPI BOOLEAN WINAPI RtlTraceDatabaseUnlock(
+		PRTL_TRACE_DATABASE pDatabase);
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseValidate.php
+	NTSYSAPI BOOLEAN NTAPI RtlTraceDatabaseValidate(
+		PRTL_TRACE_DATABASE pDatabase);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L2952C1-L2957C7
 	NTSYSAPI LOGICAL NTAPI RtlTryAcquirePebLock(VOID);
@@ -2260,15 +2339,21 @@ extern "C"
 		RtlTryAcquireSRWLockShared(
 			_Inout_ PRTL_SRWLOCK SRWLock);
 
-//RtlTryConvertSRWLockSharedToExclusiveOrRelease
-
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L1029C1-L1035C7
 	_When_(return != 0, _Acquires_exclusive_lock_(*CriticalSection)) NTSYSAPI LOGICAL NTAPI
 		RtlTryEnterCriticalSection(
 			_Inout_ PRTL_CRITICAL_SECTION CriticalSection);
 
-//RtlUdiv128
-//RtlUmsThreadYield
+	// Reversed. Probable prototype.
+	NTSYSAPI unsigned __int64 NTAPI RtlUdiv128(
+		unsigned __int64 highDividend,
+		unsigned __int64 lowDividend,
+		unsigned __int64 divisor,
+		unsigned __int64* remainder);
+
+	// Reversed
+	NTSYSCALLAPI NTSTATUS NTAPI RtlUmsThreadYield(
+		_In_ PVOID SchedulerParam);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-rtluniform
 	// See winterl.h
@@ -2295,9 +2380,6 @@ extern "C"
 		_In_reads_(SubscriptionCount) PRTL_FEATURE_USAGE_SUBSCRIPTION_DETAILS SubscriptionDetails,
 		_In_ SIZE_T SubscriptionCount);
 
-//RtlUnsubscribeWnfNotificationWaitForCompletion
-//RtlUnsubscribeWnfNotificationWithCompletionCallback
-
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L11355C1-L11360C7
 	NTSYSAPI NTSTATUS NTAPI RtlUnsubscribeWnfStateChangeNotification(
 		_In_ PWNF_USER_CALLBACK Callback);
@@ -2311,7 +2393,8 @@ extern "C"
 		_Inout_ PRTL_SRWLOCK SRWLock,
 		_In_ LOGICAL Shared); // TRUE to set to shared acquire
 
-//RtlUserFiberStart
+	// https://github.com/aahmad097/AlternativeShellcodeExec/blob/master/RtlUserFiberStart/Source.cpp
+	NTSYSAPI NTSTATUS NTAPI RtlUserFiberStart(VOID);
 	
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L8963C1-L8970C1
 	NTSYSAPI VOID NTAPI RtlUserThreadStart(
@@ -2328,8 +2411,16 @@ extern "C"
 		[in] ULONG                 TypeMask,
 		[in] ULONGLONG             ConditionMask);
 
-//RtlVirtualUnwind
-//RtlWaitForWnfMetaNotification
+	// https://learn.microsoft.com/fr-fr/windows/win32/api/winnt/nf-winnt-rtlvirtualunwind
+	NTSYSAPI PEXCEPTION_ROUTINE RtlVirtualUnwind(
+		[in]                DWORD                          HandlerType,
+		[in]                DWORD64                        ImageBase,
+		[in]                DWORD64                        ControlPc,
+		[in]                PRUNTIME_FUNCTION              FunctionEntry,
+		[in, out]           PCONTEXT                       ContextRecord,
+		[out]               PVOID * HandlerData,
+		[out]               PDWORD64                       EstablisherFrame,
+		[in, out, optional] PKNONVOLATILE_CONTEXT_POINTERS ContextPointers);
 	
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L1416C1-L1425C1
 	NTSYSAPI NTSTATUS NTAPI RtlWaitOnAddress(
@@ -2369,13 +2460,14 @@ extern "C"
 		_In_ ULONG Count,
 		_In_ ULONG Flags);
 
-//RtlWnfCompareChangeStamp
+	// Reversed
+	NTSYSAPI BOOLEAN NTAPI RtlWnfCompareChangeStamp(
+		_In_ __int64 ArgECX,
+		_In_ __int64 ArgEDX);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L11362C1-L11368C1
 	NTSYSAPI NTSTATUS NTAPI RtlWnfDllUnloadCallback(
 		_In_ PVOID DllBase);
-
-//RtlWow64CallFunction64
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
 	NTSYSAPI NTSTATUS NTAPI RtlWow64EnableFsRedirection(BOOLEAN enable);
@@ -2392,8 +2484,6 @@ extern "C"
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
 	NTSYSAPI USHORT NTAPI RtlWow64GetCurrentMachine(void);
 
-//RtlWow64GetEquivalentMachineCHPE
-
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
 	NTSYSAPI NTSTATUS NTAPI RtlWow64GetThreadContext(HANDLE handle, WOW64_CONTEXT* context);
 
@@ -2403,8 +2493,6 @@ extern "C"
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
 	NTSYSAPI NTSTATUS NTAPI RtlWow64IsWowGuestMachineSupported(USHORT machine, BOOLEAN* supported);
-
-//RtlWow64LogMessageInEventLogger
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
 	NTSYSAPI CROSS_PROCESS_WORK_ENTRY* NTAPI RtlWow64PopAllCrossProcessWorkFromWorkList(CROSS_PROCESS_WORK_HDR* list, BOOLEAN* flush);
@@ -2424,8 +2512,6 @@ extern "C"
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
 	NTSYSAPI NTSTATUS NTAPI RtlWow64SetThreadContext(HANDLE handle, const WOW64_CONTEXT* context);
 
-//RtlWow64SuspendThread
-
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlwriteregistryvalue
 	NTSYSAPI NTSTATUS RtlWriteRegistryValue(
 		[in]           ULONG  RelativeTo,
@@ -2435,55 +2521,87 @@ extern "C"
 		[in, optional] PVOID  ValueData,
 		[in]           ULONG  ValueLength);
 
-//RtlpApplyLengthFunction
-//RtlpCleanupRegistryKeys
-//RtlpConvertAbsoluteToRelativeSecurityAttribute
-//RtlpConvertCultureNamesToLCIDs
-//RtlpConvertLCIDsToCultureNames
-//RtlpConvertRelativeToAbsoluteSecurityAttribute
-//RtlpEnsureBufferSize
-//RtlpExecuteUmsThread
-//RtlpGetDeviceFamilyInfoEnum
-//RtlpGetLCIDFromLangInfoNode
-//RtlpGetNameFromLangInfoNode
+	// https://doxygen.reactos.org/d5/de2/RtlpApplyLengthFunction_8c_source.html
+	NTSYSAPI NTSTATUS NTAPI RtlpApplyLengthFunction(
+		IN ULONG Flags,
+		IN ULONG Type,
+		IN PVOID UnicodeStringOrUnicodeStringBuffer,
+		IN NTSTATUS(NTAPI* LengthFunction)(ULONG, PUNICODE_STRING, PULONG));
 
+	// Reversed
+	NTSYSAPI NTSTATUS NTAPI RtlpConvertCultureNamesToLCIDs(
+		PCWSTR SourceString);
+
+	// Reversed
+	NTSYSAPI NTSTATUS NTAPI RtlpConvertLCIDsToCultureNames(
+		PCWSTR SourceString);
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlpEnsureBufferSize.php
+	NTSYSAPI NTSTATUS WINAPI RtlpEnsureBufferSize(
+		ULONG flags,
+		PRTL_BUFFER pBuffer,
+		SIZE_T requiredSize);
+		
+	// Reversed from RtlGetDeviceFamilyInfoEnum call.
+	NTSYSAPI VOID NTAPI RtlpGetDeviceFamilyInfoEnum(
+		ULONGLONG* version,
+		PDWORD family,
+		PDWORD form);
+	
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L2882C1-L2889C1
 	NTSYSAPI NTSTATUS NTAPI RtlpGetSystemDefaultUILanguage(
 		_Out_ LANGID DefaultUILanguageId,
 		_Inout_ PLCID Lcid);
 
-//RtlpGetUserOrMachineUILanguage4NLS
-//RtlpInitializeLangRegistryInfo
-//RtlpIsQualifiedLanguage
-//RtlpLoadMachineUIByPolicy
-//RtlpLoadUserUIByPolicy
-//RtlpMergeSecurityAttributeInformation
-//RtlpMuiFreeLangRegistryInfo
-//RtlpMuiRegCreateRegistryInfo
-//RtlpMuiRegFreeRegistryInfo
-//RtlpMuiRegLoadRegistryInfo
-//RtlpNotOwnerCriticalSection
-//RtlpNtCreateKey
-//RtlpNtEnumerateSubKey
-//RtlpNtMakeTemporaryKey
-//RtlpNtOpenKey
-//RtlpNtSetValueKey
-//RtlpQueryDefaultUILanguage
-//RtlpRefreshCachedUILanguage
-//RtlpSetInstallLanguage
-//RtlpSetPreferredUILanguages
-//RtlpSetUserPreferredUILanguages
-//RtlpUmsExecuteYieldThreadEnd
-//RtlpUmsThreadYield
-//RtlpUnWaitCriticalSection
-//RtlpVerifyAndCommitUILanguageSettings
+	// Reversed
+	NTSYSAPI NTSTATUS NTAPI RtlpInitializeLangRegistryInfo(
+		_Inout_ PVOID Unknown);
+
+	// https://doxygen.reactos.org/d0/d06/critical_8c.html
+	NTSYSAPI VOID NTAPI RtlpNotOwnerCriticalSection(
+		_In_ PRTL_CRITICAL_SECTION lpCriticalSection);
+
+	// https://source.winehq.org/WineAPI/RtlpNtCreateKey.html
+	NTSYSAPI NTSTATUS NTAPI RtlpNtCreateKey (
+		PHANDLE                  retkey,
+		ACCESS_MASK              access,
+		const POBJECT_ATTRIBUTES attr,
+		ULONG                    TitleIndex,
+		const PUNICODE_STRING Class,
+		ULONG                    options,
+		PULONG                   dispos);
+
+	// https://github.com/arizvisa/ndk/blob/master/ndk/rtlfuncs.h
+	NTSYSAPI NTSTATUS NTAPI RtlpNtEnumerateSubKey(
+		_In_ HANDLE KeyHandle,
+		_Inout_ PUNICODE_STRING SubKeyName,
+		_In_ ULONG Index,
+		_In_ ULONG Unused);
+
+	// https://github.com/arizvisa/ndk/blob/master/ndk/rtlfuncs.h
+	NTSYSAPI NTSTATUS NTAPI RtlpNtMakeTemporaryKey(
+		_In_ HANDLE KeyHandle);
+
+	// https://github.com/arizvisa/ndk/blob/master/ndk/rtlfuncs.h
+	NTSYSAPI NTSTATUS NTAPI RtlpNtOpenKey(
+		_Out_ HANDLE KeyHandle,
+		_In_ ACCESS_MASK DesiredAccess,
+		_In_ POBJECT_ATTRIBUTES ObjectAttributes,
+		_In_ ULONG Unused);
+
+	// https://github.com/arizvisa/ndk/blob/master/ndk/rtlfuncs.h
+	NTSYSAPI NTSTATUS NTAPI RtlpNtSetValueKey(
+		_In_ HANDLE KeyHandle,
+		_In_ ULONG Type,
+		_In_ PVOID Data,
+		_In_ ULONG DataLength);
+
+	// https://doxygen.reactos.org/d0/d06/critical_8c.html
+	NTSYSAPI VOID NTAPI RtlpUnWaitCriticalSection(
+		PRTL_CRITICAL_SECTION CriticalSection);
 
 	// Reversed. Empty function always returning 0. Arguments unknown may not be VOID.
 	NTSYSAPI NTSTATUS NTAPI RtlpWaitForCriticalSection(VOID);
-
-//RtlpWow64CtxFromAmd64
-//RtlpWow64GetContextOnAmd64
-//RtlpWow64SetContextOnAmd64
 
 	// https://undoc.airesoft.co.uk/ntdll.dll/SbExecuteProcedure.php
 	NTSYSAPI PVOID NTAPI SbExecuteProcedure(
@@ -2500,8 +2618,11 @@ extern "C"
 		const SWITCHBRANCH_SCENARIO_TABLE* pScenarioTable,
 		ULONG scenarioIndex);
 
-//VerSetConditionMask
-//WerReportSQMEvent
+	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-versetconditionmask
+	NTSYSAPI ULONGLONG NTAPI VerSetConditionMask(
+		[in] ULONGLONG ConditionMask,
+		[in] DWORD     TypeMask,
+		[in] BYTE      Condition);
 
 }
 

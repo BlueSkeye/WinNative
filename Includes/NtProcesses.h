@@ -349,7 +349,7 @@ extern "C" {
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtUmsThreadYield(
-        _In_  PVOID SchedulerParam);
+        _In_ PVOID SchedulerParam);
     //ZwUmsThreadYield
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg

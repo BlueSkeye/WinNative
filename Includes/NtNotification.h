@@ -89,6 +89,14 @@ extern "C" {
         _In_ ULONG CheckStamp);
     //ZwUpdateWnfStateData
 
+    // Reversed
+    NTSYSAPI NTSTATUS NTAPI RtlWaitForWnfMetaNotification(
+        _In_ PCWNF_STATE_NAME StateName,
+        _In_ DWORD Unknown1,
+        _In_ DWORD Unknown2,
+        _In_ __int64 Unused,
+        _Out_ PVOID Unknown4);
+
 }
 
 #endif // _NTNOTIFICATION_
