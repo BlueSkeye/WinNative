@@ -35,7 +35,7 @@
 //#include "NtSecurity.h"
 //#include "NTSoftwareQualityMgmt.h"
 #include "NtStrings.h"
-//#include "NtTables.h"
+#include "NtTables.h"
 //#include "NtThreadPool.h"
 #include "NtTime.h"
 //#include "NtTransaction.h"

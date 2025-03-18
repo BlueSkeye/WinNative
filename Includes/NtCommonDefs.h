@@ -24,6 +24,8 @@ typedef int BOOL, * PBOOL;
 typedef unsigned char BYTE;
 typedef char CHAR;
 typedef int DWORD;
+typedef unsigned __int64 ULONG64, * PULONG64;
+typedef unsigned __int64 DWORD64, * PDWORD64;
 typedef void* HANDLE, * PHANDLE;
 typedef __int64 INT_PTR, * PINT_PTR;
 typedef long LONG, * PLONG;
@@ -42,7 +44,7 @@ typedef short WORD;
 // More derived types.
 typedef BYTE BOOLEAN, *PBOOLEAN;
 typedef DWORD LCID, *PLCID;
-typedef ULONG LOGICAL; 
+typedef ULONG CLONG, LOGICAL; 
 typedef LONG NTSTATUS;
 typedef VOID* PVOID, ** PPVOID;
 typedef void* POINTER_64 PVOID64;
@@ -111,6 +113,11 @@ typedef union _LARGE_INTEGER {
     } u;
     LONGLONG QuadPart;
 } LARGE_INTEGER, *PLARGE_INTEGER;
+
+typedef struct _LIST_ENTRY {
+    struct _LIST_ENTRY* Flink;
+    struct _LIST_ENTRY* Blink;
+} LIST_ENTRY, * PLIST_ENTRY, PRLIST_ENTRY;
 
 typedef struct _OBJECT_ATTRIBUTES {
     ULONG           Length;
