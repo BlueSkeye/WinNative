@@ -10,52 +10,64 @@ extern "C" {
 
     typedef DWORD ACCESS_MASK;
 
+#define DELETE                           (0x00010000L)
+#define READ_CONTROL                     (0x00020000L)
+#define WRITE_DAC                        (0x00040000L)
+#define WRITE_OWNER                      (0x00080000L)
+#define SYNCHRONIZE                      (0x00100000L)
+
+#define STANDARD_RIGHTS_REQUIRED         (0x000F0000L)
+
+#define STANDARD_RIGHTS_READ             (READ_CONTROL)
+#define STANDARD_RIGHTS_WRITE            (READ_CONTROL)
+#define STANDARD_RIGHTS_EXECUTE          (READ_CONTROL)
+
+#define STANDARD_RIGHTS_ALL              (0x001F0000L)
+
+#define SPECIFIC_RIGHTS_ALL              (0x0000FFFFL)
+
     // File related
-#define FILE_READ_DATA            ( 0x0001 )    // file & pipe
-#define FILE_LIST_DIRECTORY       ( 0x0001 )    // directory
+    typedef enum _FILE_ACCESS_MASK {
+        FILE_READ_DATA = 0x0001, // file & pipe
+        FILE_LIST_DIRECTORY = 0x0001, // directory
+        FILE_WRITE_DATA = 0x0002, // file & pipe
+        FILE_ADD_FILE = 0x0002, // directory
+        FILE_APPEND_DATA = 0x0004, // file
+        FILE_ADD_SUBDIRECTORY = 0x0004, // directory
+        FILE_CREATE_PIPE_INSTANCE = 0x0004, // named pipe
+        FILE_READ_EA = 0x0008, // file & directory
+        FILE_WRITE_EA = 0x0010, // file & directory
+        FILE_EXECUTE = 0x0020, // file
+        FILE_TRAVERSE = 0x0020, // directory
+        FILE_DELETE_CHILD = 0x0040, // directory
+        FILE_READ_ATTRIBUTES = 0x0080, // all
+        FILE_WRITE_ATTRIBUTES = 0x0100, // all
 
-#define FILE_WRITE_DATA           ( 0x0002 )    // file & pipe
-#define FILE_ADD_FILE             ( 0x0002 )    // directory
+        FILE_ALL_ACCESS = (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x1FF),
+        FILE_GENERIC_READ = (STANDARD_RIGHTS_READ | FILE_READ_DATA | FILE_READ_ATTRIBUTES | FILE_READ_EA | SYNCHRONIZE),
+        FILE_GENERIC_WRITE = (STANDARD_RIGHTS_WRITE | FILE_WRITE_DATA | FILE_WRITE_ATTRIBUTES | FILE_WRITE_EA |
+            FILE_APPEND_DATA | SYNCHRONIZE),
+        FILE_GENERIC_EXECUTE = (STANDARD_RIGHTS_EXECUTE | FILE_READ_ATTRIBUTES | FILE_EXECUTE | SYNCHRONIZE)
+    } FILE_ACCESS_MASK;
 
-#define FILE_APPEND_DATA          ( 0x0004 )    // file
-#define FILE_ADD_SUBDIRECTORY     ( 0x0004 )    // directory
-#define FILE_CREATE_PIPE_INSTANCE ( 0x0004 )    // named pipe
+    typedef enum _KEY_ACCESS_MASK {
+        KEY_QUERY_VALUE  = 0x0001,
+        KEY_SET_VALUE = 0x0002,
+        KEY_CREATE_SUB_KEY = 0x0004,
+        KEY_ENUMERATE_SUB_KEYS = 0x0008,
+        KEY_NOTIFY = 0x0010,
+        KEY_CREATE_LINK = 0x0020,
+        KEY_WOW64_32KEY = 0x0200,
+        KEY_WOW64_64KEY = 0x0100,
+        KEY_WOW64_RES = 0x0300,
+        
+        KEY_READ = (STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS | KEY_NOTIFY) & (~SYNCHRONIZE),
+        KEY_WRITE = (STANDARD_RIGHTS_WRITE | KEY_SET_VALUE | KEY_CREATE_SUB_KEY) & (~SYNCHRONIZE),
+        KEY_EXECUTE = KEY_READ & (~SYNCHRONIZE),
+        KEY_ALL_ACCESS = (STANDARD_RIGHTS_ALL | KEY_QUERY_VALUE | KEY_SET_VALUE | KEY_CREATE_SUB_KEY |
+            KEY_ENUMERATE_SUB_KEYS | KEY_NOTIFY | KEY_CREATE_LINK) & (~SYNCHRONIZE)
+    } KEY_ACCESS_MASK;
 
-
-#define FILE_READ_EA              ( 0x0008 )    // file & directory
-
-#define FILE_WRITE_EA             ( 0x0010 )    // file & directory
-
-#define FILE_EXECUTE              ( 0x0020 )    // file
-#define FILE_TRAVERSE             ( 0x0020 )    // directory
-
-#define FILE_DELETE_CHILD         ( 0x0040 )    // directory
-
-#define FILE_READ_ATTRIBUTES      ( 0x0080 )    // all
-
-#define FILE_WRITE_ATTRIBUTES     ( 0x0100 )    // all
-
-#define FILE_ALL_ACCESS (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x1FF)
-
-#define FILE_GENERIC_READ         (STANDARD_RIGHTS_READ     |\
-                                    FILE_READ_DATA           |\
-                                    FILE_READ_ATTRIBUTES     |\
-                                    FILE_READ_EA             |\
-                                    SYNCHRONIZE)
-
-
-#define FILE_GENERIC_WRITE        (STANDARD_RIGHTS_WRITE    |\
-                                    FILE_WRITE_DATA          |\
-                                    FILE_WRITE_ATTRIBUTES    |\
-                                    FILE_WRITE_EA            |\
-                                    FILE_APPEND_DATA         |\
-                                    SYNCHRONIZE)
-
-
-#define FILE_GENERIC_EXECUTE      (STANDARD_RIGHTS_EXECUTE  |\
-                                    FILE_READ_ATTRIBUTES     |\
-                                    FILE_EXECUTE             |\
-                                    SYNCHRONIZE)
 }
 
 #endif

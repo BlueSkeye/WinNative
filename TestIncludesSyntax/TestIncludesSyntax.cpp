@@ -29,7 +29,7 @@
 //#include "NtPartition.h"
 //#include "NtPrefixes.h"
 //#include "NtProcesses.h"
-//#include "NtRegistry.h"
+#include "NtRegistry.h"
 //#include "NTRuntimeLib.h"
 //#include "NtSection.h"
 //#include "NtSecurity.h"

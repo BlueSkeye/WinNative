@@ -9,6 +9,51 @@ extern "C" {
 
     // NO UNRESOLVED FUNCTIONS
 
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_key_information_class
+    typedef enum _KEY_INFORMATION_CLASS {
+        KeyBasicInformation,
+        KeyNodeInformation,
+        KeyFullInformation,
+        KeyNameInformation,
+        KeyCachedInformation,
+        KeyFlagsInformation,
+        KeyVirtualizationInformation,
+        KeyHandleTagsInformation,
+        KeyTrustInformation,
+        KeyLayerInformation,
+        MaxKeyInfoClass
+    } KEY_INFORMATION_CLASS;
+
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_key_set_information_class
+    typedef enum _KEY_SET_INFORMATION_CLASS {
+        KeyWriteTimeInformation,
+        KeyWow64FlagsInformation,
+        KeyControlFlagsInformation,
+        KeySetVirtualizationInformation,
+        KeySetDebugInformation,
+        KeySetHandleTagsInformation,
+        KeySetLayerInformation,
+        MaxKeySetInfoClass
+    } KEY_SET_INFORMATION_CLASS;
+
+    typedef struct _KEY_VALUE_ENTRY {
+        PUNICODE_STRING ValueName;
+        ULONG           DataLength;
+        ULONG           DataOffset;
+        ULONG           Type;
+    } KEY_VALUE_ENTRY, * PKEY_VALUE_ENTRY;
+
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_key_value_information_class
+    typedef enum _KEY_VALUE_INFORMATION_CLASS {
+        KeyValueBasicInformation,
+        KeyValueFullInformation,
+        KeyValuePartialInformation,
+        KeyValueFullInformationAlign64,
+        KeyValuePartialInformationAlign64,
+        KeyValueLayerInformation,
+        MaxKeyValueInfoClass
+    } KEY_VALUE_INFORMATION_CLASS;
+
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtCommitRegistryTransaction(
         HANDLE RegistryHandle,
@@ -34,7 +79,7 @@ extern "C" {
         ULONG              TitleIndex,
         _In_opt_  PUNICODE_STRING    Class,
         _In_            ULONG              CreateOptions,
-        [out, optional] PULONG             Disposition);
+        _Out_opt_ PULONG             Disposition);
     //ZwCreateKey
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwcreatekeytransacted
@@ -46,7 +91,7 @@ extern "C" {
         _In_opt_  PUNICODE_STRING    Class,
         _In_            ULONG              CreateOptions,
         _In_            HANDLE             TransactionHandle,
-        [out, optional] PULONG             Disposition);
+        _Out_opt_ PULONG             Disposition);
     //ZwCreateKeyTransacted
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwcreatekeytransacted
@@ -73,7 +118,7 @@ extern "C" {
         _In_            HANDLE                KeyHandle,
         _In_            ULONG                 Index,
         _In_            KEY_INFORMATION_CLASS KeyInformationClass,
-        [out, optional] PVOID                 KeyInformation,
+        _Out_opt_ PVOID                 KeyInformation,
         _In_            ULONG                 Length,
         _Out_           PULONG                ResultLength);
     //ZwEnumerateKey
@@ -83,7 +128,7 @@ extern "C" {
         _In_            HANDLE                      KeyHandle,
         _In_            ULONG                       Index,
         _In_            KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
-        [out, optional] PVOID                       KeyValueInformation,
+        _Out_opt_ PVOID                       KeyValueInformation,
         _In_            ULONG                       Length,
         _Out_           PULONG                      ResultLength);
     //ZwEnumerateValueKey
@@ -154,7 +199,7 @@ extern "C" {
         _Out_           PIO_STATUS_BLOCK IoStatusBlock,
         _In_            ULONG            CompletionFilter,
         _In_            BOOLEAN          WatchTree,
-        [out, optional] PVOID            Buffer,
+        _Out_opt_ PVOID            Buffer,
         _In_            ULONG            BufferSize,
         _In_            BOOLEAN          Asynchronous);
     //ZwNotifyChangeKey
@@ -224,9 +269,9 @@ extern "C" {
         _In_ ULONG Length,
         _Out_ PULONG ResultLength);
 
+    // https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntquerymultiplevaluekey
     // See winternl.h
-    // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
-    NTSYSCALLAPI NTSTATUS NTAPI ZwQueryMultipleValueKey(
+    NTSYSCALLAPI NTSTATUS NTAPI NtQueryMultipleValueKey(
         _In_ HANDLE KeyHandle,
         _Inout_updates_(EntryCount) PKEY_VALUE_ENTRY ValueEntries,
         _In_ ULONG EntryCount,
