@@ -10,6 +10,7 @@
 #define NT_INCLUDED
 // ... however we have to define a couple of things
 
+#define ANYSIZE_ARRAY 1
 #define CONST const
 #define POINTER_64 __ptr64
 #define UNALIGNED __unaligned
@@ -63,7 +64,7 @@ typedef const VOID* PCVOID;
 typedef size_t SIZE_T, * PSIZE_T;
 
 typedef _Null_terminated_ CHAR* LPCH, * LPSTR, * NPSTR, * PCH, * PCHAR, * PSTR, * PSZ;
-typedef _Null_terminated_ CONST char* LPCCH, * PCCH, * PCSZ;
+typedef _Null_terminated_ CONST char *LPCCH, * LPCSTR, * PCCH, * PCSTR, * PCSZ;
 
 typedef WCHAR* PWCHAR, * LPWCH, * PWCH;
 typedef CONST WCHAR* LPCWCH, * PCWCH;
@@ -157,6 +158,7 @@ typedef const UNICODE_STRING* PCUNICODE_STRING;
 
 // Define some specificiation strings to prevent compilation errors.
 #define __drv_aliasesMem
+#define _Frees_ptr_
 #define _Frees_ptr_opt_
 #define DECLSPEC_ALLOCATOR __declspec(allocator)
 #define DECLSPEC_NOALIAS __declspec(noalias)
