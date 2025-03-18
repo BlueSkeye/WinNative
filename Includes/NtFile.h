@@ -4,10 +4,209 @@
 #define _NTFILE_
 
 #include "NtCommonDefs.h"
+#include "NtAccessRights.h"
 
 extern "C" {
 
 	// NO UNRESOLVED FUNCTIONS
+
+	// Forward declarations
+	typedef struct _IO_STATUS_BLOCK *PIO_STATUS_BLOCK;
+
+	// Structures and enumerations declarations
+	// https://github.com/winsiderss/systeminformer/blob/dd76af8d5f64ca6c5436d6fc86890f2ab90e17d7/phnt/include/ntioapi.h#L2109C1-L2115C76
+	typedef enum _DIRECTORY_NOTIFY_INFORMATION_CLASS {
+		DirectoryNotifyInformation = 1, // FILE_NOTIFY_INFORMATION
+		DirectoryNotifyExtendedInformation, // FILE_NOTIFY_EXTENDED_INFORMATION
+		DirectoryNotifyFullInformation, // FILE_NOTIFY_FULL_INFORMATION // since 22H2
+		DirectoryNotifyMaximumInformation
+	} DIRECTORY_NOTIFY_INFORMATION_CLASS, * PDIRECTORY_NOTIFY_INFORMATION_CLASS;
+
+	// https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/ns-wdm-_file_basic_information
+	typedef struct _FILE_BASIC_INFORMATION {
+		LARGE_INTEGER CreationTime;
+		LARGE_INTEGER LastAccessTime;
+		LARGE_INTEGER LastWriteTime;
+		LARGE_INTEGER ChangeTime;
+		ULONG         FileAttributes;
+	} FILE_BASIC_INFORMATION, * PFILE_BASIC_INFORMATION;
+
+	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_file_information_class
+	typedef enum _FILE_INFORMATION_CLASS {
+		FileDirectoryInformation = 1,
+		FileFullDirectoryInformation = 2,
+		FileBothDirectoryInformation = 3,
+		FileBasicInformation = 4,
+		FileStandardInformation = 5,
+		FileInternalInformation = 6,
+		FileEaInformation = 7,
+		FileAccessInformation = 8,
+		FileNameInformation = 9,
+		FileRenameInformation = 10,
+		FileLinkInformation = 11,
+		FileNamesInformation = 12,
+		FileDispositionInformation = 13,
+		FilePositionInformation = 14,
+		FileFullEaInformation = 15,
+		FileModeInformation = 16,
+		FileAlignmentInformation = 17,
+		FileAllInformation = 18,
+		FileAllocationInformation = 19,
+		FileEndOfFileInformation = 20,
+		FileAlternateNameInformation = 21,
+		FileStreamInformation = 22,
+		FilePipeInformation = 23,
+		FilePipeLocalInformation = 24,
+		FilePipeRemoteInformation = 25,
+		FileMailslotQueryInformation = 26,
+		FileMailslotSetInformation = 27,
+		FileCompressionInformation = 28,
+		FileObjectIdInformation = 29,
+		FileCompletionInformation = 30,
+		FileMoveClusterInformation = 31,
+		FileQuotaInformation = 32,
+		FileReparsePointInformation = 33,
+		FileNetworkOpenInformation = 34,
+		FileAttributeTagInformation = 35,
+		FileTrackingInformation = 36,
+		FileIdBothDirectoryInformation = 37,
+		FileIdFullDirectoryInformation = 38,
+		FileValidDataLengthInformation = 39,
+		FileShortNameInformation = 40,
+		FileIoCompletionNotificationInformation = 41,
+		FileIoStatusBlockRangeInformation = 42,
+		FileIoPriorityHintInformation = 43,
+		FileSfioReserveInformation = 44,
+		FileSfioVolumeInformation = 45,
+		FileHardLinkInformation = 46,
+		FileProcessIdsUsingFileInformation = 47,
+		FileNormalizedNameInformation = 48,
+		FileNetworkPhysicalNameInformation = 49,
+		FileIdGlobalTxDirectoryInformation = 50,
+		FileIsRemoteDeviceInformation = 51,
+		FileUnusedInformation = 52,
+		FileNumaNodeInformation = 53,
+		FileStandardLinkInformation = 54,
+		FileRemoteProtocolInformation = 55,
+		FileRenameInformationBypassAccessCheck = 56,
+		FileLinkInformationBypassAccessCheck = 57,
+		FileVolumeNameInformation = 58,
+		FileIdInformation = 59,
+		FileIdExtdDirectoryInformation = 60,
+		FileReplaceCompletionInformation = 61,
+		FileHardLinkFullIdInformation = 62,
+		FileIdExtdBothDirectoryInformation = 63,
+		FileDispositionInformationEx = 64,
+		FileRenameInformationEx = 65,
+		FileRenameInformationExBypassAccessCheck = 66,
+		FileDesiredStorageClassInformation = 67,
+		FileStatInformation = 68,
+		FileMemoryPartitionInformation = 69,
+		FileStatLxInformation = 70,
+		FileCaseSensitiveInformation = 71,
+		FileLinkInformationEx = 72,
+		FileLinkInformationExBypassAccessCheck = 73,
+		FileStorageReserveIdInformation = 74,
+		FileCaseSensitiveInformationForceAccessCheck = 75,
+		FileKnownFolderInformation = 76,
+		FileStatBasicInformation = 77,
+		FileId64ExtdDirectoryInformation = 78,
+		FileId64ExtdBothDirectoryInformation = 79,
+		FileIdAllExtdDirectoryInformation = 80,
+		FileIdAllExtdBothDirectoryInformation = 81,
+		FileStreamReservationInformation,
+		FileMupProviderInfo,
+		FileMaximumInformation
+	} FILE_INFORMATION_CLASS, * PFILE_INFORMATION_CLASS;
+
+	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_file_network_open_information
+	typedef struct _FILE_NETWORK_OPEN_INFORMATION {
+		LARGE_INTEGER CreationTime;
+		LARGE_INTEGER LastAccessTime;
+		LARGE_INTEGER LastWriteTime;
+		LARGE_INTEGER ChangeTime;
+		LARGE_INTEGER AllocationSize;
+		LARGE_INTEGER EndOfFile;
+		ULONG         FileAttributes;
+	} FILE_NETWORK_OPEN_INFORMATION, * PFILE_NETWORK_OPEN_INFORMATION;
+
+	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-file_segment_element
+	typedef union _FILE_SEGMENT_ELEMENT {
+		PVOID64   Buffer;
+		ULONGLONG Alignment;
+	} FILE_SEGMENT_ELEMENT, * PFILE_SEGMENT_ELEMENT;
+
+	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_fsinfoclass
+	typedef enum _FSINFOCLASS {
+		FileFsVolumeInformation,
+		FileFsLabelInformation,
+		FileFsSizeInformation,
+		FileFsDeviceInformation,
+		FileFsAttributeInformation,
+		FileFsControlInformation,
+		FileFsFullSizeInformation,
+		FileFsObjectIdInformation,
+		FileFsDriverPathInformation,
+		FileFsVolumeFlagsInformation,
+		FileFsSectorSizeInformation,
+		FileFsDataCopyInformation,
+		FileFsMetadataSizeInformation,
+		FileFsFullSizeInformationEx,
+		FileFsGuidInformation,
+		FileFsMaximumInformation
+	} FS_INFORMATION_CLASS, * PFS_INFORMATION_CLASS;
+
+	typedef VOID (NTAPI* PIO_APC_ROUTINE) (
+		_In_ PVOID ApcContext,
+		_In_ PIO_STATUS_BLOCK IoStatusBlock,
+		_In_ ULONG Reserved);
+
+	// https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/ns-wdm-_io_status_block
+	typedef struct _IO_STATUS_BLOCK {
+		union {
+			NTSTATUS Status;
+			PVOID    Pointer;
+		};
+		ULONG_PTR Information;
+	} IO_STATUS_BLOCK;
+
+	typedef struct _OVERLAPPED {
+		ULONG_PTR Internal;
+		ULONG_PTR InternalHigh;
+		union {
+			struct {
+				DWORD Offset;
+				DWORD OffsetHigh;
+			} DUMMYSTRUCTNAME;
+			PVOID Pointer;
+		} DUMMYUNIONNAME;
+		HANDLE    hEvent;
+	} OVERLAPPED, * LPOVERLAPPED;
+	
+	// https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	typedef struct _RTLP_CURDIR_REF {
+		LONG ReferenceCount;
+		HANDLE DirectoryHandle;
+	} RTLP_CURDIR_REF, * PRTLP_CURDIR_REF;
+
+	// https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	typedef enum _RTL_PATH_TYPE {
+		RtlPathTypeUnknown,
+		RtlPathTypeUncAbsolute,     // "\\\\server\\share\\folder\\file.txt
+		RtlPathTypeDriveAbsolute,   // "C:\\folder\\file.txt"
+		RtlPathTypeDriveRelative,   // "C:folder\\file.txt"
+		RtlPathTypeRooted,          // "\\folder\\file.txt"
+		RtlPathTypeRelative,        // "folder\\file.txt"
+		RtlPathTypeLocalDevice,     // "\\\\.\\PhysicalDrive0"
+		RtlPathTypeRootLocalDevice  // "\\\\?\\C:\\folder\\file.txt"
+	} RTL_PATH_TYPE;
+
+	// https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
+	typedef struct _RTL_RELATIVE_NAME_U {
+		UNICODE_STRING RelativeName;
+		HANDLE ContainingDirectory;
+		PRTLP_CURDIR_REF CurDirRef;
+	} RTL_RELATIVE_NAME_U, * PRTL_RELATIVE_NAME_U;
 
 	//https://ntdoc.m417z.com/ldrgetfilenamefromloadasdatatable
 	//https://processhacker.sourceforge.io/doc/ntldr_8h_source.html
@@ -15,7 +214,7 @@ extern "C" {
 		_In_ PVOID Module,
 		_Out_ PVOID* pFileNamePrt);
 
-	//https://www.geoffchappell.com/studies/windows/win32/ntdll/api/rtl/rtlexec/openimagefileoptionskey.htm
+	// https://www.geoffchappell.com/studies/windows/win32/ntdll/api/rtl/rtlexec/openimagefileoptionskey.htm
 	// https://doxygen.reactos.org/d8/d6b/ldrinit_8c.html
 	NTSYSAPI NTSTATUS NTAPI LdrOpenImageFileOptionsKey(
 		_In_ PUNICODE_STRING lpImageFile,
@@ -73,13 +272,12 @@ extern "C" {
 	//ZwAssociateWaitCompletionPacket
 
 	// https://learn.microsoft.com/en-us/windows/win32/devnotes/nt-cancel-io-file
-	NTSYSCALLAPI BOOL WINAPI NtCancelIoFile(
-		_In_ HANDLE hFile
-	);
+	NTSYSCALLAPI BOOL NTAPI NtCancelIoFile(
+		_In_ HANDLE hFile);
 	//ZwCancelIoFile
 
 	// https://learn.microsoft.com/en-us/windows/win32/devnotes/nt-cancel-io-file-ex
-	NTSYSCALLAPI BOOL WINAPI NtCancelIoFileEx(
+	NTSYSCALLAPI BOOL NTAPI NtCancelIoFileEx(
 		_In_     HANDLE       hFile,
 		_In_opt_ LPOVERLAPPED lpOverlapped
 	);
@@ -131,21 +329,21 @@ extern "C" {
 	// https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntcreatefile
 	NTSYSAPI NTSTATUS NTAPI NtCreateIoCompletion(
 		_Out_ PHANDLE IoHandle,
-		_In_ FILE_ACCESS_MASK DesiredAccess,
+		_In_ ACCESS_MASK DesiredAccess,
 		_In_ POBJECT_ATTRIBUTES ObjectAttributes,
 		_In_ ULONG NumberOfConcurrentThreads);
 	//ZwCreateIoCompletion
 
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtCreateMailslotFile(
-		OUT PHANDLE             MailslotFileHandle,
-		IN ACCESS_MASK          DesiredAccess,
-		IN POBJECT_ATTRIBUTES   ObjectAttributes,
-		OUT PIO_STATUS_BLOCK    IoStatusBlock,
-		IN ULONG                CreateOptions,
-		IN ULONG                MailslotQuota,
-		IN ULONG                MaxMessageSize,
-		IN PLARGE_INTEGER       ReadTimeOut);
+		_Out_ PHANDLE             MailslotFileHandle,
+		_In_ ACCESS_MASK          DesiredAccess,
+		_In_ POBJECT_ATTRIBUTES   ObjectAttributes,
+		_Out_ PIO_STATUS_BLOCK    IoStatusBlock,
+		_In_ ULONG                CreateOptions,
+		_In_ ULONG                MailslotQuota,
+		_In_ ULONG                MaxMessageSize,
+		_In_ PLARGE_INTEGER       ReadTimeOut);
 	//ZwCreateMailslotFile
 
 	// https://learn.microsoft.com/en-us/windows/win32/devnotes/nt-create-named-pipe-file
@@ -163,21 +361,19 @@ extern "C" {
 		_In_ ULONG MaximumInstances,
 		_In_ ULONG InboundQuota,
 		_In_ ULONG OutboundQuota,
-		_In_opt_ PLARGE_INTEGER DefaultTimeout
-	);
+		_In_opt_ PLARGE_INTEGER DefaultTimeout);
 	//ZwCreateNamedPipeFile
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtCreateWaitCompletionPacket(
 		_Out_ PHANDLE WaitCompletionPacketHandle,
-		_In_ FILE_ACCESS_MASK DesiredAccess,
+		_In_ ACCESS_MASK DesiredAccess,
 		_In_opt_ POBJECT_ATTRIBUTES ObjectAttributes);
 	//ZwCreateWaitCompletionPacket
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwdeletefile
 	NTSYSCALLAPI NTSTATUS NTAPI NtDeleteFile(
-		_In_ POBJECT_ATTRIBUTES ObjectAttributes
-	);
+		_In_ POBJECT_ATTRIBUTES ObjectAttributes);
 	//ZwDeleteFile
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntdeviceiocontrolfile
@@ -220,25 +416,26 @@ extern "C" {
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwflushbuffersfileex
 	NTSYSAPI NTSTATUS NtFlushBuffersFileEx(
-		[in]  HANDLE           FileHandle,
+		_In_  HANDLE           FileHandle,
 		ULONG            FLags,
 		PVOID            Parameters,
 		ULONG            ParametersSize,
-		[out] PIO_STATUS_BLOCK IoStatusBlock);
+		_Out_ PIO_STATUS_BLOCK IoStatusBlock);
 	//ZwFlushBuffersFileEx
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwfscontrolfile
 	NTSYSAPI NTSTATUS NtFsControlFile(
-		[in]            HANDLE           FileHandle,
-		[in, optional]  HANDLE           Event,
-		[in, optional]  PIO_APC_ROUTINE  ApcRoutine,
-		[in, optional]  PVOID            ApcContext,
-		[out]           PIO_STATUS_BLOCK IoStatusBlock,
-		[in]            ULONG            FsControlCode,
-		[in, optional]  PVOID            InputBuffer,
-		[in]            ULONG            InputBufferLength,
-		[out, optional] PVOID            OutputBuffer,
-		[in]            ULONG            OutputBufferLength);
+		_In_            HANDLE           FileHandle,
+		_In_opt_
+		_In_opt_  HANDLE           Event,
+		_In_opt_  PIO_APC_ROUTINE  ApcRoutine,
+		_In_opt_  PVOID            ApcContext,
+		_Out_           PIO_STATUS_BLOCK IoStatusBlock,
+		_In_            ULONG            FsControlCode,
+		_In_opt_  PVOID            InputBuffer,
+		_In_            ULONG            InputBufferLength,
+		_Out_opt_ PVOID            OutputBuffer,
+		_In_            ULONG            OutputBufferLength);
 	//ZwFsControlFile
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -303,7 +500,7 @@ extern "C" {
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtOpenIoCompletion(
 		_Out_ PHANDLE Handle,
-		_In_ FILE_ACCESS_MASK DesiredAccess,
+		_In_ ACCESS_MASK DesiredAccess,
 		_In_ POBJECT_ATTRIBUTES ObjectAttributes);
 	//ZwOpenIoCompletion
 
@@ -390,37 +587,37 @@ extern "C" {
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntqueryquotainformationfile
 	NTSYSCALLAPI NTSTATUS NtQueryQuotaInformationFile(
-		[in]           HANDLE           FileHandle,
-		[out]          PIO_STATUS_BLOCK IoStatusBlock,
-		[out]          PVOID            Buffer,
-		[in]           ULONG            Length,
-		[in]           BOOLEAN          ReturnSingleEntry,
-		[in, optional] PVOID            SidList,
-		[in]           ULONG            SidListLength,
-		[in, optional] PSID             StartSid,
-		[in]           BOOLEAN          RestartScan);
+		_In_           HANDLE           FileHandle,
+		_Out_          PIO_STATUS_BLOCK IoStatusBlock,
+		_Out_          PVOID            Buffer,
+		_In_           ULONG            Length,
+		_In_           BOOLEAN          ReturnSingleEntry,
+		_In_opt_ PVOID            SidList,
+		_In_           ULONG            SidListLength,
+		_In_opt_ PSID             StartSid,
+		_In_           BOOLEAN          RestartScan);
 	//ZwQueryQuotaInformationFile
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntqueryvolumeinformationfile
 	NTSYSCALLAPI NTSTATUS NtQueryVolumeInformationFile(
-		[in]  HANDLE               FileHandle,
-		[out] PIO_STATUS_BLOCK     IoStatusBlock,
-		[out] PVOID                FsInformation,
-		[in]  ULONG                Length,
-		[in]  FS_INFORMATION_CLASS FsInformationClass);
+		_In_  HANDLE               FileHandle,
+		_Out_ PIO_STATUS_BLOCK     IoStatusBlock,
+		_Out_ PVOID                FsInformation,
+		_In_  ULONG                Length,
+		_In_  FS_INFORMATION_CLASS FsInformationClass);
 	//ZwQueryVolumeInformationFile
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntreadfile
 	NTSYSCALLAPI NTSTATUS NtReadFile(
-		[in]           HANDLE           FileHandle,
-		[in, optional] HANDLE           Event,
-		[in, optional] PIO_APC_ROUTINE  ApcRoutine,
-		[in, optional] PVOID            ApcContext,
-		[out]          PIO_STATUS_BLOCK IoStatusBlock,
-		[out]          PVOID            Buffer,
-		[in]           ULONG            Length,
-		[in, optional] PLARGE_INTEGER   ByteOffset,
-		[in, optional] PULONG           Key);
+		_In_           HANDLE           FileHandle,
+		_In_opt_ HANDLE           Event,
+		_In_opt_ PIO_APC_ROUTINE  ApcRoutine,
+		_In_opt_ PVOID            ApcContext,
+		_Out_          PIO_STATUS_BLOCK IoStatusBlock,
+		_Out_          PVOID            Buffer,
+		_In_           ULONG            Length,
+		_In_opt_ PLARGE_INTEGER   ByteOffset,
+		_In_opt_ PULONG           Key);
 	//ZwReadFile
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -457,20 +654,20 @@ extern "C" {
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwseteafile
 	NTSYSCALLAPI NTSTATUS NtSetEaFile(
-		[in]  HANDLE           FileHandle,
-		[out] PIO_STATUS_BLOCK IoStatusBlock,
-		[in]  PVOID            Buffer,
-		[in]  ULONG            Length
+		_In_  HANDLE           FileHandle,
+		_Out_ PIO_STATUS_BLOCK IoStatusBlock,
+		_In_  PVOID            Buffer,
+		_In_  ULONG            Length
 	);
 	//ZwSetEaFile
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntsetinformationfile
 	NTSYSCALLAPI NTSTATUS NtSetInformationFile(
-		[in]  HANDLE                 FileHandle,
-		[out] PIO_STATUS_BLOCK       IoStatusBlock,
-		[in]  PVOID                  FileInformation,
-		[in]  ULONG                  Length,
-		[in]  FILE_INFORMATION_CLASS FileInformationClass);
+		_In_  HANDLE                 FileHandle,
+		_Out_ PIO_STATUS_BLOCK       IoStatusBlock,
+		_In_  PVOID                  FileInformation,
+		_In_  ULONG                  Length,
+		_In_  FILE_INFORMATION_CLASS FileInformationClass);
 	//ZwSetInformationFile
 
 	// https://github.com/Uri3n/Thread-Pool-Injection-PoC/blob/main/include/FunctionPtrs.hpp
@@ -495,19 +692,19 @@ extern "C" {
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntsetquotainformationfile
 	NTSYSCALLAPI NTSTATUS NtSetQuotaInformationFile(
-		[in]  HANDLE           FileHandle,
-		[out] PIO_STATUS_BLOCK IoStatusBlock,
-		[in]  PVOID            Buffer,
-		[in]  ULONG            Length);
+		_In_  HANDLE           FileHandle,
+		_Out_ PIO_STATUS_BLOCK IoStatusBlock,
+		_In_  PVOID            Buffer,
+		_In_  ULONG            Length);
 	//ZwSetQuotaInformationFile
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwsetvolumeinformationfile
 	NTSYSAPI NTSTATUS NtSetVolumeInformationFile(
-		[in]  HANDLE               FileHandle,
-		[out] PIO_STATUS_BLOCK     IoStatusBlock,
-		[in]  PVOID                FsInformation,
-		[in]  ULONG                Length,
-		[in]  FS_INFORMATION_CLASS FsInformationClass);
+		_In_  HANDLE               FileHandle,
+		_Out_ PIO_STATUS_BLOCK     IoStatusBlock,
+		_In_  PVOID                FsInformation,
+		_In_  ULONG                Length,
+		_In_  FS_INFORMATION_CLASS FsInformationClass);
 	//ZwSetVolumeInformationFile
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -520,37 +717,37 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntunlockfile
 	NTSYSCALLAPI NTSTATUS NtUnlockFile(
-		[in]  HANDLE           FileHandle,
-		[out] PIO_STATUS_BLOCK IoStatusBlock,
-		[in]  PLARGE_INTEGER   ByteOffset,
-		[in]  PLARGE_INTEGER   Length,
-		[in]  ULONG            Key);
+		_In_  HANDLE           FileHandle,
+		_Out_ PIO_STATUS_BLOCK IoStatusBlock,
+		_In_  PLARGE_INTEGER   ByteOffset,
+		_In_  PLARGE_INTEGER   Length,
+		_In_  ULONG            Key);
 	//ZwUnlockFile
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntwritefile
 	NTSYSCALLAPI NTSTATUS NtWriteFile(
-		[in]           HANDLE           FileHandle,
-		[in, optional] HANDLE           Event,
-		[in, optional] PIO_APC_ROUTINE  ApcRoutine,
-		[in, optional] PVOID            ApcContext,
-		[out]          PIO_STATUS_BLOCK IoStatusBlock,
-		[in]           PVOID            Buffer,
-		[in]           ULONG            Length,
-		[in, optional] PLARGE_INTEGER   ByteOffset,
-		[in, optional] PULONG           Key);
+		_In_           HANDLE           FileHandle,
+		_In_opt_ HANDLE           Event,
+		_In_opt_ PIO_APC_ROUTINE  ApcRoutine,
+		_In_opt_ PVOID            ApcContext,
+		_Out_          PIO_STATUS_BLOCK IoStatusBlock,
+		_In_           PVOID            Buffer,
+		_In_           ULONG            Length,
+		_In_opt_ PLARGE_INTEGER   ByteOffset,
+		_In_opt_ PULONG           Key);
 	//ZwWriteFile
 
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtWriteFileGather(
-		IN HANDLE               FileHandle,
-		IN HANDLE               Event OPTIONAL,
-		IN PIO_APC_ROUTINE      ApcRoutine OPTIONAL,
-		IN PVOID                ApcContext OPTIONAL,
-		OUT PIO_STATUS_BLOCK    IoStatusBlock,
-		IN FILE_SEGMENT_ELEMENT SegmentArray,
-		IN ULONG                Length,
-		IN PLARGE_INTEGER       ByteOffset,
-		IN PULONG               Key OPTIONAL);
+		_In_ HANDLE               FileHandle,
+		_In_opt_ HANDLE               Event,
+		_In_opt_ PIO_APC_ROUTINE      ApcRoutine,
+		_In_opt_ PVOID                ApcContext,
+		_Out_ PIO_STATUS_BLOCK    IoStatusBlock,
+		_In_ FILE_SEGMENT_ELEMENT SegmentArray,
+		_In_ ULONG                Length,
+		_In_ PLARGE_INTEGER       ByteOffset,
+		_In_opt_ PULONG               Key);
 	//ZwWriteFileGather
 
 	//https://github.com/winsiderss/phnt/blob/master/ntrtl.h

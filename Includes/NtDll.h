@@ -1,31 +1,12 @@
 #pragma once
 
+#include "NtCommonDefs.h"
+
 #ifndef _NTDLL_
 #define _NTDLL_
 
-#include "NTCRuntime.h"
-#include "NtAtoms.h"
-#include "NtDebugging.h"
-#include "NtDevices.h"
-#include "NtEnvironment.h"
-#include "NtEvents.h"
-#include "NtFile.h"
-#include "NtIo.h"
-#include "NtLocalProcedureCalls.h"
-#include "NtMemory.h"
-#include "NtNotification.h"
-#include "NtObjects.h"
-#include "NtPartition.h"
-#include "NtRegisry.h"
-#include "NtRuntimeLib.h"
-#include "NtSection.h"
-#include "NtSecurity.h"
-#include "NtTime.h"
-#include "NtTransaction.h"
-
 extern "C"
 {
-
 	// UNRESOLVED FUNCTIONS
 
 	// Theese three functions are quite intricated. Actually the exported addresses are just in the
@@ -43,7 +24,6 @@ extern "C"
 	//ShipAssertGetBufferInfo
 	//ShipAssertMsgA
 	//ShipAssertMsgW
-
 	// END OF UNRESOLVED FUNCTIONS
 
 	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
@@ -269,33 +249,33 @@ extern "C"
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/winuser/nf-winuser-defwindowproca
 	// Forwarded from USER32:DefWindowProcA
 	NTSYSAPI LRESULT NTAPI NtdllDefWindowProc_A(
-		[in] HWND   hWnd,
-		[in] UINT   Msg,
-		[in] WPARAM wParam,
-		[in] LPARAM lParam);
+		_In_ HWND   hWnd,
+		_In_ UINT   Msg,
+		_In_ WPARAM wParam,
+		_In_ LPARAM lParam);
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/winuser/nf-winuser-defwindowprocw
 	NTSYSAPI LRESULT NTAPI NtdllDefWindowProc_W(
-		[in] HWND   hWnd,
-		[in] UINT   Msg,
-		[in] WPARAM wParam,
-		[in] LPARAM lParam);
+		_In_ HWND   hWnd,
+		_In_ UINT   Msg,
+		_In_ WPARAM wParam,
+		_In_ LPARAM lParam);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-defdlgproca
 	// Forwarded from USER32:DefDlgProcA
 	NTSYSAPI LRESULT NTAPI NtdllDialogWndProc_A(
-		[in] HWND   hDlg,
-		[in] UINT   Msg,
-		[in] WPARAM wParam,
-		[in] LPARAM lParam);
+		_In_ HWND   hDlg,
+		_In_ UINT   Msg,
+		_In_ WPARAM wParam,
+		_In_ LPARAM lParam);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-defdlgprocw
 	// Forwarded from USER32:DefDlgProcW
 	NTSYSAPI LRESULT NTAPI NtdllDialogWndProc_W(
-		[in] HWND   hDlg,
-		[in] UINT   Msg,
-		[in] WPARAM wParam,
-		[in] LPARAM lParam);
+		_In_ HWND   hDlg,
+		_In_ UINT   Msg,
+		_In_ WPARAM wParam,
+		_In_ LPARAM lParam);
 
 	// https://doxygen.reactos.org/dc/d65/rxact_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlAbortRXact(
@@ -380,15 +360,15 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlarebitsclear
 	NTSYSAPI BOOLEAN RtlAreBitsClear(
-		[in] PRTL_BITMAP BitMapHeader,
-		[in] ULONG       StartingIndex,
-		[in] ULONG       Length);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_In_ ULONG       StartingIndex,
+		_In_ ULONG       Length);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlarebitsset
 	NTSYSAPI BOOLEAN RtlAreBitsSet(
-		[in] PRTL_BITMAP BitMapHeader,
-		[in] ULONG       StartingIndex,
-		[in] ULONG       Length);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_In_ ULONG       StartingIndex,
+		_In_ ULONG       Length);
 
 	// Reversed
 	NTSYSAPI BOOLEAN NTAPI RtlAreLongPathsEnabled(VOID);
@@ -412,18 +392,18 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcapturecontext
 	NTSYSAPI VOID RtlCaptureContext(
-		[out] PCONTEXT ContextRecord);
+		_Out_ PCONTEXT ContextRecord);
 
 	// Guessed
 	// https://microsoft.github.io/windows-docs-rs/doc/windows/Win32/System/Diagnostics/Debug/fn.RtlCaptureContext2.html
 	NTSYSAPI VOID RtlCaptureContext2(
-		[out] PCONTEXT ContextRecord);
+		_Out_ PCONTEXT ContextRecord);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcapturestackbacktrace
 	NTSYSAPI USHORT RtlCaptureStackBackTrace(
-		[in]            ULONG  FramesToSkip,
-		[in]            ULONG  FramesToCapture,
-		[out]           PVOID* BackTrace,
+		_In_            ULONG  FramesToSkip,
+		_In_            ULONG  FramesToCapture,
+		_Out_           PVOID* BackTrace,
 		[out, optional] PULONG BackTraceHash);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L10720C1-L10727C1
@@ -441,8 +421,8 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcheckregistrykey
 	NTSYSAPI NTSTATUS RtlCheckRegistryKey(
-		[in] ULONG RelativeTo,
-		[in] PWSTR Path);
+		_In_ ULONG RelativeTo,
+		_In_ PWSTR Path);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L10086C1-L10093C1
 	NTSYSAPI NTSTATUS NTAPI RtlCheckSandboxedToken(
@@ -473,7 +453,7 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlclearallbits
 	NTSYSAPI VOID RtlClearAllBits(
-		[in] PRTL_BITMAP BitMapHeader);
+		_In_ PRTL_BITMAP BitMapHeader);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI VOID NTAPI RtlClearAllBitsEx(
@@ -481,8 +461,8 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlclearbit
 	NTSYSAPI VOID RtlClearBit(
-		[in] PRTL_BITMAP BitMapHeader,
-		[in] ULONG       BitNumber);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_In_ ULONG       BitNumber);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI VOID NTAPI RtlClearBitEx(
@@ -491,21 +471,21 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlclearbits
 	NTSYSAPI VOID RtlClearBits(
-		[in] PRTL_BITMAP BitMapHeader,
-		[in] ULONG       StartingIndex,
-		[in] ULONG       NumberToClear);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_In_ ULONG       StartingIndex,
+		_In_ ULONG       NumberToClear);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcmdecodememioresource
 	NTSYSAPI ULONGLONG RtlCmDecodeMemIoResource(
-		[in]            PCM_PARTIAL_RESOURCE_DESCRIPTOR Descriptor,
+		_In_            PCM_PARTIAL_RESOURCE_DESCRIPTOR Descriptor,
 		[out, optional] PULONGLONG                      Start);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcmencodememioresource
 	NTSYSAPI NTSTATUS RtlCmEncodeMemIoResource(
-		[in] PCM_PARTIAL_RESOURCE_DESCRIPTOR Descriptor,
-		[in] UCHAR                           Type,
-		[in] ULONGLONG                       Length,
-		[in] ULONGLONG                       Start);
+		_In_ PCM_PARTIAL_RESOURCE_DESCRIPTOR Descriptor,
+		_In_ UCHAR                           Type,
+		_In_ ULONGLONG                       Length,
+		_In_ ULONGLONG                       Start);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L6279C1-L6286C1
 	NTSYSAPI PVOID NTAPI RtlCommitDebugInfo(
@@ -519,14 +499,14 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcompressbuffer
 	NTSYSAPI NT_RTL_COMPRESS_API NTSTATUS RtlCompressBuffer(
-		[in]  USHORT CompressionFormatAndEngine,
-		[in]  PUCHAR UncompressedBuffer,
-		[in]  ULONG  UncompressedBufferSize,
-		[out] PUCHAR CompressedBuffer,
-		[in]  ULONG  CompressedBufferSize,
-		[in]  ULONG  UncompressedChunkSize,
-		[out] PULONG FinalCompressedSize,
-		[in]  PVOID  WorkSpace);
+		_In_  USHORT CompressionFormatAndEngine,
+		_In_  PUCHAR UncompressedBuffer,
+		_In_  ULONG  UncompressedBufferSize,
+		_Out_ PUCHAR CompressedBuffer,
+		_In_  ULONG  CompressedBufferSize,
+		_In_  ULONG  UncompressedChunkSize,
+		_Out_ PULONG FinalCompressedSize,
+		_In_  PVOID  WorkSpace);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
 	NTSYSAPI DWORD NTAPI RtlComputeCrc32(
@@ -603,8 +583,8 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcopyluid
 	NTSYSAPI VOID RtlCopyLuid(
-		[out] PLUID DestinationLuid,
-		[in]  PLUID SourceLuid);
+		_Out_ PLUID DestinationLuid,
+		_In_  PLUID SourceLuid);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI VOID NTAPI RtlCopyLuidAndAttributesArray(
@@ -642,12 +622,12 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcreateregistrykey
 	NTSYSAPI NTSTATUS RtlCreateRegistryKey(
-		[in] ULONG RelativeTo,
-		[in] PWSTR Path);
+		_In_ ULONG RelativeTo,
+		_In_ PWSTR Path);
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcreatesystemvolumeinformationfolder
 	NTSYSAPI NTSTATUS RtlCreateSystemVolumeInformationFolder(
-		[in] PCUNICODE_STRING VolumeRootPath);
+		_In_ PCUNICODE_STRING VolumeRootPath);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI NTSTATUS NTAPI RtlCreateUserSecurityObject(
@@ -723,33 +703,33 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtldecompressbuffer
 	NTSYSAPI NT_RTL_COMPRESS_API NTSTATUS RtlDecompressBuffer(
-		[in]  USHORT CompressionFormat,
-		[out] PUCHAR UncompressedBuffer,
-		[in]  ULONG  UncompressedBufferSize,
-		[in]  PUCHAR CompressedBuffer,
-		[in]  ULONG  CompressedBufferSize,
-		[out] PULONG FinalUncompressedSize);
+		_In_  USHORT CompressionFormat,
+		_Out_ PUCHAR UncompressedBuffer,
+		_In_  ULONG  UncompressedBufferSize,
+		_In_  PUCHAR CompressedBuffer,
+		_In_  ULONG  CompressedBufferSize,
+		_Out_ PULONG FinalUncompressedSize);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtldecompressbufferex
 	NTSYSAPI NT_RTL_COMPRESS_API NTSTATUS RtlDecompressBufferEx(
-		[in]  USHORT CompressionFormat,
-		[out] PUCHAR UncompressedBuffer,
-		[in]  ULONG  UncompressedBufferSize,
-		[in]  PUCHAR CompressedBuffer,
-		[in]  ULONG  CompressedBufferSize,
-		[out] PULONG FinalUncompressedSize,
-		[in]  PVOID  WorkSpace);
+		_In_  USHORT CompressionFormat,
+		_Out_ PUCHAR UncompressedBuffer,
+		_In_  ULONG  UncompressedBufferSize,
+		_In_  PUCHAR CompressedBuffer,
+		_In_  ULONG  CompressedBufferSize,
+		_Out_ PULONG FinalUncompressedSize,
+		_In_  PVOID  WorkSpace);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtldecompressfragment
 	NTSYSAPI NT_RTL_COMPRESS_API NTSTATUS RtlDecompressFragment(
-		[in]  USHORT CompressionFormat,
-		[out] PUCHAR UncompressedFragment,
-		[in]  ULONG  UncompressedFragmentSize,
-		[in]  PUCHAR CompressedBuffer,
-		[in]  ULONG  CompressedBufferSize,
-		[in]  ULONG  FragmentOffset,
-		[out] PULONG FinalUncompressedSize,
-		[in]  PVOID  WorkSpace);
+		_In_  USHORT CompressionFormat,
+		_Out_ PUCHAR UncompressedFragment,
+		_In_  ULONG  UncompressedFragmentSize,
+		_In_  PUCHAR CompressedBuffer,
+		_In_  ULONG  CompressedBufferSize,
+		_In_  ULONG  FragmentOffset,
+		_Out_ PULONG FinalUncompressedSize,
+		_In_  PVOID  WorkSpace);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L8518C1-L8523C7
 	NTSYSAPI NTSTATUS NTAPI RtlDefaultNpAcl(
@@ -765,9 +745,9 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtldeleteregistryvalue
 	NTSYSAPI NTSTATUS RtlDeleteRegistryValue(
-		[in] ULONG  RelativeTo,
-		[in] PCWSTR Path,
-		[in] PCWSTR ValueName);
+		_In_ ULONG  RelativeTo,
+		_In_ PCWSTR Path,
+		_In_ PCWSTR ValueName);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L1127C1-L1132C7
 	NTSYSAPI VOID NTAPI RtlDeleteResource(
@@ -821,7 +801,7 @@ extern "C"
 
 	//https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtldrainnonvolatileflush
 	NTSYSAPI NTSTATUS NTAPI RtlDrainNonVolatileFlush(
-		[in] PVOID NvToken);
+		_In_ PVOID NvToken);
 
 	// https://doxygen.reactos.org/de/df0/sdk_2lib_2rtl_2resource_8c.html
 	NTSYSAPI VOID NTAPI RtlDumpResource(
@@ -910,22 +890,22 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindclearbits
 	NTSYSAPI ULONG RtlFindClearBits(
-		[in] PRTL_BITMAP BitMapHeader,
-		[in] ULONG       NumberToFind,
-		[in] ULONG       HintIndex);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_In_ ULONG       NumberToFind,
+		_In_ ULONG       HintIndex);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindclearbitsandset
 	NTSYSAPI ULONG RtlFindClearBitsAndSet(
-		[in] PRTL_BITMAP BitMapHeader,
-		[in] ULONG       NumberToFind,
-		[in] ULONG       HintIndex);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_In_ ULONG       NumberToFind,
+		_In_ ULONG       HintIndex);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindclearruns
 	NTSYSAPI ULONG RtlFindClearRuns(
-		[in]  PRTL_BITMAP     BitMapHeader,
-		[out] PRTL_BITMAP_RUN RunArray,
-		[in]  ULONG           SizeOfRunArray,
-		[in]  BOOLEAN         LocateLongestRuns);
+		_In_  PRTL_BITMAP     BitMapHeader,
+		_Out_ PRTL_BITMAP_RUN RunArray,
+		_In_  ULONG           SizeOfRunArray,
+		_In_  BOOLEAN         LocateLongestRuns);
 
 	// https://doxygen.reactos.org/de/df5/xdk_2rtlfuncs_8h_source.html
 	NTSYSAPI NTSTATUS NTAPI RtlFindClosestEncodableLength(
@@ -939,18 +919,18 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindlastbackwardrunclear
 	NTSYSAPI ULONG RtlFindLastBackwardRunClear(
-		[in]  PRTL_BITMAP BitMapHeader,
-		[in]  ULONG       FromIndex,
-		[out] PULONG      StartingRunIndex);
+		_In_  PRTL_BITMAP BitMapHeader,
+		_In_  ULONG       FromIndex,
+		_Out_ PULONG      StartingRunIndex);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindleastsignificantbit
 	NTSYSAPI CCHAR RtlFindLeastSignificantBit(
-		[in] ULONGLONG Set);
+		_In_ ULONGLONG Set);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindlongestrunclear
 	NTSYSAPI ULONG RtlFindLongestRunClear(
-		[in]  PRTL_BITMAP BitMapHeader,
-		[out] PULONG      StartingIndex);
+		_In_  PRTL_BITMAP BitMapHeader,
+		_Out_ PULONG      StartingIndex);
 
 	// https://doxygen.reactos.org/de/d70/sdk_2lib_2rtl_2message_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlFindMessage(
@@ -962,25 +942,25 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindmostsignificantbit
 	NTSYSAPI CCHAR RtlFindMostSignificantBit(
-		[in] ULONGLONG Set);
+		_In_ ULONGLONG Set);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindnextforwardrunclear
 	NTSYSAPI ULONG RtlFindNextForwardRunClear(
-		[in]  PRTL_BITMAP BitMapHeader,
-		[in]  ULONG       FromIndex,
-		[out] PULONG      StartingRunIndex);
+		_In_  PRTL_BITMAP BitMapHeader,
+		_In_  ULONG       FromIndex,
+		_Out_ PULONG      StartingRunIndex);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindsetbits
 	NTSYSAPI ULONG RtlFindSetBits(
-		[in] PRTL_BITMAP BitMapHeader,
-		[in] ULONG       NumberToFind,
-		[in] ULONG       HintIndex);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_In_ ULONG       NumberToFind,
+		_In_ ULONG       HintIndex);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindsetbitsandclear
 	NTSYSAPI ULONG RtlFindSetBitsAndClear(
-		[in] PRTL_BITMAP BitMapHeader,
-		[in] ULONG       NumberToFind,
-		[in] ULONG       HintIndex);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_In_ ULONG       NumberToFind,
+		_In_ ULONG       HintIndex);
 
 	// https://jabber-tools.github.io/google_cognitive_apis/doc/0.1.5/ntapi/ntrtl/fn.RtlFindClearBitsAndSet.html
 	NTSYSAPI ULONG NTAPI RtlFindClearBitsAndSet(
@@ -990,13 +970,13 @@ extern "C"
 
 	//https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindsetbits
 	NTSYSAPI ULONG NTAPI RtlFindSetBits(
-		[in] PRTL_BITMAP BitMapHeader,
-		[in] ULONG       NumberToFind,
-		[in] ULONG       HintIndex);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_In_ ULONG       NumberToFind,
+		_In_ ULONG       HintIndex);
 
 	//https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtlfirstentryslist
 	NTSYSAPI PSLIST_ENTRY NTAPI RtlFirstEntrySList(
-		[in] const SLIST_HEADER* ListHead);
+		_In_ const SLIST_HEADER* ListHead);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L10227C1-L10234C1
 	NTSYSAPI NTSTATUS NTAPI RtlFlsAlloc(
@@ -1061,8 +1041,8 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlgenerate8dot3name
 	NTSYSAPI NTSTATUS NTAPI RtlGenerate8dot3Name(
-		[in]      PCUNICODE_STRING       Name,
-		[in]      BOOLEAN                AllowExtendedCharacters,
+		_In_      PCUNICODE_STRING       Name,
+		_In_      BOOLEAN                AllowExtendedCharacters,
 		[in, out] PGENERATE_NAME_CONTEXT Context,
 		[in, out] PUNICODE_STRING        Name8dot3);
 
@@ -1089,9 +1069,9 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlgetcompressionworkspacesize
 	NT_RTL_COMPRESS_API NTSTATUS RtlGetCompressionWorkSpaceSize(
-		[in]  USHORT CompressionFormatAndEngine,
-		[out] PULONG CompressBufferWorkSpaceSize,
-		[out] PULONG CompressFragmentWorkSpaceSize);
+		_In_  USHORT CompressionFormatAndEngine,
+		_Out_ PULONG CompressBufferWorkSpaceSize,
+		_Out_ PULONG CompressFragmentWorkSpaceSize);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L1051C1-L1056C7
 	NTSYSAPI ULONG NTAPI RtlGetCriticalSectionRecursionCount(
@@ -1127,7 +1107,7 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlgetenabledextendedfeatures
 	NTSYSAPI ULONG64 RtlGetEnabledExtendedFeatures(
-		[in] ULONG64 FeatureMask);
+		_In_ ULONG64 FeatureMask);
 
 	// https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/loader.c
 	NTSYSAPI NTSTATUS NTAPI RtlGetExePath(
@@ -1206,11 +1186,11 @@ extern "C"
 	// https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getproductinfo
 	// From Kernel32 to Imports from api-ms-win-core-sysinfo-l1-2-0.dll:__imp_GetProductInfo
 	NTSYSAPI BOOL NTAPI RtlGetProductInfo(
-		[in]  DWORD  dwOSMajorVersion,
-		[in]  DWORD  dwOSMinorVersion,
-		[in]  DWORD  dwSpMajorVersion,
-		[in]  DWORD  dwSpMinorVersion,
-		[out] PDWORD pdwReturnedProductType);
+		_In_  DWORD  dwOSMajorVersion,
+		_In_  DWORD  dwOSMinorVersion,
+		_In_  DWORD  dwSpMajorVersion,
+		_In_  DWORD  dwSpMinorVersion,
+		_Out_ PDWORD pdwReturnedProductType);
 
 	// https://learn.microsoft.com/en-us/windows/win32/devnotes/rtlgetreturnaddresshijacktarget
 	NTSYSAPI ULONG_PTR NTAPI RtlGetReturnAddressHijackTarget(VOID);
@@ -1319,7 +1299,7 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlgetversion
 	NTSYSAPI NTSTATUS RtlGetVersion(
-		[out] PRTL_OSVERSIONINFOW lpVersionInformation);
+		_Out_ PRTL_OSVERSIONINFOW lpVersionInformation);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L4151C1-L4159C1
 	NTSYSAPI NTSTATUS NTAPI RtlGuardCheckLongJumpTarget(
@@ -1406,9 +1386,9 @@ extern "C"
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlinitializebitmap
 	NTSYSAPI VOID RtlInitializeBitMap(
-		[out] PRTL_BITMAP BitMapHeader,
-		[in]  __drv_aliasesMem PULONG BitMapBuffer,
-		[in]  ULONG SizeOfBitMap);
+		_Out_ PRTL_BITMAP BitMapHeader,
+		_In_  __drv_aliasesMem PULONG BitMapBuffer,
+		_In_  ULONG SizeOfBitMap);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L7315C1-L7323C1
 	NTSYSAPI VOID NTAPI RtlInitializeBitMapEx(
@@ -1431,8 +1411,8 @@ extern "C"
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlinitializecorrelationvector
 	NTSYSAPI NTSTATUS RtlInitializeCorrelationVector(
 		[in, out] PCORRELATION_VECTOR CorrelationVector,
-		[in]      int                 Version,
-		[in]      const GUID* Guid);
+		_In_      int                 Version,
+		_In_      const GUID* Guid);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI NTSTATUS NTAPI RtlInitializeCriticalSection(
@@ -1475,7 +1455,7 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtlinitializeslisthead
 	NTSYSAPI VOID RtlInitializeSListHead(
-		[in] PSLIST_HEADER ListHead);
+		_In_ PSLIST_HEADER ListHead);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI VOID NTAPI RtlInitializeSRWLock(
@@ -1489,16 +1469,16 @@ extern "C"
 
 	//https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtlinterlockedflushslist
 	NTSYSAPI PSLIST_ENTRY NTAPI RtlInterlockedFlushSList(
-		[in] PSLIST_HEADER ListHead);
+		_In_ PSLIST_HEADER ListHead);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtlinterlockedpopentryslist
 	NTSYSAPI PSLIST_ENTRY NTAPI RtlInterlockedPopEntrySList(
-		[in] PSLIST_HEADER ListHead);
+		_In_ PSLIST_HEADER ListHead);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtlinterlockedpushentryslist
 	NTSYSAPI PSLIST_ENTRY NTAPI RtlInterlockedPushEntrySList(
-		[in] PSLIST_HEADER                 ListHead,
-		[in] __drv_aliasesMem PSLIST_ENTRY ListEntry);
+		_In_ PSLIST_HEADER                 ListHead,
+		_In_ __drv_aliasesMem PSLIST_ENTRY ListEntry);
 	
 	// https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/sync.c
 	NTSYSAPI PSLIST_ENTRY FASTCALL NTAPI RtlInterlockedPushListSList(
@@ -1522,19 +1502,19 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtliodecodememioresource
 	NTSYSAPI ULONGLONG RtlIoDecodeMemIoResource(
-		[in]            PIO_RESOURCE_DESCRIPTOR Descriptor,
+		_In_            PIO_RESOURCE_DESCRIPTOR Descriptor,
 		[out, optional] PULONGLONG              Alignment,
 		[out, optional] PULONGLONG              MinimumAddress,
 		[out, optional] PULONGLONG              MaximumAddress);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlioencodememioresource
 	NTSYSAPI NTSTATUS RtlIoEncodeMemIoResource(
-		[in] PIO_RESOURCE_DESCRIPTOR Descriptor,
-		[in] UCHAR                   Type,
-		[in] ULONGLONG               Length,
-		[in] ULONGLONG               Alignment,
-		[in] ULONGLONG               MinimumAddress,
-		[in] ULONGLONG               MaximumAddress);
+		_In_ PIO_RESOURCE_DESCRIPTOR Descriptor,
+		_In_ UCHAR                   Type,
+		_In_ ULONGLONG               Length,
+		_In_ ULONGLONG               Alignment,
+		_In_ ULONGLONG               MinimumAddress,
+		_In_ ULONGLONG               MaximumAddress);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI LOGICAL NTAPI RtlIsCriticalSectionLocked(
@@ -1573,8 +1553,8 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlispartialplaceholder
 	NTSYSAPI BOOLEAN RtlIsPartialPlaceholder(
-		[in] ULONG FileAttributes,
-		[in] ULONG ReparseTag);
+		_In_ ULONG FileAttributes,
+		_In_ ULONG ReparseTag);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI BOOLEAN NTAPI RtlIsThreadWithinLoaderCallout(VOID);
@@ -1657,9 +1637,9 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtllookupfunctionentry
 	NTSYSAPI PRUNTIME_FUNCTION RtlLookupFunctionEntry(
-		[in]  DWORD64               ControlPc,
-		[out] PDWORD64              ImageBase,
-		[out] PUNWIND_HISTORY_TABLE HistoryTable);
+		_In_  DWORD64               ControlPc,
+		_Out_ PDWORD64              ImageBase,
+		_Out_ PUNWIND_HISTORY_TABLE HistoryTable);
 
 	// https://doxygen.reactos.org/de/ddc/sdk_2lib_2rtl_2error_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlMapSecurityErrorToNtStatus(
@@ -1679,11 +1659,11 @@ extern "C"
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlntstatustodoserror
 	// See winternl.h
 	NTSYSAPI ULONG NTAPI RtlNtStatusToDosError(
-		[in] NTSTATUS Status);
+		_In_ NTSTATUS Status);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlntstatustodoserrornoteb
 	NTSYSAPI ULONG RtlNtStatusToDosErrorNoTeb(
-		[in] NTSTATUS Status);
+		_In_ NTSTATUS Status);
 
 	// Reversed
 	NTSYSAPI PCWSTR RtlNtdllName;
@@ -1694,7 +1674,7 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlnumberofclearbits
 	NTSYSAPI ULONG RtlNumberOfClearBits(
-		[in] PRTL_BITMAP BitMapHeader);
+		_In_ PRTL_BITMAP BitMapHeader);
 
 	//RtlNumberOfClearBitsInRange
 	NTSYSAPI UINT NTAPI RtlNumberOfClearBitsInRange(
@@ -1704,11 +1684,11 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlnumberofsetbits
 	NTSYSAPI ULONG RtlNumberOfSetBits(
-		[in] PRTL_BITMAP BitMapHeader);
+		_In_ PRTL_BITMAP BitMapHeader);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlnumberofsetbits
 	NTSYSAPI ULONG NTAPI RtlNumberOfSetBits(
-		[in] PRTL_BITMAP BitMapHeader);
+		_In_ PRTL_BITMAP BitMapHeader);
 
 	// Reversed. Based on call from RtlNumberOfClearBitsInRange
 	NTSYSAPI UINT NTAPI RtlNumberOfSetBitsInRange(
@@ -1716,7 +1696,7 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlnumberofsetbitsulongptr
 	NTSYSAPI ULONG RtlNumberOfSetBitsUlongPtr(
-		[in] ULONG_PTR Target);
+		_In_ ULONG_PTR Target);
 
 	// https://doxygen.reactos.org/d5/dc9/sdk_2lib_2rtl_2registry_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlOpenCurrentUser(
@@ -1760,7 +1740,7 @@ extern "C"
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/winnt/nf-winnt-rtlquerydepthslist
 	NTSYSAPI WORD RtlQueryDepthSList(
-		[in] PSLIST_HEADER ListHead);
+		_In_ PSLIST_HEADER ListHead);
 	
 	// https://undoc.airesoft.co.uk/ntdll.dll/RtlQueryElevationFlags.php
 	NTSYSAPI NTSTATUS NTAPI RtlQueryElevationFlags(
@@ -1847,11 +1827,11 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancecounter
 	NTSYSAPI BOOL NTAPI RtlQueryPerformanceCounter(
-		[out] PLARGE_INTEGER lpPerformanceCount);
+		_Out_ PLARGE_INTEGER lpPerformanceCount);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancefrequency
 	NTSYSAPI BOOL NTAPI QueryPerformanceFrequency(
-		[out] PLARGE_INTEGER lpFrequency);
+		_Out_ PLARGE_INTEGER lpFrequency);
 
 	// https://github.com/winsiderss/phnt/blob/48759c9b5916a359df706789f71053e49b528a18/ntrtl.h#L10535C1-L10542C1
 	NTSYSAPI NTSTATUS NTAPI RtlQueryProtectedPolicy(
@@ -1860,21 +1840,21 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlqueryregistryvaluewithfallback
 	NTSYSAPI NTSTATUS RtlQueryRegistryValueWithFallback(
-		[in]  HANDLE          PrimaryHandle,
-		[in]  HANDLE          FallbackHandle,
-		[in]  PUNICODE_STRING ValueName,
-		[in]  ULONG           ValueLength,
+		_In_  HANDLE          PrimaryHandle,
+		_In_  HANDLE          FallbackHandle,
+		_In_  PUNICODE_STRING ValueName,
+		_In_  ULONG           ValueLength,
 		[Out] PULONG          ValueType,
-		[out] PVOID           ValueData,
-		[out] PULONG          ResultLength);
+		_Out_ PVOID           ValueData,
+		_Out_ PULONG          ResultLength);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlqueryregistryvalues
 	NTSYSAPI NTSTATUS RtlQueryRegistryValues(
-		[in]           ULONG                     RelativeTo,
-		[in]           PCWSTR                    Path,
+		_In_           ULONG                     RelativeTo,
+		_In_           PCWSTR                    Path,
 		[in, out]      PRTL_QUERY_REGISTRY_TABLE QueryTable,
-		[in, optional] PVOID                     Context,
-		[in, optional] PVOID                     Environment);
+		_In_opt_ PVOID                     Context,
+		_In_opt_ PVOID                     Environment);
 
 	//RtlQueryRegistryValuesEx
 	NTSYSAPI NTSTATUS NTAPI RtlQueryRegistryValuesEx(
@@ -2044,14 +2024,14 @@ extern "C"
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlrunoncebegininitialize
 	NTSYSAPI NTSTATUS RtlRunOnceBeginInitialize(
 		[in, out] PRTL_RUN_ONCE RunOnce,
-		[in]      ULONG         Flags,
-		[out]     PVOID* Context);
+		_In_      ULONG         Flags,
+		_Out_     PVOID* Context);
 
 	// http://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlrunoncecomplete
 	NTSYSAPI NTSTATUS RtlRunOnceComplete(
 		[in, out]      PRTL_RUN_ONCE RunOnce,
-		[in]           ULONG         Flags,
-		[in, optional] PVOID         Context);
+		_In_           ULONG         Flags,
+		_In_opt_ PVOID         Context);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlrunonceexecuteonce
 	NTSYSAPI NTSTATUS RtlRunOnceExecuteOnce(
@@ -2062,7 +2042,7 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlrunonceinitialize
 	NTSYSAPI VOID RtlRunOnceInitialize(
-		[out] PRTL_RUN_ONCE RunOnce);
+		_Out_ PRTL_RUN_ONCE RunOnce);
 
 	// https://github.com/xmoezzz/NativeLib-R/blob/master/ntsmss.h
 	NTSYSAPI NTSTATUS NTAPI RtlSendMsgToSm(
@@ -2071,12 +2051,12 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlsetallbits
 	NTSYSAPI VOID RtlSetAllBits(
-		[in] PRTL_BITMAP BitMapHeader);
+		_In_ PRTL_BITMAP BitMapHeader);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlsetbit
 	NTSYSAPI VOID RtlSetBit(
-		[in] PRTL_BITMAP BitMapHeader,
-		[in] ULONG       BitNumber);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_In_ ULONG       BitNumber);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI VOID NTAPI RtlSetBitEx(
@@ -2085,9 +2065,9 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlsetbits
 	NTSYSAPI VOID RtlSetBits(
-		[in] PRTL_BITMAP BitMapHeader,
-		[in] ULONG       StartingIndex,
-		[in] ULONG       NumberToSet);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_In_ ULONG       StartingIndex,
+		_In_ ULONG       NumberToSet);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI ULONG NTAPI RtlSetCriticalSectionSpinCount(
@@ -2269,8 +2249,8 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtltestbit
 	NTSYSAPI BOOLEAN RtlTestBit(
-		[in] PRTL_BITMAP BitMapHeader,
-		[in] ULONG       BitNumber);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_In_ ULONG       BitNumber);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L7325C1-L7332C7
 	_Check_return_ NTSYSAPI BOOLEAN NTAPI RtlTestBitEx(
@@ -2407,19 +2387,19 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlverifyversioninfo
 	NTSYSAPI NTSTATUS RtlVerifyVersionInfo(
-		[in] PRTL_OSVERSIONINFOEXW VersionInfo,
-		[in] ULONG                 TypeMask,
-		[in] ULONGLONG             ConditionMask);
+		_In_ PRTL_OSVERSIONINFOEXW VersionInfo,
+		_In_ ULONG                 TypeMask,
+		_In_ ULONGLONG             ConditionMask);
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/winnt/nf-winnt-rtlvirtualunwind
 	NTSYSAPI PEXCEPTION_ROUTINE RtlVirtualUnwind(
-		[in]                DWORD                          HandlerType,
-		[in]                DWORD64                        ImageBase,
-		[in]                DWORD64                        ControlPc,
-		[in]                PRUNTIME_FUNCTION              FunctionEntry,
+		_In_                DWORD                          HandlerType,
+		_In_                DWORD64                        ImageBase,
+		_In_                DWORD64                        ControlPc,
+		_In_                PRUNTIME_FUNCTION              FunctionEntry,
 		[in, out]           PCONTEXT                       ContextRecord,
-		[out]               PVOID * HandlerData,
-		[out]               PDWORD64                       EstablisherFrame,
+		_Out_               PVOID * HandlerData,
+		_Out_               PDWORD64                       EstablisherFrame,
 		[in, out, optional] PKNONVOLATILE_CONTEXT_POINTERS ContextPointers);
 	
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L1416C1-L1425C1
@@ -2514,12 +2494,12 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlwriteregistryvalue
 	NTSYSAPI NTSTATUS RtlWriteRegistryValue(
-		[in]           ULONG  RelativeTo,
-		[in]           PCWSTR Path,
-		[in]           PCWSTR ValueName,
-		[in]           ULONG  ValueType,
-		[in, optional] PVOID  ValueData,
-		[in]           ULONG  ValueLength);
+		_In_           ULONG  RelativeTo,
+		_In_           PCWSTR Path,
+		_In_           PCWSTR ValueName,
+		_In_           ULONG  ValueType,
+		_In_opt_ PVOID  ValueData,
+		_In_           ULONG  ValueLength);
 
 	// https://doxygen.reactos.org/d5/de2/RtlpApplyLengthFunction_8c_source.html
 	NTSYSAPI NTSTATUS NTAPI RtlpApplyLengthFunction(
@@ -2620,9 +2600,9 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-versetconditionmask
 	NTSYSAPI ULONGLONG NTAPI VerSetConditionMask(
-		[in] ULONGLONG ConditionMask,
-		[in] DWORD     TypeMask,
-		[in] BYTE      Condition);
+		_In_ ULONGLONG ConditionMask,
+		_In_ DWORD     TypeMask,
+		_In_ BYTE      Condition);
 
 }
 

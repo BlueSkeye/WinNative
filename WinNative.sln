@@ -16,6 +16,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleBasicNativeApp", "Sam
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Includes", "Includes", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
+		Includes\NtAccessRights.h = Includes\NtAccessRights.h
 		Includes\NtAsyncProcdureCalls.h = Includes\NtAsyncProcdureCalls.h
 		Includes\NtAtoms.h = Includes\NtAtoms.h
 		Includes\NtClientServer.h = Includes\NtClientServer.h
@@ -56,6 +57,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Includes", "Includes", "{02
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NtDllCrossReferencer", "NtDllCrossReferencer\NtDllCrossReferencer.csproj", "{731EBC21-402F-4CB6-9381-FF87BB35AA44}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestIncludesSyntax", "TestIncludesSyntax\TestIncludesSyntax.vcxproj", "{2A25E7FB-18BC-4F03-A3BE-62006EAD30A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +104,18 @@ Global
 		{731EBC21-402F-4CB6-9381-FF87BB35AA44}.Release|x64.Build.0 = Release|Any CPU
 		{731EBC21-402F-4CB6-9381-FF87BB35AA44}.Release|x86.ActiveCfg = Release|Any CPU
 		{731EBC21-402F-4CB6-9381-FF87BB35AA44}.Release|x86.Build.0 = Release|Any CPU
+		{2A25E7FB-18BC-4F03-A3BE-62006EAD30A4}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{2A25E7FB-18BC-4F03-A3BE-62006EAD30A4}.Debug|Any CPU.Build.0 = Debug|x64
+		{2A25E7FB-18BC-4F03-A3BE-62006EAD30A4}.Debug|x64.ActiveCfg = Debug|x64
+		{2A25E7FB-18BC-4F03-A3BE-62006EAD30A4}.Debug|x64.Build.0 = Debug|x64
+		{2A25E7FB-18BC-4F03-A3BE-62006EAD30A4}.Debug|x86.ActiveCfg = Debug|Win32
+		{2A25E7FB-18BC-4F03-A3BE-62006EAD30A4}.Debug|x86.Build.0 = Debug|Win32
+		{2A25E7FB-18BC-4F03-A3BE-62006EAD30A4}.Release|Any CPU.ActiveCfg = Release|x64
+		{2A25E7FB-18BC-4F03-A3BE-62006EAD30A4}.Release|Any CPU.Build.0 = Release|x64
+		{2A25E7FB-18BC-4F03-A3BE-62006EAD30A4}.Release|x64.ActiveCfg = Release|x64
+		{2A25E7FB-18BC-4F03-A3BE-62006EAD30A4}.Release|x64.Build.0 = Release|x64
+		{2A25E7FB-18BC-4F03-A3BE-62006EAD30A4}.Release|x86.ActiveCfg = Release|Win32
+		{2A25E7FB-18BC-4F03-A3BE-62006EAD30A4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

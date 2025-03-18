@@ -11,76 +11,76 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcommitcomplete
     NTSYSCALLAPI NTSTATUS NtCommitComplete(
-        [in]           HANDLE         EnlistmentHandle,
-        [in, optional] PLARGE_INTEGER TmVirtualClock);
+        _In_           HANDLE         EnlistmentHandle,
+        _In_opt_ PLARGE_INTEGER TmVirtualClock);
     //ZwCommitComplete
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcommitenlistment
     NTSYSCALLAPI NTSTATUS NtCommitEnlistment(
-        [in]           HANDLE         EnlistmentHandle,
-        [in, optional] PLARGE_INTEGER TmVirtualClock);
+        _In_           HANDLE         EnlistmentHandle,
+        _In_opt_ PLARGE_INTEGER TmVirtualClock);
     //ZwCommitEnlistment
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcommittransaction
     NTSYSCALLAPI NTSTATUS NtCommitTransaction(
-        [in] HANDLE  TransactionHandle,
-        [in] BOOLEAN Wait);
+        _In_ HANDLE  TransactionHandle,
+        _In_ BOOLEAN Wait);
     //ZwCommitTransaction
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcreateenlistment
     NTSYSCALLAPI NTSTATUS NtCreateEnlistment(
-        [out]          PHANDLE            EnlistmentHandle,
-        [in]           ACCESS_MASK        DesiredAccess,
-        [in]           HANDLE             ResourceManagerHandle,
-        [in]           HANDLE             TransactionHandle,
-        [in, optional] POBJECT_ATTRIBUTES ObjectAttributes,
-        [in, optional] ULONG              CreateOptions,
-        [in]           NOTIFICATION_MASK  NotificationMask,
-        [in, optional] PVOID              EnlistmentKey);
+        _Out_          PHANDLE            EnlistmentHandle,
+        _In_           ACCESS_MASK        DesiredAccess,
+        _In_           HANDLE             ResourceManagerHandle,
+        _In_           HANDLE             TransactionHandle,
+        _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes,
+        _In_opt_ ULONG              CreateOptions,
+        _In_           NOTIFICATION_MASK  NotificationMask,
+        _In_opt_ PVOID              EnlistmentKey);
     //ZwCreateEnlistment
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcreateresourcemanager
     NTSYSCALLAPI NTSTATUS NtCreateResourceManager(
-        [out]          PHANDLE            ResourceManagerHandle,
-        [in]           ACCESS_MASK        DesiredAccess,
-        [in]           HANDLE             TmHandle,
-        [in]           LPGUID             RmGuid,
-        [in, optional] POBJECT_ATTRIBUTES ObjectAttributes,
-        [in, optional] ULONG              CreateOptions,
-        [in, optional] PUNICODE_STRING    Description);
+        _Out_          PHANDLE            ResourceManagerHandle,
+        _In_           ACCESS_MASK        DesiredAccess,
+        _In_           HANDLE             TmHandle,
+        _In_           LPGUID             RmGuid,
+        _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes,
+        _In_opt_ ULONG              CreateOptions,
+        _In_opt_ PUNICODE_STRING    Description);
     //ZwCreateResourceManager
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcreatetransaction
     NTSYSCALLAPI NTSTATUS NtCreateTransaction(
-        [out]          PHANDLE            TransactionHandle,
-        [in]           ACCESS_MASK        DesiredAccess,
-        [in, optional] POBJECT_ATTRIBUTES ObjectAttributes,
-        [in, optional] LPGUID             Uow,
-        [in, optional] HANDLE             TmHandle,
-        [in, optional] ULONG              CreateOptions,
-        [in, optional] ULONG              IsolationLevel,
-        [in, optional] ULONG              IsolationFlags,
-        [in, optional] PLARGE_INTEGER     Timeout,
-        [in, optional] PUNICODE_STRING    Description);
+        _Out_          PHANDLE            TransactionHandle,
+        _In_           ACCESS_MASK        DesiredAccess,
+        _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes,
+        _In_opt_ LPGUID             Uow,
+        _In_opt_ HANDLE             TmHandle,
+        _In_opt_ ULONG              CreateOptions,
+        _In_opt_ ULONG              IsolationLevel,
+        _In_opt_ ULONG              IsolationFlags,
+        _In_opt_ PLARGE_INTEGER     Timeout,
+        _In_opt_ PUNICODE_STRING    Description);
     //ZwCreateTransaction
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcreatetransactionmanager
     NTSYSCALLAPI NTSTATUS NtCreateTransactionManager(
-        [out]          PHANDLE            TmHandle,
-        [in]           ACCESS_MASK        DesiredAccess,
-        [in, optional] POBJECT_ATTRIBUTES ObjectAttributes,
-        [in, optional] PUNICODE_STRING    LogFileName,
-        [in, optional] ULONG              CreateOptions,
-        [in, optional] ULONG              CommitStrength);
+        _Out_          PHANDLE            TmHandle,
+        _In_           ACCESS_MASK        DesiredAccess,
+        _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes,
+        _In_opt_ PUNICODE_STRING    LogFileName,
+        _In_opt_ ULONG              CreateOptions,
+        _In_opt_ ULONG              CommitStrength);
     //ZwCreateTransactionManager
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntenumeratetransactionobject
     NTSYSCALLAPI NTSTATUS NtEnumerateTransactionObject(
-        [in, optional] HANDLE            RootObjectHandle,
-        [in]           KTMOBJECT_TYPE    QueryType,
+        _In_opt_ HANDLE            RootObjectHandle,
+        _In_           KTMOBJECT_TYPE    QueryType,
         [in, out]      PKTMOBJECT_CURSOR ObjectCursor,
-        [in]           ULONG             ObjectCursorLength,
-        [out]          PULONG            ReturnLength);
+        _In_           ULONG             ObjectCursorLength,
+        _Out_          PULONG            ReturnLength);
     //ZwEnumerateTransactionObject
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -91,74 +91,74 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntgetnotificationresourcemanager
     NTSYSCALLAPI NTSTATUS NtGetNotificationResourceManager(
-        [in]            HANDLE                    ResourceManagerHandle,
-        [out]           PTRANSACTION_NOTIFICATION TransactionNotification,
-        [in]            ULONG                     NotificationLength,
-        [in]            PLARGE_INTEGER            Timeout,
+        _In_            HANDLE                    ResourceManagerHandle,
+        _Out_           PTRANSACTION_NOTIFICATION TransactionNotification,
+        _In_            ULONG                     NotificationLength,
+        _In_            PLARGE_INTEGER            Timeout,
         [out, optional] PULONG                    ReturnLength,
-        [in]            ULONG                     Asynchronous,
-        [in, optional]  ULONG_PTR                 AsynchronousContext);
+        _In_            ULONG                     Asynchronous,
+        _In_opt_  ULONG_PTR                 AsynchronousContext);
     //ZwGetNotificationResourceManager
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntopenenlistment
     NTSYSCALLAPI NTSTATUS NtOpenEnlistment(
-        [out]          PHANDLE            EnlistmentHandle,
-        [in]           ACCESS_MASK        DesiredAccess,
-        [in]           HANDLE             ResourceManagerHandle,
-        [in]           LPGUID             EnlistmentGuid,
-        [in, optional] POBJECT_ATTRIBUTES ObjectAttributes);
+        _Out_          PHANDLE            EnlistmentHandle,
+        _In_           ACCESS_MASK        DesiredAccess,
+        _In_           HANDLE             ResourceManagerHandle,
+        _In_           LPGUID             EnlistmentGuid,
+        _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes);
     //ZwOpenEnlistment
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntopenresourcemanager
     NTSYSCALLAPI NTSTATUS NtOpenResourceManager(
-        [out]          PHANDLE            ResourceManagerHandle,
-        [in]           ACCESS_MASK        DesiredAccess,
-        [in]           HANDLE             TmHandle,
-        [in]           LPGUID             ResourceManagerGuid,
-        [in, optional] POBJECT_ATTRIBUTES ObjectAttributes);
+        _Out_          PHANDLE            ResourceManagerHandle,
+        _In_           ACCESS_MASK        DesiredAccess,
+        _In_           HANDLE             TmHandle,
+        _In_           LPGUID             ResourceManagerGuid,
+        _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes);
     //ZwOpenResourceManager
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntopentransaction
     NTSYSCALLAPI NTSTATUS NtOpenTransaction(
-        [out]          PHANDLE            TransactionHandle,
-        [in]           ACCESS_MASK        DesiredAccess,
-        [in, optional] POBJECT_ATTRIBUTES ObjectAttributes,
-        [in]           LPGUID             Uow,
-        [in, optional] HANDLE             TmHandle);
+        _Out_          PHANDLE            TransactionHandle,
+        _In_           ACCESS_MASK        DesiredAccess,
+        _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes,
+        _In_           LPGUID             Uow,
+        _In_opt_ HANDLE             TmHandle);
     //ZwOpenTransaction
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntopentransactionmanager
     NTSYSCALLAPI NTSTATUS NtOpenTransactionManager(
-        [out]          PHANDLE            TmHandle,
-        [in]           ACCESS_MASK        DesiredAccess,
-        [in, optional] POBJECT_ATTRIBUTES ObjectAttributes,
-        [in, optional] PUNICODE_STRING    LogFileName,
-        [in, optional] LPGUID             TmIdentity,
-        [in, optional] ULONG              OpenOptions);
+        _Out_          PHANDLE            TmHandle,
+        _In_           ACCESS_MASK        DesiredAccess,
+        _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes,
+        _In_opt_ PUNICODE_STRING    LogFileName,
+        _In_opt_ LPGUID             TmIdentity,
+        _In_opt_ ULONG              OpenOptions);
     //ZwOpenTransactionManager
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntprepreparecomplete
     NTSYSCALLAPI NTSTATUS NtPrePrepareComplete(
-        [in]           HANDLE         EnlistmentHandle,
-        [in, optional] PLARGE_INTEGER TmVirtualClock);
+        _In_           HANDLE         EnlistmentHandle,
+        _In_opt_ PLARGE_INTEGER TmVirtualClock);
     //ZwPrePrepareComplete
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntpreprepareenlistment
     NTSYSCALLAPI NTSTATUS NtPrePrepareEnlistment(
-        [in]           HANDLE         EnlistmentHandle,
-        [in, optional] PLARGE_INTEGER TmVirtualClock);
+        _In_           HANDLE         EnlistmentHandle,
+        _In_opt_ PLARGE_INTEGER TmVirtualClock);
     //ZwPrePrepareEnlistment
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntpreparecomplete
     NTSYSCALLAPI NTSTATUS NtPrepareComplete(
-        [in]           HANDLE         EnlistmentHandle,
-        [in, optional] PLARGE_INTEGER TmVirtualClock);
+        _In_           HANDLE         EnlistmentHandle,
+        _In_opt_ PLARGE_INTEGER TmVirtualClock);
     //ZwPrepareComplete
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntprepareenlistment
     NTSYSCALLAPI NTSTATUS NtPrepareEnlistment(
-        [in]           HANDLE         EnlistmentHandle,
-        [in, optional] PLARGE_INTEGER TmVirtualClock);
+        _In_           HANDLE         EnlistmentHandle,
+        _In_opt_ PLARGE_INTEGER TmVirtualClock);
     //ZwPrepareEnlistment
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntprepareenlistment
@@ -178,60 +178,60 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntqueryinformationenlistment
     NTSYSCALLAPI NTSTATUS NtQueryInformationEnlistment(
-        [in]            HANDLE                       EnlistmentHandle,
-        [in]            ENLISTMENT_INFORMATION_CLASS EnlistmentInformationClass,
-        [out]           PVOID                        EnlistmentInformation,
-        [in]            ULONG                        EnlistmentInformationLength,
+        _In_            HANDLE                       EnlistmentHandle,
+        _In_            ENLISTMENT_INFORMATION_CLASS EnlistmentInformationClass,
+        _Out_           PVOID                        EnlistmentInformation,
+        _In_            ULONG                        EnlistmentInformationLength,
         [out, optional] PULONG                       ReturnLength);
     //ZwQueryInformationEnlistment
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntqueryinformationresourcemanager
     NTSYSCALLAPI NTSTATUS NtQueryInformationResourceManager(
-        [in]            HANDLE                            ResourceManagerHandle,
-        [in]            RESOURCEMANAGER_INFORMATION_CLASS ResourceManagerInformationClass,
-        [out]           PVOID                             ResourceManagerInformation,
-        [in]            ULONG                             ResourceManagerInformationLength,
+        _In_            HANDLE                            ResourceManagerHandle,
+        _In_            RESOURCEMANAGER_INFORMATION_CLASS ResourceManagerInformationClass,
+        _Out_           PVOID                             ResourceManagerInformation,
+        _In_            ULONG                             ResourceManagerInformationLength,
         [out, optional] PULONG                            ReturnLength);
     //ZwQueryInformationResourceManager
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntqueryinformationtransaction
     NTSYSCALLAPI NTSTATUS NtQueryInformationTransaction(
-        [in]            HANDLE                        TransactionHandle,
-        [in]            TRANSACTION_INFORMATION_CLASS TransactionInformationClass,
-        [out]           PVOID                         TransactionInformation,
-        [in]            ULONG                         TransactionInformationLength,
+        _In_            HANDLE                        TransactionHandle,
+        _In_            TRANSACTION_INFORMATION_CLASS TransactionInformationClass,
+        _Out_           PVOID                         TransactionInformation,
+        _In_            ULONG                         TransactionInformationLength,
         [out, optional] PULONG                        ReturnLength);
     //ZwQueryInformationTransaction
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntqueryinformationtransactionmanager
     NTSYSCALLAPI NTSTATUS NtQueryInformationTransactionManager(
-        [in]            HANDLE                               TransactionManagerHandle,
-        [in]            TRANSACTIONMANAGER_INFORMATION_CLASS TransactionManagerInformationClass,
-        [out]           PVOID                                TransactionManagerInformation,
-        [in]            ULONG                                TransactionManagerInformationLength,
+        _In_            HANDLE                               TransactionManagerHandle,
+        _In_            TRANSACTIONMANAGER_INFORMATION_CLASS TransactionManagerInformationClass,
+        _Out_           PVOID                                TransactionManagerInformation,
+        _In_            ULONG                                TransactionManagerInformationLength,
         [out, optional] PULONG                               ReturnLength);
     //ZwQueryInformationTransactionManager
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntreadonlyenlistment
     NTSYSCALLAPI NTSTATUS NtReadOnlyEnlistment(
-        [in]           HANDLE         EnlistmentHandle,
-        [in, optional] PLARGE_INTEGER TmVirtualClock);
+        _In_           HANDLE         EnlistmentHandle,
+        _In_opt_ PLARGE_INTEGER TmVirtualClock);
     //ZwReadOnlyEnlistment
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrecoverenlistment
     NTSYSCALLAPI NTSTATUS NtRecoverEnlistment(
-        [in]           HANDLE EnlistmentHandle,
-        [in, optional] PVOID  EnlistmentKey);
+        _In_           HANDLE EnlistmentHandle,
+        _In_opt_ PVOID  EnlistmentKey);
     //ZwRecoverEnlistment
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrecoverresourcemanager
     NTSYSCALLAPI NTSTATUS NtRecoverResourceManager(
-        [in] HANDLE ResourceManagerHandle);
+        _In_ HANDLE ResourceManagerHandle);
     //ZwRecoverResourceManager
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrecovertransactionmanager
     NTSYSCALLAPI NTSTATUS NtRecoverTransactionManager(
-        [in] HANDLE TransactionManagerHandle);
+        _In_ HANDLE TransactionManagerHandle);
     //ZwRecoverTransactionManager
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -245,40 +245,40 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrenametransactionmanager
     NTSYSCALLAPI NTSTATUS NtRenameTransactionManager(
-        [in] PUNICODE_STRING LogFileName,
-        [in] LPGUID          ExistingTransactionManagerGuid);
+        _In_ PUNICODE_STRING LogFileName,
+        _In_ LPGUID          ExistingTransactionManagerGuid);
     //ZwRenameTransactionManager
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrollbackcomplete
     NTSYSCALLAPI NTSTATUS NtRollbackComplete(
-        [in]           HANDLE         EnlistmentHandle,
-        [in, optional] PLARGE_INTEGER TmVirtualClock);
+        _In_           HANDLE         EnlistmentHandle,
+        _In_opt_ PLARGE_INTEGER TmVirtualClock);
     //ZwRollbackComplete
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrollbackenlistment
     NTSYSCALLAPI NTSTATUS NtRollbackEnlistment(
-        [in]           HANDLE         EnlistmentHandle,
-        [in, optional] PLARGE_INTEGER TmVirtualClock);
+        _In_           HANDLE         EnlistmentHandle,
+        _In_opt_ PLARGE_INTEGER TmVirtualClock);
     //ZwRollbackEnlistment
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrollbacktransaction
     NTSYSCALLAPI NTSTATUS NtRollbackTransaction(
-        [in] HANDLE  TransactionHandle,
-        [in] BOOLEAN Wait);
+        _In_ HANDLE  TransactionHandle,
+        _In_ BOOLEAN Wait);
     //ZwRollbackTransaction
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntrollforwardtransactionmanager
     NTSYSCALLAPI NTSTATUS NtRollforwardTransactionManager(
-        [in]           HANDLE         TransactionManagerHandle,
-        [in, optional] PLARGE_INTEGER TmVirtualClock);
+        _In_           HANDLE         TransactionManagerHandle,
+        _In_opt_ PLARGE_INTEGER TmVirtualClock);
     //ZwRollforwardTransactionManager
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntsetinformationenlistment
     NTSYSCALLAPI NTSTATUS NtSetInformationEnlistment(
-        [in] HANDLE                       EnlistmentHandle,
-        [in] ENLISTMENT_INFORMATION_CLASS EnlistmentInformationClass,
-        [in] PVOID                        EnlistmentInformation,
-        [in] ULONG                        EnlistmentInformationLength);
+        _In_ HANDLE                       EnlistmentHandle,
+        _In_ ENLISTMENT_INFORMATION_CLASS EnlistmentInformationClass,
+        _In_ PVOID                        EnlistmentInformation,
+        _In_ ULONG                        EnlistmentInformationLength);
     //ZwSetInformationEnlistment
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntsetinformationresourcemanager
@@ -291,24 +291,24 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntsetinformationtransaction
     NTSYSCALLAPI NTSTATUS NtSetInformationTransaction(
-        [in] HANDLE                        TransactionHandle,
-        [in] TRANSACTION_INFORMATION_CLASS TransactionInformationClass,
-        [in] PVOID                         TransactionInformation,
-        [in] ULONG                         TransactionInformationLength);
+        _In_ HANDLE                        TransactionHandle,
+        _In_ TRANSACTION_INFORMATION_CLASS TransactionInformationClass,
+        _In_ PVOID                         TransactionInformation,
+        _In_ ULONG                         TransactionInformationLength);
     //ZwSetInformationTransaction
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntsetinformationtransactionmanager
     NTSYSCALLAPI NTSTATUS NtSetInformationTransactionManager(
-        [in, optional] HANDLE                               TmHandle,
-        [in]           TRANSACTIONMANAGER_INFORMATION_CLASS TransactionManagerInformationClass,
-        [in]           PVOID                                TransactionManagerInformation,
-        [in]           ULONG                                TransactionManagerInformationLength);
+        _In_opt_ HANDLE                               TmHandle,
+        _In_           TRANSACTIONMANAGER_INFORMATION_CLASS TransactionManagerInformationClass,
+        _In_           PVOID                                TransactionManagerInformation,
+        _In_           ULONG                                TransactionManagerInformationLength);
     //ZwSetInformationTransactionManager
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntsinglephasereject
     NTSYSCALLAPI NTSTATUS NtSinglePhaseReject(
-        [in]           HANDLE         EnlistmentHandle,
-        [in, optional] PLARGE_INTEGER TmVirtualClock);
+        _In_           HANDLE         EnlistmentHandle,
+        _In_opt_ PLARGE_INTEGER TmVirtualClock);
     //ZwSinglePhaseReject
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg

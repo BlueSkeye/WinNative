@@ -36,9 +36,9 @@ extern "C" {
 
     //https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/nf-wdm-dbgprintex
     NTSYSAPI ULONG DbgPrintEx(
-        [in] ULONG ComponentId,
-        [in] ULONG Level,
-        [in] PCSTR Format,
+        _In_ ULONG ComponentId,
+        _In_ ULONG Level,
+        _In_ PCSTR Format,
         ...);
 
     //https://doxygen.reactos.org/d6/dc3/xdk_2kdfuncs_8h.html
@@ -48,8 +48,8 @@ extern "C" {
 
     //https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-dbgprompt
     NTSYSAPI ULONG DbgPrompt(
-        [in]  PCCH  Prompt,
-        [out] PCH   Response,
+        _In_  PCCH  Prompt,
+        _Out_ PCH   Response,
         ULONG Length);
 
     //https://doxygen.reactos.org/d6/dc3/xdk_2kdfuncs_8h.html
@@ -239,18 +239,18 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlsecondssince1970totime
     NTSYSAPI VOID RtlSecondsSince1970ToTime(
-        [in]  ULONG          ElapsedSeconds,
-        [out] PLARGE_INTEGER Time);
+        _In_  ULONG          ElapsedSeconds,
+        _Out_ PLARGE_INTEGER Time);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlsecondssince1980totime
     NTSYSAPI VOID RtlSecondsSince1980ToTime(
-        [in]  ULONG          ElapsedSeconds,
-        [out] PLARGE_INTEGER Time);
+        _In_  ULONG          ElapsedSeconds,
+        _Out_ PLARGE_INTEGER Time);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtltimefieldstotime
     NTSYSAPI BOOLEAN RtlTimeFieldsToTime(
-        [in]  PTIME_FIELDS   TimeFields,
-        [out] PLARGE_INTEGER Time);
+        _In_  PTIME_FIELDS   TimeFields,
+        _Out_ PLARGE_INTEGER Time);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtltimetosecondssince1970
     // See winternl.h
@@ -258,13 +258,13 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtltimetosecondssince1980
     NTSYSAPI BOOLEAN RtlTimeToSecondsSince1980(
-        [in]  PLARGE_INTEGER Time,
-        [out] PULONG         ElapsedSeconds);
+        _In_  PLARGE_INTEGER Time,
+        _Out_ PULONG         ElapsedSeconds);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtltimetotimefields
     NTSYSAPI VOID RtlTimeToTimeFields(
-        [in]  PLARGE_INTEGER Time,
-        [out] PTIME_FIELDS   TimeFields);
+        _In_  PLARGE_INTEGER Time,
+        _Out_ PTIME_FIELDS   TimeFields);
 
 }
 

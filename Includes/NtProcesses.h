@@ -175,10 +175,10 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-ntopenprocess
     NTSYSCALLAPI NTSTATUS NtOpenProcess(
-        [out]          PHANDLE            ProcessHandle,
-        [in]           ACCESS_MASK        DesiredAccess,
-        [in]           POBJECT_ATTRIBUTES ObjectAttributes,
-        [in, optional] PCLIENT_ID         ClientId);
+        _Out_          PHANDLE            ProcessHandle,
+        _In_           ACCESS_MASK        DesiredAccess,
+        _In_           POBJECT_ATTRIBUTES ObjectAttributes,
+        _In_opt_ PCLIENT_ID         ClientId);
     //ZwOpenProcess
 
     // https://learn.microsoft.com/en-us/windows/win32/devnotes/ntopenthread
@@ -426,11 +426,11 @@ extern "C" {
     // TODO : Resolve virtual DLL name and make sure the implementation is the one provided by
     // NTDLL.DLL
     NTSYSAPI NTSTATUS NTAPI PssWalkSnapshot(
-        [in]  HPSS                       SnapshotHandle,
-        [in]  PSS_WALK_INFORMATION_CLASS InformationClass,
-        [in]  HPSSWALK                   WalkMarkerHandle,
-        [out] void* Buffer,
-        [in]  DWORD                      BufferLength);
+        _In_  HPSS                       SnapshotHandle,
+        _In_  PSS_WALK_INFORMATION_CLASS InformationClass,
+        _In_  HPSSWALK                   WalkMarkerHandle,
+        _Out_ void* Buffer,
+        _In_  DWORD                      BufferLength);
 
     // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
     NTSTATUS WINAPI RtlCreateUserProcess(UNICODE_STRING* path, ULONG attributes,

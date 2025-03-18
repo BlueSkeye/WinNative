@@ -52,7 +52,7 @@ extern "C" {
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/rtlsupportapi/nf-rtlsupportapi-rtlraiseexception
 	NTSYSAPI VOID NTAPI RtlRaiseException(
-		[in] PEXCEPTION_RECORD ExceptionRecord);
+		_In_ PEXCEPTION_RECORD ExceptionRecord);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntxcapi.h#L36
 	NTSYSAPI VOID NTAPI RtlRaiseExceptionForReturnAddressHijack(VOID);
@@ -83,12 +83,12 @@ extern "C" {
 	// https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-setunhandledexceptionfilter
 	// From Kernel32, invoke api-ms-win-core-errorhandling-l1-1-0.dll::__imp_SetUnhandledExceptionFilter
 	NTSYSAPI LPTOP_LEVEL_EXCEPTION_FILTER NTAPI RtlSetUnhandledExceptionFilter(
-		[in] LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter);
+		_In_ LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-unhandledexceptionfilter
 	// From Kernel32, invoke api-ms-win-core-errorhandling-l1-1-0.dll::__imp_UnhandledExceptionFilter
 	NTSYSAPI LONG NTAPI RtlUnhandledExceptionFilter(
-		[in] _EXCEPTION_POINTERS* ExceptionInfo);
+		_In_ _EXCEPTION_POINTERS* ExceptionInfo);
 
 	// https://doxygen.reactos.org/dc/d38/sdk_2lib_2rtl_2exception_8c.html
 	NTSYSAPI LONG NTAPI RtlUnhandledExceptionFilter2(
@@ -97,19 +97,19 @@ extern "C" {
 
 	//https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtlunwind
 	NTSYSAPI VOID NTAPI RtlUnwind(
-		[in, optional] PVOID             TargetFrame,
-		[in, optional] PVOID             TargetIp,
-		[in, optional] PEXCEPTION_RECORD ExceptionRecord,
-		[in]           PVOID             ReturnValue);
+		_In_opt_ PVOID             TargetFrame,
+		_In_opt_ PVOID             TargetIp,
+		_In_opt_ PEXCEPTION_RECORD ExceptionRecord,
+		_In_           PVOID             ReturnValue);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtlunwindex
 	NTSYSAPI VOID NTAPI RtlUnwindEx(
-		[in, optional] PVOID                 TargetFrame,
-		[in, optional] PVOID                 TargetIp,
-		[in, optional] PEXCEPTION_RECORD     ExceptionRecord,
-		[in]           PVOID                 ReturnValue,
-		[in]           PCONTEXT              ContextRecord,
-		[in, optional] PUNWIND_HISTORY_TABLE HistoryTable);
+		_In_opt_ PVOID                 TargetFrame,
+		_In_opt_ PVOID                 TargetIp,
+		_In_opt_ PEXCEPTION_RECORD     ExceptionRecord,
+		_In_           PVOID                 ReturnValue,
+		_In_           PCONTEXT              ContextRecord,
+		_In_opt_ PUNWIND_HISTORY_TABLE HistoryTable);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI NTSTATUS NTAPI RtlWerpReportException(

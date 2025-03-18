@@ -72,13 +72,13 @@ extern "C" {
 
     //https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwduplicateobject
     NTSYSAPI NTSTATUS NtDuplicateObject(
-        [in]            HANDLE      SourceProcessHandle,
-        [in]            HANDLE      SourceHandle,
-        [in, optional]  HANDLE      TargetProcessHandle,
+        _In_            HANDLE      SourceProcessHandle,
+        _In_            HANDLE      SourceHandle,
+        _In_opt_  HANDLE      TargetProcessHandle,
         [out, optional] PHANDLE     TargetHandle,
-        [in]            ACCESS_MASK DesiredAccess,
-        [in]            ULONG       HandleAttributes,
-        [in]            ULONG       Options);
+        _In_            ACCESS_MASK DesiredAccess,
+        _In_            ULONG       HandleAttributes,
+        _In_            ULONG       Options);
     //ZwDuplicateObject
 
     //https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwduplicateobject
@@ -88,7 +88,7 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwmaketemporaryobject
     NTSYSAPI NTSTATUS NtMakeTemporaryObject(
-        [in] HANDLE Handle);
+        _In_ HANDLE Handle);
     //ZwMakeTemporaryObject
 
     // https://learn.microsoft.com/en-us/windows/win32/devnotes/ntopendirectoryobject
@@ -125,9 +125,9 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopensymboliclinkobject
     NTSYSAPI NTSTATUS NtOpenSymbolicLinkObject(
-        [out] PHANDLE            LinkHandle,
-        [in]  ACCESS_MASK        DesiredAccess,
-        [in]  POBJECT_ATTRIBUTES ObjectAttributes);
+        _Out_ PHANDLE            LinkHandle,
+        _In_  ACCESS_MASK        DesiredAccess,
+        _In_  POBJECT_ATTRIBUTES ObjectAttributes);
     //ZwOpenSymbolicLinkObject
 
     // https://learn.microsoft.com/en-us/windows/win32/devnotes/ntquerydirectoryobject

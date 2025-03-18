@@ -62,15 +62,15 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwmapviewofsectionex
 	NTSYSAPI NTSTATUS ZwMapViewOfSectionEx(
-		[in]                HANDLE                  SectionHandle,
-		[in]                HANDLE                  ProcessHandle,
+		_In_                HANDLE                  SectionHandle,
+		_In_                HANDLE                  ProcessHandle,
 		[in, out]           PVOID* BaseAddress,
 		[in, out, optional] PLARGE_INTEGER          SectionOffset,
 		[in, out]           PSIZE_T                 ViewSize,
-		[in]                ULONG                   AllocationType,
-		[in]                ULONG                   PageProtection,
+		_In_                ULONG                   AllocationType,
+		_In_                ULONG                   PageProtection,
 		[in, out, optional] PMEM_EXTENDED_PARAMETER ExtendedParameters,
-		[in]                ULONG                   ExtendedParameterCount);
+		_In_                ULONG                   ExtendedParameterCount);
 	//ZwMapViewOfSectionEx
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg

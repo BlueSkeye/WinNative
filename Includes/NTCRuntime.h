@@ -115,8 +115,8 @@ extern "C" {
 
 	// Reversed. A wrapper around RtlUnwind.
 	NTSYSAPI VOID NTAPI _local_unwind(
-		[in, optional] PVOID TargetFrame,
-		[in, optional] PVOID TargetIp);
+		_In_opt_ PVOID TargetFrame,
+		_In_opt_ PVOID TargetIp);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/itoa-itow?view=msvc-170
 	NTSYSAPI char* NTAPI _ltoa(
@@ -921,18 +921,18 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-vdbgprintex
 	NTSYSAPI ULONG NTAPI vDbgPrintEx(
-		[in] ULONG   ComponentId,
-		[in] ULONG   Level,
-		[in] PCCH    Format,
-		[in] va_list arglist);
+		_In_ ULONG   ComponentId,
+		_In_ ULONG   Level,
+		_In_ PCCH    Format,
+		_In_ va_list arglist);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-vdbgprintexwithprefix
 	NTSYSAPI ULONG vDbgPrintExWithPrefix(
-		[in] PCCH    Prefix,
-		[in] ULONG   ComponentId,
-		[in] ULONG   Level,
-		[in] PCCH    Format,
-		[in] va_list arglist);
+		_In_ PCCH    Prefix,
+		_In_ ULONG   ComponentId,
+		_In_ ULONG   Level,
+		_In_ PCCH    Format,
+		_In_ va_list arglist);
 	
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/vsprintf-vsprintf-l-vswprintf-vswprintf-l-vswprintf-l?view=msvc-170
 	NTSYSAPI int NTAPI vsprintf(

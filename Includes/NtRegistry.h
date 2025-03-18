@@ -28,24 +28,24 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwcreatekey
     NTSYSAPI NTSTATUS NtCreateKey(
-        [out]           PHANDLE            KeyHandle,
-        [in]            ACCESS_MASK        DesiredAccess,
-        [in]            POBJECT_ATTRIBUTES ObjectAttributes,
+        _Out_           PHANDLE            KeyHandle,
+        _In_            ACCESS_MASK        DesiredAccess,
+        _In_            POBJECT_ATTRIBUTES ObjectAttributes,
         ULONG              TitleIndex,
-        [in, optional]  PUNICODE_STRING    Class,
-        [in]            ULONG              CreateOptions,
+        _In_opt_  PUNICODE_STRING    Class,
+        _In_            ULONG              CreateOptions,
         [out, optional] PULONG             Disposition);
     //ZwCreateKey
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwcreatekeytransacted
     NTSYSAPI NTSTATUS NtCreateKeyTransacted(
-        [out]           PHANDLE            KeyHandle,
-        [in]            ACCESS_MASK        DesiredAccess,
-        [in]            POBJECT_ATTRIBUTES ObjectAttributes,
+        _Out_           PHANDLE            KeyHandle,
+        _In_            ACCESS_MASK        DesiredAccess,
+        _In_            POBJECT_ATTRIBUTES ObjectAttributes,
         ULONG              TitleIndex,
-        [in, optional]  PUNICODE_STRING    Class,
-        [in]            ULONG              CreateOptions,
-        [in]            HANDLE             TransactionHandle,
+        _In_opt_  PUNICODE_STRING    Class,
+        _In_            ULONG              CreateOptions,
+        _In_            HANDLE             TransactionHandle,
         [out, optional] PULONG             Disposition);
     //ZwCreateKeyTransacted
 
@@ -59,38 +59,38 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwdeletekey
     NTSYSAPI NTSTATUS NtDeleteKey(
-        [in] HANDLE KeyHandle);
+        _In_ HANDLE KeyHandle);
     //ZwDeleteKey
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwdeletevaluekey
     NTSYSAPI NTSTATUS NtDeleteValueKey(
-        [in] HANDLE          KeyHandle,
-        [in] PUNICODE_STRING ValueName);
+        _In_ HANDLE          KeyHandle,
+        _In_ PUNICODE_STRING ValueName);
     //ZwDeleteValueKey
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwenumeratekey
     NTSYSAPI NTSTATUS NtEnumerateKey(
-        [in]            HANDLE                KeyHandle,
-        [in]            ULONG                 Index,
-        [in]            KEY_INFORMATION_CLASS KeyInformationClass,
+        _In_            HANDLE                KeyHandle,
+        _In_            ULONG                 Index,
+        _In_            KEY_INFORMATION_CLASS KeyInformationClass,
         [out, optional] PVOID                 KeyInformation,
-        [in]            ULONG                 Length,
-        [out]           PULONG                ResultLength);
+        _In_            ULONG                 Length,
+        _Out_           PULONG                ResultLength);
     //ZwEnumerateKey
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwenumeratevaluekey
     NTSYSAPI NTSTATUS NtEnumerateValueKey(
-        [in]            HANDLE                      KeyHandle,
-        [in]            ULONG                       Index,
-        [in]            KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
+        _In_            HANDLE                      KeyHandle,
+        _In_            ULONG                       Index,
+        _In_            KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
         [out, optional] PVOID                       KeyValueInformation,
-        [in]            ULONG                       Length,
-        [out]           PULONG                      ResultLength);
+        _In_            ULONG                       Length,
+        _Out_           PULONG                      ResultLength);
     //ZwEnumerateValueKey
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwflushkey
     NTSYSAPI NTSTATUS NtFlushKey(
-        [in] HANDLE KeyHandle);
+        _In_ HANDLE KeyHandle);
     //ZwFlushKey
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -147,16 +147,16 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwnotifychangekey
     NTSYSAPI NTSTATUS NtNotifyChangeKey(
-        [in]            HANDLE           KeyHandle,
-        [in, optional]  HANDLE           Event,
-        [in, optional]  PIO_APC_ROUTINE  ApcRoutine,
-        [in, optional]  PVOID            ApcContext,
-        [out]           PIO_STATUS_BLOCK IoStatusBlock,
-        [in]            ULONG            CompletionFilter,
-        [in]            BOOLEAN          WatchTree,
+        _In_            HANDLE           KeyHandle,
+        _In_opt_  HANDLE           Event,
+        _In_opt_  PIO_APC_ROUTINE  ApcRoutine,
+        _In_opt_  PVOID            ApcContext,
+        _Out_           PIO_STATUS_BLOCK IoStatusBlock,
+        _In_            ULONG            CompletionFilter,
+        _In_            BOOLEAN          WatchTree,
         [out, optional] PVOID            Buffer,
-        [in]            ULONG            BufferSize,
-        [in]            BOOLEAN          Asynchronous);
+        _In_            ULONG            BufferSize,
+        _In_            BOOLEAN          Asynchronous);
     //ZwNotifyChangeKey
 
     // https://learn.microsoft.com/en-us/windows/win32/api/Winternl/nf-winternl-ntnotifychangemultiplekeys
@@ -179,34 +179,34 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopenkey
     NTSYSAPI NTSTATUS NtOpenKey(
-        [out] PHANDLE            KeyHandle,
-        [in]  ACCESS_MASK        DesiredAccess,
-        [in]  POBJECT_ATTRIBUTES ObjectAttributes);
+        _Out_ PHANDLE            KeyHandle,
+        _In_  ACCESS_MASK        DesiredAccess,
+        _In_  POBJECT_ATTRIBUTES ObjectAttributes);
     //ZwOpenKey
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopenkeyex
     NTSYSAPI NTSTATUS NtOpenKeyEx(
-        [out] PHANDLE            KeyHandle,
-        [in]  ACCESS_MASK        DesiredAccess,
-        [in]  POBJECT_ATTRIBUTES ObjectAttributes,
-        [in]  ULONG              OpenOptions);
+        _Out_ PHANDLE            KeyHandle,
+        _In_  ACCESS_MASK        DesiredAccess,
+        _In_  POBJECT_ATTRIBUTES ObjectAttributes,
+        _In_  ULONG              OpenOptions);
     //ZwOpenKeyEx
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopenkeytransacted
     NTSYSAPI NTSTATUS NtOpenKeyTransacted(
-        [out] PHANDLE            KeyHandle,
-        [in]  ACCESS_MASK        DesiredAccess,
-        [in]  POBJECT_ATTRIBUTES ObjectAttributes,
-        [in]  HANDLE             TransactionHandle);
+        _Out_ PHANDLE            KeyHandle,
+        _In_  ACCESS_MASK        DesiredAccess,
+        _In_  POBJECT_ATTRIBUTES ObjectAttributes,
+        _In_  HANDLE             TransactionHandle);
     //ZwOpenKeyTransacted
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopenkeytransactedex
     NTSYSAPI NTSTATUS NtOpenKeyTransactedEx(
-        [out] PHANDLE            KeyHandle,
-        [in]  ACCESS_MASK        DesiredAccess,
-        [in]  POBJECT_ATTRIBUTES ObjectAttributes,
-        [in]  ULONG              OpenOptions,
-        [in]  HANDLE             TransactionHandle);
+        _Out_ PHANDLE            KeyHandle,
+        _In_  ACCESS_MASK        DesiredAccess,
+        _In_  POBJECT_ATTRIBUTES ObjectAttributes,
+        _In_  ULONG              OpenOptions,
+        _In_  HANDLE             TransactionHandle);
     //ZwOpenKeyTransactedEx
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopenkeytransactedex
@@ -317,10 +317,10 @@ extern "C" {
     // https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntsetinformationkey
     // See winternl.h
     NTSYSAPI NTSTATUS NTAPI NtSetInformationKey(
-        [in] HANDLE                    KeyHandle,
-        [in] KEY_SET_INFORMATION_CLASS KeySetInformationClass,
-        [in] PVOID                     KeySetInformation,
-        [in] ULONG                     KeySetInformationLength);
+        _In_ HANDLE                    KeyHandle,
+        _In_ KEY_SET_INFORMATION_CLASS KeySetInformationClass,
+        _In_ PVOID                     KeySetInformation,
+        _In_ ULONG                     KeySetInformationLength);
     //ZwSetInformationKey
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopenkeytransactedex

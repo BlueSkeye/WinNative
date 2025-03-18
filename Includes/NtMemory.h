@@ -84,10 +84,10 @@ extern "C" {
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwflushvirtualmemory
 	NTSYSAPI NTSTATUS NtFlushVirtualMemory(
-		[in]      HANDLE           ProcessHandle,
+		_In_      HANDLE           ProcessHandle,
 		[in, out] PVOID* BaseAddress,
 		[in, out] PSIZE_T          RegionSize,
-		[out]     PIO_STATUS_BLOCK IoStatus);
+		_Out_     PIO_STATUS_BLOCK IoStatus);
 	//ZwFlushVirtualMemory
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -238,9 +238,9 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlallocateheap
 	NTSYSAPI PVOID RtlAllocateHeap(
-		[in]           PVOID  HeapHandle,
-		[in, optional] ULONG  Flags,
-		[in]           SIZE_T Size);
+		_In_           PVOID  HeapHandle,
+		_In_opt_ ULONG  Flags,
+		_In_           SIZE_T Size);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html#a45d5646d40fe2acf29e8137ca6b93795
 	NTSYSAPI NTSTATUS NTAPI RtlAllocateMemoryBlockLookaside(
@@ -261,15 +261,15 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcomparememory
 	NTSYSAPI SIZE_T NTAPI RtlCompareMemory(
-		[in] const VOID* Source1,
-		[in] const VOID* Source2,
-		[in] SIZE_T     Length);
+		_In_ const VOID* Source1,
+		_In_ const VOID* Source2,
+		_In_ SIZE_T     Length);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcomparememoryulong
 	NTSYSAPI SIZE_T NTAPI RtlCompareMemoryUlong(
-		[in] PVOID  Source,
-		[in] SIZE_T Length,
-		[in] ULONG  Pattern);
+		_In_ PVOID  Source,
+		_In_ SIZE_T Length,
+		_In_ ULONG  Pattern);
 
 	// https://doxygen.reactos.org/da/dff/memstream_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlCopyMappedMemory(
@@ -291,12 +291,12 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcreateheap
 	NTSYSAPI PVOID NTAPI RtlCreateHeap(
-		[in]           ULONG                Flags,
-		[in, optional] PVOID                HeapBase,
-		[in, optional] SIZE_T               ReserveSize,
-		[in, optional] SIZE_T               CommitSize,
-		[in, optional] PVOID                Lock,
-		[in, optional] PRTL_HEAP_PARAMETERS Parameters);
+		_In_           ULONG                Flags,
+		_In_opt_ PVOID                HeapBase,
+		_In_opt_ SIZE_T               ReserveSize,
+		_In_opt_ SIZE_T               CommitSize,
+		_In_opt_ PVOID                Lock,
+		_In_opt_ PRTL_HEAP_PARAMETERS Parameters);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI NTSTATUS NTAPI RtlCreateMemoryBlockLookaside(
@@ -321,7 +321,7 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtldestroyheap
 	NTSYSAPI PVOID NTAPI RtlDestroyHeap(
-		[in] PVOID HeapHandle);
+		_In_ PVOID HeapHandle);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI NTSTATUS NTAPI RtlDestroyMemoryBlockLookaside(
@@ -406,8 +406,8 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlfreeheap
 	NTSYSAPI LOGICAL RtlFreeHeap(
-		[in]           PVOID                 HeapHandle,
-		[in, optional] ULONG                 Flags,
+		_In_           PVOID                 HeapHandle,
+		_In_opt_ ULONG                 Flags,
 		_Frees_ptr_opt_ PVOID BaseAddress);
 
 	// https://github.com/winsiderss/systeminformer/blob/5d11186e6a48a7329cb30666131977365e78f591/phnt/include/ntrtl.h#L5991C1-L5997C7

@@ -1,0 +1,46 @@
+// A guinea pig project to test include files syntax.
+
+#include "NtCommonDefs.h"
+
+//#include "NtAsyincProcdureCalls.h"
+//#include "NtAtoms.h"
+//#include "NtClientServer.h"
+//#include "NtContexts.h"
+//#include "NTCRuntime.h"
+//#include "NtCrypto.h"
+//#include "NtDebugging.h"
+//#include "NtDevices.h"
+//#include "NtDll.h"
+//#include "NtEnclave.h"
+//#include "NtEnvironment.h"
+//#include "NtEvents.h"
+//#include "NtEventTracing.h"
+//#include "NtExceptions.h"
+#include "NtFile.h"
+//#include "NtIo.h"
+//#include "NtLanguageSupport.h"
+//#include "NtLoader.h"
+//#include "NtLocalProcedureCalls.h"
+//#include "NtMemory.h"
+//#include "NtMemoryStream.h"
+//#include "NtNetwork.h"
+//#include "NtNotification.h"
+//#include "NtObjects.h"
+//#include "NtPartition.h"
+//#include "NtPrefixes.h"
+//#include "NtProcesses.h"
+//#include "NtRegistry.h"
+//#include "NTRuntimeLib.h"
+//#include "NtSection.h"
+//#include "NtSecurity.h"
+//#include "NTSoftwareQualityMgmt.h"
+//#include "NtStrings.h"
+//#include "NtTables.h"
+//#include "NtThreadPool.h"
+//#include "NtTime.h"
+//#include "NtTransaction.h"
+
+extern "C" void NTAPI NtProcessStartup(PVOID /*PPEB*/ peb)
+{
+	return;
+}

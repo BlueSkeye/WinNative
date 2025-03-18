@@ -42,8 +42,8 @@ extern "C" {
 	//https://learn.microsoft.com/fr-fr/windows/win32/api/evntrace/nf-evntrace-createtraceinstanceid
 	// Forwarded from Advapi32:CreateTraceInstanceId
 	NTSYSAPI ULONG WMIAPI EtwCreateTraceInstanceId(
-		[in]  HANDLE               RegHandle,
-		[out] PEVENT_INSTANCE_INFO InstInfo);
+		_In_  HANDLE               RegHandle,
+		_Out_ PEVENT_INSTANCE_INFO InstInfo);
 
 	// https://ntdoc.m417z.com/etwenumerateprocessregguids
 	// https://docs.rs/phnt/latest/phnt/ffi/fn.EtwEnumerateProcessRegGuids.html
@@ -55,17 +55,17 @@ extern "C" {
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/evntrace/nf-evntrace-gettraceenableflags
 	// Forwarded from Advapi32:GetTraceEnableFlags
 	NTSYSAPI ULONG NTAPI EtwGetTraceEnableFlags(
-		[in] TRACELOGGER_HANDLE TraceHandle);
+		_In_ TRACELOGGER_HANDLE TraceHandle);
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/evntrace/nf-evntrace-gettraceenablelevel
 	// Forwarded from Advapi32:GetTraceEnableLevel
 	NTSYSAPI UCHAR NTAPI EtwGetTraceEnableLevel(
-		[in] TRACEHANDLE TraceHandle);
+		_In_ TRACEHANDLE TraceHandle);
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/evntrace/nf-evntrace-gettraceloggerhandle
 	// Forwarded from Advapi32:GetTraceLoggerHandle
 	NTSYSAPI TRACEHANDLE NTAPI EtwGetTraceLoggerHandle(
-		[in] PVOID Buffer);
+		_In_ PVOID Buffer);
 
 	// https://learn.microsoft.com/en-us/windows/win32/devnotes/etwlogtraceevent
 	NTSYSAPI ULONG NTAPI EtwLogTraceEvent(
@@ -91,25 +91,25 @@ extern "C" {
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/evntrace/nf-evntrace-registertraceguidsa
 	NTSYSAPI ULONG NTAPI EtwRegisterTraceGuidsA(
-		[in]      WMIDPREQUEST             RequestAddress,
-		[in]      PVOID                    RequestContext,
-		[in]      LPCGUID                  ControlGuid,
-		[in]      ULONG                    GuidCount,
+		_In_      WMIDPREQUEST             RequestAddress,
+		_In_      PVOID                    RequestContext,
+		_In_      LPCGUID                  ControlGuid,
+		_In_      ULONG                    GuidCount,
 		[in, out] PTRACE_GUID_REGISTRATION TraceGuidReg,
-		[in]      LPCSTR                   MofImagePath,
-		[in]      LPCSTR                   MofResourceName,
-		[out]     TRACEGUID_HANDLE* RegistrationHandle);
+		_In_      LPCSTR                   MofImagePath,
+		_In_      LPCSTR                   MofResourceName,
+		_Out_     TRACEGUID_HANDLE* RegistrationHandle);
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/evntrace/nf-evntrace-registertraceguidsw
 	NTSYSAPI ULONG NTAPI EtwRegisterTraceGuidsW(
-		[in]      WMIDPREQUEST             RequestAddress,
-		[in]      PVOID                    RequestContext,
-		[in]      LPCGUID                  ControlGuid,
-		[in]      ULONG                    GuidCount,
+		_In_      WMIDPREQUEST             RequestAddress,
+		_In_      PVOID                    RequestContext,
+		_In_      LPCGUID                  ControlGuid,
+		_In_      ULONG                    GuidCount,
 		[in, out] PTRACE_GUID_REGISTRATION TraceGuidReg,
-		[in]      LPCWSTR                  MofImagePath,
-		[in]      LPCWSTR                  MofResourceName,
-		[out]     PTRACEHANDLE             RegistrationHandle);
+		_In_      LPCWSTR                  MofImagePath,
+		_In_      LPCWSTR                  MofResourceName,
+		_Out_     PTRACEHANDLE             RegistrationHandle);
 
 	//https://ntdoc.m417z.com/etwreplynotification
 	NTSYSAPI ULONG NTAPI EtwReplyNotification(
@@ -132,33 +132,33 @@ extern "C" {
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/evntrace/nf-evntrace-traceeventinstance
 	// Forwarded from Advapi32:TraceEventInstance
 	NTSYSAPI ULONG NTAPI EtwTraceEventInstance(
-		[in] TRACEHANDLE            TraceHandle,
-		[in] PEVENT_INSTANCE_HEADER EventTrace,
-		[in] PEVENT_INSTANCE_INFO   InstInfo,
-		[in] PEVENT_INSTANCE_INFO   ParentInstInfo);
+		_In_ TRACEHANDLE            TraceHandle,
+		_In_ PEVENT_INSTANCE_HEADER EventTrace,
+		_In_ PEVENT_INSTANCE_INFO   InstInfo,
+		_In_ PEVENT_INSTANCE_INFO   ParentInstInfo);
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/evntrace/nf-evntrace-tracemessage
 	// Forwarded from Advapi32:TraceMessage
 	NTSYSAPI ULONG NTAPI EtwTraceMessage(
-		[in] TRACEHANDLE LoggerHandle,
-		[in] ULONG       MessageFlags,
-		[in] LPCGUID     MessageGuid,
-		[in] USHORT      MessageNumber,
+		_In_ TRACEHANDLE LoggerHandle,
+		_In_ ULONG       MessageFlags,
+		_In_ LPCGUID     MessageGuid,
+		_In_ USHORT      MessageNumber,
 		...);
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/evntrace/nf-evntrace-tracemessageva
 	// Forwarded from Advapi32:TraceMessageVa
 	NTSYSAPI ULONG NTAPI EtwTraceMessageVa(
-		[in] TRACEHANDLE LoggerHandle,
-		[in] ULONG       MessageFlags,
-		[in] LPCGUID     MessageGuid,
-		[in] USHORT      MessageNumber,
-		[in] va_list     MessageArgList);
+		_In_ TRACEHANDLE LoggerHandle,
+		_In_ ULONG       MessageFlags,
+		_In_ LPCGUID     MessageGuid,
+		_In_ USHORT      MessageNumber,
+		_In_ va_list     MessageArgList);
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/evntrace/nf-evntrace-unregistertraceguids
 	// Forwarded from Advapi32:UnregisterTraceGuids
 	NTSYSAPI ULONG NTAPI EtwUnregisterTraceGuids(
-		[in] TRACEGUID_HANDLE RegistrationHandle);
+		_In_ TRACEGUID_HANDLE RegistrationHandle);
 
 	// https://jsecurity101.medium.com/uncovering-window-security-events-ab72e1ec745c
 	// https://www.geoffchappell.com/studies/windows/win32/ntdll/api/etw/writeumsecurityevent.htm

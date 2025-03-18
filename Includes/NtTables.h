@@ -9,18 +9,18 @@ extern "C" {
 	
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/winnt/nf-winnt-rtladdfunctiontable
 	NTSYSAPI BOOLEAN NTAPI RtlAddFunctionTable(
-		[in] PRUNTIME_FUNCTION FunctionTable,
-		[in] DWORD             EntryCount,
-		[in] DWORD64           BaseAddress);
+		_In_ PRUNTIME_FUNCTION FunctionTable,
+		_In_ DWORD             EntryCount,
+		_In_ DWORD64           BaseAddress);
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/winnt/nf-winnt-rtladdgrowablefunctiontable
 	NTSYSAPI DWORD NTAPI RtlAddGrowableFunctionTable(
-		[out] PVOID* DynamicTable,
+		_Out_ PVOID* DynamicTable,
 		PRUNTIME_FUNCTION FunctionTable,
-		[in]  DWORD             EntryCount,
-		[in]  DWORD             MaximumEntryCount,
-		[in]  ULONG_PTR         RangeBase,
-		[in]  ULONG_PTR         RangeEnd);
+		_In_  DWORD             EntryCount,
+		_In_  DWORD             MaximumEntryCount,
+		_In_  ULONG_PTR         RangeBase,
+		_In_  ULONG_PTR         RangeEnd);
 
 	// https://github.com/mic101/windows/blob/master/WRK-v1.2/base/ntos/rtl/imagedir.c
 	NTSYSAPI PVOID NTAPI RtlAddressInSectionTable(
@@ -76,11 +76,11 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtldeletefunctiontable
 	NTSYSAPI BOOLEAN NTAPI RtlDeleteFunctionTable(
-		[in] PRUNTIME_FUNCTION FunctionTable);
+		_In_ PRUNTIME_FUNCTION FunctionTable);
 
 	//https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtldeletegrowablefunctiontable
 	NTSYSAPI VOID RtlDeleteGrowableFunctionTable(
-		[in] PVOID DynamicTable);
+		_In_ PVOID DynamicTable);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html#a45d5646d40fe2acf29e8137ca6b93795
 	NTSYSAPI VOID NTAPI RtlDeleteHashTable(
@@ -176,7 +176,7 @@ extern "C" {
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/winnt/nf-winnt-rtlgrowfunctiontable
 	NTSYSAPI VOID NTAPI RtlGrowFunctionTable(
 		PVOID DynamicTable,
-		[in] DWORD NewEntryCount);
+		_In_ DWORD NewEntryCount);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html#a45d5646d40fe2acf29e8137ca6b93795
 	NTSYSAPI BOOLEAN NTAPI RtlInitEnumerationHashTable(
@@ -260,12 +260,12 @@ extern "C" {
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/winnt/nf-winnt-rtlinstallfunctiontablecallback
 	NTSYSAPI BOOLEAN NTAPI RtlInstallFunctionTableCallback(
-		[in] DWORD64                        TableIdentifier,
-		[in] DWORD64                        BaseAddress,
-		[in] DWORD                          Length,
-		[in] PGET_RUNTIME_FUNCTION_CALLBACK Callback,
-		[in] PVOID                          Context,
-		[in] PCWSTR                         OutOfProcessCallbackDll);
+		_In_ DWORD64                        TableIdentifier,
+		_In_ DWORD64                        BaseAddress,
+		_In_ DWORD                          Length,
+		_In_ PGET_RUNTIME_FUNCTION_CALLBACK Callback,
+		_In_ PVOID                          Context,
+		_In_ PCWSTR                         OutOfProcessCallbackDll);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html#a45d5646d40fe2acf29e8137ca6b93795
 	//https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c

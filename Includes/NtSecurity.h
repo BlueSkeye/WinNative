@@ -380,11 +380,11 @@ extern "C" {
 
     //https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntqueryinformationtoken
     NTSYSCALLAPI NTSTATUS NtQueryInformationToken(
-        [in]  HANDLE                  TokenHandle,
-        [in]  TOKEN_INFORMATION_CLASS TokenInformationClass,
-        [out] PVOID                   TokenInformation,
-        [in]  ULONG                   TokenInformationLength,
-        [out] PULONG                  ReturnLength);
+        _In_  HANDLE                  TokenHandle,
+        _In_  TOKEN_INFORMATION_CLASS TokenInformationClass,
+        _Out_ PVOID                   TokenInformation,
+        _In_  ULONG                   TokenInformationLength,
+        _Out_ PULONG                  ReturnLength);
     //ZwQueryInformationToken
 
     //https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntqueryinformationtoken
@@ -399,11 +399,11 @@ extern "C" {
 
     //https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntquerysecurityobject
     NTSYSCALLAPI NTSTATUS NtQuerySecurityObject(
-        [in]  HANDLE               Handle,
-        [in]  SECURITY_INFORMATION SecurityInformation,
-        [out] PSECURITY_DESCRIPTOR SecurityDescriptor,
-        [in]  ULONG                Length,
-        [out] PULONG               LengthNeeded);
+        _In_  HANDLE               Handle,
+        _In_  SECURITY_INFORMATION SecurityInformation,
+        _Out_ PSECURITY_DESCRIPTOR SecurityDescriptor,
+        _In_  ULONG                Length,
+        _Out_ PULONG               LengthNeeded);
     //ZwQuerySecurityObject
 
     //https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntquerysecurityobject
@@ -437,23 +437,23 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntsetinformationtoken
     NTSYSCALLAPI NTSTATUS NtSetInformationToken(
-        [in] HANDLE                  TokenHandle,
-        [in] TOKEN_INFORMATION_CLASS TokenInformationClass,
-        [in] PVOID                   TokenInformation,
-        [in] ULONG                   TokenInformationLength);
+        _In_ HANDLE                  TokenHandle,
+        _In_ TOKEN_INFORMATION_CLASS TokenInformationClass,
+        _In_ PVOID                   TokenInformation,
+        _In_ ULONG                   TokenInformationLength);
     //ZwSetInformationToken
 
     //https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntsetsecurityobject
     NTSYSCALLAPI NTSTATUS NtSetSecurityObject(
-        [in] HANDLE               Handle,
-        [in] SECURITY_INFORMATION SecurityInformation,
-        [in] PSECURITY_DESCRIPTOR SecurityDescriptor);
+        _In_ HANDLE               Handle,
+        _In_ SECURITY_INFORMATION SecurityInformation,
+        _In_ PSECURITY_DESCRIPTOR SecurityDescriptor);
     // ZwSetSecurityObject
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlabsolutetoselfrelativesd
     NTSYSAPI NTSTATUS RtlAbsoluteToSelfRelativeSD(
-        [in]      PSECURITY_DESCRIPTOR AbsoluteSecurityDescriptor,
-        [out]     PSECURITY_DESCRIPTOR SelfRelativeSecurityDescriptor,
+        _In_      PSECURITY_DESCRIPTOR AbsoluteSecurityDescriptor,
+        _Out_     PSECURITY_DESCRIPTOR SelfRelativeSecurityDescriptor,
         [in, out] PULONG               BufferLength);
 
     // https://github.com/mirror/reactos/blob/master/reactos/lib/rtl/priv.c
@@ -466,17 +466,17 @@ extern "C" {
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtladdaccessallowedace
     NTSYSAPI NTSTATUS RtlAddAccessAllowedAce(
         [in, out] PACL        Acl,
-        [in]      ULONG       AceRevision,
-        [in]      ACCESS_MASK AccessMask,
-        [in]      PSID        Sid);
+        _In_      ULONG       AceRevision,
+        _In_      ACCESS_MASK AccessMask,
+        _In_      PSID        Sid);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtladdaccessallowedaceex
     NTSYSAPI NTSTATUS RtlAddAccessAllowedAceEx(
         [in, out] PACL        Acl,
-        [in]      ULONG       AceRevision,
-        [in]      ULONG       AceFlags,
-        [in]      ACCESS_MASK AccessMask,
-        [in]      PSID        Sid);
+        _In_      ULONG       AceRevision,
+        _In_      ULONG       AceFlags,
+        _In_      ACCESS_MASK AccessMask,
+        _In_      PSID        Sid);
 
     //https://doxygen.reactos.org/dc/de0/sdk_2lib_2rtl_2acl_8c.html
     NTSYSAPI NTSTATUS NTAPI RtlAddAccessAllowedObjectAce(
@@ -524,10 +524,10 @@ extern "C" {
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtladdace
     NTSYSAPI NTSTATUS NTAPI RtlAddAce(
         _Inout_ PACL  Acl,
-        [in] ULONG AceRevision,
-        [in] ULONG StartingAceIndex,
-        [in] PVOID AceList,
-        [in] ULONG AceListLength);
+        _In_ ULONG AceRevision,
+        _In_ ULONG StartingAceIndex,
+        _In_ PVOID AceList,
+        _In_ ULONG AceListLength);
 
     // https://doxygen.reactos.org/dc/de0/sdk_2lib_2rtl_2acl_8c.html
     NTSYSAPI NTSTATUS NTAPI RtlAddAuditAccessAce(
@@ -657,8 +657,8 @@ extern "C" {
     // See winterl.h
     NTSYSAPI NTSTATUS NTAPI RtlConvertSidToUnicodeString(
         [in, out] PUNICODE_STRING UnicodeString,
-        [in]      PSID            Sid,
-        [in]      BOOLEAN         AllocateDestinationString);
+        _In_      PSID            Sid,
+        _In_      BOOLEAN         AllocateDestinationString);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
     NTSYSAPI NTSTATUS NTAPI RtlConvertToAutoInheritSecurityObject(
@@ -676,9 +676,9 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcopysid
     NTSYSAPI NTSTATUS RtlCopySid(
-        [in] ULONG DestinationSidLength,
-        [in] PSID  DestinationSid,
-        [in] PSID  SourceSid);
+        _In_ ULONG DestinationSidLength,
+        _In_ PSID  DestinationSid,
+        _In_ PSID  SourceSid);
 
     // https://doxygen.reactos.org/dd/da4/sdk_2lib_2rtl_2sid_8c_source.html
     NTSTATUS NTAPI RtlCopySidAndAttributesArray(IN ULONG Count,
@@ -691,8 +691,8 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcreateacl
     NTSYSAPI NTSTATUS RtlCreateAcl(
-        [out] PACL  Acl,
-        [in]  ULONG AclLength,
+        _Out_ PACL  Acl,
+        _In_  ULONG AclLength,
         ULONG AclRevision);
 
     // https://github.com/mirror/reactos/blob/master/reactos/lib/rtl/security.c
@@ -710,8 +710,8 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcreatesecuritydescriptor
     NTSYSAPI NTSTATUS RtlCreateSecurityDescriptor(
-        [out] PSECURITY_DESCRIPTOR SecurityDescriptor,
-        [in]  ULONG                Revision);
+        _Out_ PSECURITY_DESCRIPTOR SecurityDescriptor,
+        _In_  ULONG                Revision);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
     NTSYSAPI NTSTATUS NTAPI RtlCreateServiceSid(
@@ -729,7 +729,7 @@ extern "C" {
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtldeleteace
     NTSYSAPI NTSTATUS RtlDeleteAce(
         [in, out] PACL  Acl,
-        [in]      ULONG AceIndex);
+        _In_      ULONG AceIndex);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
     NTSYSAPI VOID NTAPI RtlDeleteBoundaryDescriptor(
@@ -747,13 +747,13 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlequalprefixsid
     NTSYSAPI BOOLEAN RtlEqualPrefixSid(
-        [in] PSID Sid1,
-        [in] PSID Sid2);
+        _In_ PSID Sid1,
+        _In_ PSID Sid2);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlequalsid
     NTSYSAPI BOOLEAN RtlEqualSid(
-        [in] PSID Sid1,
-        [in] PSID Sid2);
+        _In_ PSID Sid1,
+        _In_ PSID Sid2);
 
     // https://github.com/winsiderss/phnt/blob/master/ntrtl.h
     NTSYSAPI PVOID NTAPI RtlFindAceByType(
@@ -772,9 +772,9 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlgetace
     NTSYSAPI NTSTATUS RtlGetAce(
-        [in]  PACL  Acl,
-        [in]  ULONG AceIndex,
-        [out] PVOID* Ace);
+        _In_  PACL  Acl,
+        _In_  ULONG AceIndex,
+        _Out_ PVOID* Ace);
 
     // https://ntdoc.m417z.com/rtlgetappcontainersidtype
     NTSYSAPI NTSTATUS NTAPI RtlGetAppContainerSidType(
@@ -792,29 +792,29 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlgetdaclsecuritydescriptor
     NTSYSAPI NTSTATUS RtlGetDaclSecurityDescriptor(
-        [in]  PSECURITY_DESCRIPTOR SecurityDescriptor,
-        [out] PBOOLEAN             DaclPresent,
-        [out] PACL* Dacl,
-        [out] PBOOLEAN             DaclDefaulted);
+        _In_  PSECURITY_DESCRIPTOR SecurityDescriptor,
+        _Out_ PBOOLEAN             DaclPresent,
+        _Out_ PACL* Dacl,
+        _Out_ PBOOLEAN             DaclDefaulted);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlgetgroupsecuritydescriptor
     NTSYSAPI NTSTATUS RtlGetGroupSecurityDescriptor(
-        [in]  PSECURITY_DESCRIPTOR SecurityDescriptor,
-        [out] PSID* Group,
-        [out] PBOOLEAN             GroupDefaulted);
+        _In_  PSECURITY_DESCRIPTOR SecurityDescriptor,
+        _Out_ PSID* Group,
+        _Out_ PBOOLEAN             GroupDefaulted);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlgetownersecuritydescriptor
     NTSYSAPI NTSTATUS RtlGetOwnerSecurityDescriptor(
-        [in]  PSECURITY_DESCRIPTOR SecurityDescriptor,
-        [out] PSID* Owner,
-        [out] PBOOLEAN             OwnerDefaulted);
+        _In_  PSECURITY_DESCRIPTOR SecurityDescriptor,
+        _Out_ PSID* Owner,
+        _Out_ PBOOLEAN             OwnerDefaulted);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlgetsaclsecuritydescriptor
     NTSYSAPI NTSTATUS RtlGetSaclSecurityDescriptor(
-        [in]  PSECURITY_DESCRIPTOR SecurityDescriptor,
-        [out] PBOOLEAN             SaclPresent,
-        [out] PACL* Sacl,
-        [out] PBOOLEAN             SaclDefaulted);
+        _In_  PSECURITY_DESCRIPTOR SecurityDescriptor,
+        _Out_ PBOOLEAN             SaclPresent,
+        _Out_ PACL* Sacl,
+        _Out_ PBOOLEAN             SaclDefaulted);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
     NTSYSAPI BOOLEAN NTAPI RtlGetSecurityDescriptorRMControl(
@@ -837,15 +837,15 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlinitializesid
     NTSYSAPI NTSTATUS RtlInitializeSid(
-        [out] PSID                      Sid,
-        [in]  PSID_IDENTIFIER_AUTHORITY IdentifierAuthority,
-        [in]  UCHAR                     SubAuthorityCount);
+        _Out_ PSID                      Sid,
+        _In_  PSID_IDENTIFIER_AUTHORITY IdentifierAuthority,
+        _In_  UCHAR                     SubAuthorityCount);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlinitializesidex
     NTSYSAPI NTSTATUS RtlInitializeSidEx(
-        [out] PSID                      Sid,
-        [in]  PSID_IDENTIFIER_AUTHORITY IdentifierAuthority,
-        [in]  UCHAR                     SubAuthorityCount,
+        _Out_ PSID                      Sid,
+        _In_  PSID_IDENTIFIER_AUTHORITY IdentifierAuthority,
+        _In_  UCHAR                     SubAuthorityCount,
         ...);
 
     // https://ntdoc.m417z.com/rtliscapabilitysid
@@ -872,15 +872,15 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtllengthrequiredsid
     NTSYSAPI ULONG RtlLengthRequiredSid(
-        [in] ULONG SubAuthorityCount);
+        _In_ ULONG SubAuthorityCount);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtllengthsecuritydescriptor
     NTSYSAPI ULONG RtlLengthSecurityDescriptor(
-        [in] PSECURITY_DESCRIPTOR SecurityDescriptor);
+        _In_ PSECURITY_DESCRIPTOR SecurityDescriptor);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtllengthsid
     NTSYSAPI ULONG RtlLengthSid(
-        [in] PSID Sid);
+        _In_ PSID Sid);
 
     // https://github.com/winsiderss/systeminformer/blob/daf4737ce0399fa92d17df118bcb3aba5cdc794f/phnt/include/ntrtl.h#L7783
     NTSYSAPI NTSTATUS NTAPI RtlLengthSidAsUnicodeString(
@@ -896,7 +896,7 @@ extern "C" {
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlmapgenericmask
     NTSYSAPI VOID RtlMapGenericMask(
         [in, out] PACCESS_MASK          AccessMask,
-        [in]      const GENERIC_MAPPING* GenericMapping);
+        _In_      const GENERIC_MAPPING* GenericMapping);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
     NTSYSAPI NTSTATUS NTAPI RtlNewInstanceSecurityObject(
@@ -1008,16 +1008,16 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlselfrelativetoabsolutesd
     NTSYSAPI NTSTATUS RtlSelfRelativeToAbsoluteSD(
-        [in]      PSECURITY_DESCRIPTOR SelfRelativeSecurityDescriptor,
-        [out]     PSECURITY_DESCRIPTOR AbsoluteSecurityDescriptor,
+        _In_      PSECURITY_DESCRIPTOR SelfRelativeSecurityDescriptor,
+        _Out_     PSECURITY_DESCRIPTOR AbsoluteSecurityDescriptor,
         [in, out] PULONG               AbsoluteSecurityDescriptorSize,
-        [out]     PACL                 Dacl,
+        _Out_     PACL                 Dacl,
         [in, out] PULONG               DaclSize,
-        [out]     PACL                 Sacl,
+        _Out_     PACL                 Sacl,
         [in, out] PULONG               SaclSize,
-        [out]     PSID                 Owner,
+        _Out_     PSID                 Owner,
         [in, out] PULONG               OwnerSize,
-        [out]     PSID                 PrimaryGroup,
+        _Out_     PSID                 PrimaryGroup,
         [in, out] PULONG               PrimaryGroupSize);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
@@ -1040,15 +1040,15 @@ extern "C" {
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlsetdaclsecuritydescriptor
     NTSYSAPI NTSTATUS RtlSetDaclSecurityDescriptor(
         [in, out]      PSECURITY_DESCRIPTOR SecurityDescriptor,
-        [in]           BOOLEAN              DaclPresent,
-        [in, optional] PACL                 Dacl,
-        [in, optional] BOOLEAN              DaclDefaulted);
+        _In_           BOOLEAN              DaclPresent,
+        _In_opt_ PACL                 Dacl,
+        _In_opt_ BOOLEAN              DaclDefaulted);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlsetgroupsecuritydescriptor
     NTSYSAPI NTSTATUS RtlSetGroupSecurityDescriptor(
         [in, out]      PSECURITY_DESCRIPTOR SecurityDescriptor,
-        [in, optional] PSID                 Group,
-        [in, optional] BOOLEAN              GroupDefaulted);
+        _In_opt_ PSID                 Group,
+        _In_opt_ BOOLEAN              GroupDefaulted);
 
     //RtlSetInformationAcl
     NTSYSAPI NTSTATUS NTAPI RtlSetInformationAcl(
@@ -1060,8 +1060,8 @@ extern "C" {
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlsetownersecuritydescriptor
     NTSYSAPI NTSTATUS RtlSetOwnerSecurityDescriptor(
         [in, out]      PSECURITY_DESCRIPTOR SecurityDescriptor,
-        [in, optional] PSID                 Owner,
-        [in, optional] BOOLEAN              OwnerDefaulted);
+        _In_opt_ PSID                 Owner,
+        _In_opt_ BOOLEAN              OwnerDefaulted);
 
     // https://github.com/winsiderss/systeminformer/blob/daf4737ce0399fa92d17df118bcb3aba5cdc794f/phnt/include/ntrtl.h#L10787
     NTSYSAPI ULONG NTAPI RtlSetProxiedProcessId(
@@ -1131,7 +1131,7 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlsubauthoritysid
     NTSYSAPI PULONG RtlSubAuthoritySid(
-        [in] PSID  Sid,
+        _In_ PSID  Sid,
         ULONG SubAuthority);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
@@ -1154,7 +1154,7 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlvalidsid
     NTSYSAPI BOOLEAN RtlValidSid(
-        [in] PSID Sid);
+        _In_ PSID Sid);
 
 }
 

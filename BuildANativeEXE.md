@@ -28,6 +28,7 @@ Next make sure project properties match following values :
     - Ignore default libraries : Yes (/NODEFAULTLIB)
 - C/C++
   - Code generation
+    - Basic runtime checks : Default
     - Enable C++ Exceptions : No
     - Runtime library : Multi-threaded (/MT)
     - Security Check : Disable Security Check (/GS-)

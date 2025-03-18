@@ -3,12 +3,139 @@
 #ifndef _NTCOMMONDEFS_
 #define _NTCOMMONDEFS_
 
-// To be found in %SystemDrive%\Program Files (x86)\Windows Kits\10\Include\x.y.z.t\shared
-#include <minwindef.h>
+#include <sal.h>
 
+#define WIN32
+// This will prevent minwindef.h to include winnt.h
+#define NT_INCLUDED
+// ... however we have to define a couple of things
+
+#define CONST const
+#define POINTER_64 __ptr64
+#define UNALIGNED __unaligned
+#define VOID void
+
+// Forward declarations
+typedef struct _SID_IDENTIFIER_AUTHORITY* PSID_IDENTIFIER_AUTHORITY;
+typedef struct _UNICODE_STRING* PUNICODE_STRING;
+
+// Intrinsic types aliases
+typedef int BOOL, * PBOOL;
+typedef unsigned char BYTE;
+typedef char CHAR, * PCHAR;
+typedef int DWORD;
+typedef void* HANDLE, * PHANDLE;
+typedef __int64 INT_PTR, * PINT_PTR;
+typedef long LONG, * PLONG;
+typedef __int64 LONGLONG, QWORD;
+typedef __int64 LONG_PTR, * PLONG_PTR;
+typedef short SHORT, * PSHORT;
+typedef unsigned char UCHAR, * PUCHAR;
+typedef unsigned __int64 UINT_PTR, * PUINT_PTR;
+typedef unsigned long ULONG, * PULONG;
+typedef unsigned __int64 ULONGLONG, *PULONGLONG;
+typedef unsigned __int64 ULONG_PTR, * PULONG_PTR;
+typedef unsigned short USHORT, * PUSHORT;
+typedef wchar_t WCHAR;    // wc,   16-bit UNICODE character
+typedef short WORD;
+
+// More derived types.
+typedef BYTE BOOLEAN, *PBOOLEAN;
+typedef DWORD LCID, *PLCID;
 typedef LONG NTSTATUS;
+typedef VOID* PVOID, ** PPVOID;
+typedef void* POINTER_64 PVOID64;
 
-#define NTSYSAPI     __declspec(dllimport)
+#define __int3264   __int64
+#ifndef FALSE
+#define FALSE               0
+#endif
+#ifndef TRUE
+#define TRUE                1
+#endif
+
+// Including some basic types
+#define DECLARE_HANDLE(name) struct name##__; typedef struct name##__ *name
+typedef size_t SIZE_T, * PSIZE_T;
+
+typedef WCHAR* PWCHAR, * LPWCH, * PWCH;
+typedef CONST WCHAR* LPCWCH, * PCWCH;
+
+typedef _Null_terminated_ WCHAR* NWPSTR, * LPWSTR, * PWSTR;
+typedef _Null_terminated_ PWSTR* PZPWSTR;
+typedef _Null_terminated_ CONST PWSTR* PCZPWSTR;
+typedef _Null_terminated_ WCHAR UNALIGNED* LPUWSTR, * PUWSTR;
+typedef _Null_terminated_ CONST WCHAR* LPCWSTR, * PCWSTR;
+typedef _Null_terminated_ PCWSTR* PZPCWSTR;
+typedef _Null_terminated_ CONST PCWSTR* PCZPCWSTR;
+typedef _Null_terminated_ CONST WCHAR UNALIGNED* LPCUWSTR, * PCUWSTR;
+
+typedef _NullNull_terminated_ WCHAR* PZZWSTR;
+typedef _NullNull_terminated_ CONST WCHAR* PCZZWSTR;
+typedef _NullNull_terminated_ WCHAR UNALIGNED* PUZZWSTR;
+typedef _NullNull_terminated_ CONST WCHAR UNALIGNED* PCUZZWSTR;
+
+typedef  WCHAR* PNZWCH;
+typedef  CONST WCHAR* PCNZWCH;
+typedef  WCHAR UNALIGNED* PUNZWCH;
+typedef  CONST WCHAR UNALIGNED* PCUNZWCH;
+
+typedef CONST WCHAR* LPCWCHAR, * PCWCHAR;
+typedef CONST WCHAR UNALIGNED* LPCUWCHAR, * PCUWCHAR;
+
+#define NTSYSAPI __declspec(dllimport)
 #define NTSYSCALLAPI __declspec(dllimport)
+#define NTAPI __stdcall
+
+typedef union _LARGE_INTEGER {
+    struct {
+        ULONG LowPart;
+        LONG HighPart;
+    } DUMMYSTRUCTNAME;
+    struct {
+        ULONG LowPart;
+        LONG HighPart;
+    } u;
+    LONGLONG QuadPart;
+} LARGE_INTEGER, *PLARGE_INTEGER;
+
+typedef struct _OBJECT_ATTRIBUTES {
+    ULONG           Length;
+    HANDLE          RootDirectory;
+    PUNICODE_STRING ObjectName;
+    ULONG           Attributes;
+    PVOID           SecurityDescriptor;
+    PVOID           SecurityQualityOfService;
+} OBJECT_ATTRIBUTES, *POBJECT_ATTRIBUTES;
+
+typedef struct _SID_IDENTIFIER_AUTHORITY {
+    UCHAR Value[6];
+} SID_IDENTIFIER_AUTHORITY;
+
+typedef struct _SID {
+    BYTE Revision;
+    BYTE SubAuthorityCount;
+    SID_IDENTIFIER_AUTHORITY IdentifierAuthority;
+    /* [size_is] */ ULONG SubAuthority[1];
+} SID, *PSID;
+
+typedef struct _STRING {
+    USHORT Length;
+    USHORT MaximumLength;
+    _Field_size_bytes_part_opt_(MaximumLength, Length) PCHAR Buffer;
+} STRING;
+typedef STRING ANSI_STRING, OEM_STRING, * PSTRING;
+typedef PSTRING PANSI_STRING, POEM_STRING;
+typedef CONST STRING* PCOEM_STRING;
+
+typedef struct _UNICODE_STRING {
+	USHORT Length;
+	USHORT MaximumLength;
+	PWSTR  Buffer;
+} UNICODE_STRING;
+typedef const UNICODE_STRING* PCUNICODE_STRING;
+
+// To be found in %SystemDrive%\Program Files (x86)\Windows Kits\10\Include\x.y.z.t\shared
+// #include <minwindef.h>
 
 #endif // _NTCOMMONDEFS_

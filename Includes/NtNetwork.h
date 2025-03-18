@@ -28,25 +28,25 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/ip2string/nf-ip2string-rtlethernetaddresstostringa
 	NTSYSAPI PSTR NTAPI RtlEthernetAddressToStringA(
-		[in]  const DL_EUI48* Addr,
-		[out] PSTR S);
+		_In_  const DL_EUI48* Addr,
+		_Out_ PSTR S);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/ip2string/nf-ip2string-rtlethernetaddresstostringw
 	NTSYSAPI PWSTR NTAPI RtlEthernetAddressToStringW(
-		[in]  const DL_EUI48* Addr,
-		[out] PWSTR S);
+		_In_  const DL_EUI48* Addr,
+		_Out_ PWSTR S);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/ip2string/nf-ip2string-rtlethernetstringtoaddressa
 	NTSYSAPI NTSTATUS NTAPI RtlEthernetStringToAddressA(
-		[in]  PCSTR    S,
-		[out] PCSTR* Terminator,
-		[out] DL_EUI48* Addr);
+		_In_  PCSTR    S,
+		_Out_ PCSTR* Terminator,
+		_Out_ DL_EUI48* Addr);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/ip2string/nf-ip2string-rtlethernetstringtoaddressw
 	NTSYSAPI NTSTATUS NTAPI RtlEthernetStringToAddressW(
-		[in]  PCWSTR   S,
-		[out] LPCWSTR* Terminator,
-		[out] DL_EUI48* Addr);
+		_In_  PCWSTR   S,
+		_Out_ LPCWSTR* Terminator,
+		_Out_ DL_EUI48* Addr);
 
 }
 
