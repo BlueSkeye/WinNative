@@ -25,7 +25,7 @@ typedef int BOOL, * PBOOL;
 typedef unsigned char BYTE;
 typedef char CHAR;
 typedef int DWORD;
-typedef unsigned __int64 ULONG64, * PULONG64;
+typedef unsigned __int64 ULONG64, UINT64, * PULONG64;
 typedef unsigned __int64 DWORD64, * PDWORD64;
 typedef void* HANDLE, * PHANDLE;
 typedef __int64 INT_PTR, * PINT_PTR;

@@ -7,6 +7,9 @@
 
 extern "C" {
 
+	// See : https://www.ivanlef0u.tuxfamily.org/?p=188
+	// See : https://www.geoffchappell.com/studies/windows/win32/csrsrv/api/apireqst/api_msg.htm
+
 	// NO UNDEFINED FUNCTIONS
 
 	typedef struct _CLIENT_ID CLIENT_ID;
