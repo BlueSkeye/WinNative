@@ -16,6 +16,17 @@ extern "C" {
     //RtlUpdateTimer
     // END OF UNRESOLVED FUNCTIONS
 
+    // http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FTimer%2FNtQueryTimer.html
+    typedef enum _TIMER_INFORMATION_CLASS {
+        TimerBasicInformation
+    } TIMER_INFORMATION_CLASS, * PTIMER_INFORMATION_CLASS;
+
+    typedef enum _TIMER_TYPE {
+        NotificationTimer,
+        SynchronizationTimer
+    } TIMER_TYPE;
+
+    // ====================== functions ====================
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtCancelTimer(
         _In_ HANDLE TimerHandle,
@@ -106,6 +117,12 @@ extern "C" {
         _Out_opt_ PLARGE_INTEGER PrevSystemTime);
     //ZwSetSystemTime
 
+    // http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FTimer%2FNtSetTimer.html
+    typedef void (NTAPI *PTIMER_APC_ROUTINE)(
+        _In_ PVOID TimerContext,
+        _In_ ULONG TimerLowValue,
+        _In_ LONG TimerHighValue);
+
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtSetTimer(
         _In_ HANDLE TimerHandle,
@@ -151,7 +168,11 @@ extern "C" {
         HANDLE TimerQueue);
 
     // https://doxygen.reactos.org/dd/d63/sdk_2lib_2rtl_2timerqueue_8c.html
-    NTSYSAPI NTSTATUS WINAPI RtlSetTimer(
+    // https://doxygen.reactos.org/d5/df7/ndk_2rtltypes_8h.html#a7015455ab806eacbc4cab1fa2a0c085d
+    typedef VOID(NTAPI* WAITORTIMERCALLBACKFUNC)(
+        PVOID pvContext,
+        BOOLEAN fTimerOrWaitFired);
+    NTSYSAPI NTSTATUS NTAPI RtlSetTimer(
         HANDLE TimerQueue,
         PHANDLE NewTimer,
         WAITORTIMERCALLBACKFUNC Callback,
