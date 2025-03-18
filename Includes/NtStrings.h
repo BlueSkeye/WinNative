@@ -9,6 +9,44 @@ extern "C" {
 
 	// NO UNRESOLVED FUNCTIONS
 
+	// This structure is the data from the raw codepage files.  Note that we set the "Codepage" field
+	// last, so any threads accessing this pointers in this structure should check to see if that is
+	// CP_UTF8 (65001) first.  If so, they should not use the pointers.
+	// MemoryBarrier might be warranted before checking CodePage to protect out-of-order reads of the pointers.
+	#define MAXIMUM_LEADBYTES   12
+	typedef struct _CPTABLEINFO {
+		USHORT CodePage;                    // code page number (For UTF-8 the rest of the structure is unused)
+		USHORT MaximumCharacterSize;        // max length (bytes) of a char
+		USHORT DefaultChar;                 // default character (MB)
+		USHORT UniDefaultChar;              // default character (Unicode)
+		USHORT TransDefaultChar;            // translation of default char (Unicode)
+		USHORT TransUniDefaultChar;         // translation of Unic default char (MB)
+		USHORT DBCSCodePage;                // Non 0 for DBCS code pages
+		UCHAR  LeadByte[MAXIMUM_LEADBYTES]; // lead byte ranges
+		PUSHORT MultiByteTable;             // pointer to MB->Unicode translation table
+		PVOID   WideCharTable;              // pointer to WC (Unicode->CodePage) translation table
+		PUSHORT DBCSRanges;                 // pointer to DBCS ranges (UNUSED, DO NOT SET)
+		PUSHORT DBCSOffsets;                // pointer to DBCS offsets
+	} CPTABLEINFO, * PCPTABLEINFO;
+	
+	// https://github.com/x-tinkerer/WRK/blob/e2e25706c766e1f93b3e55ab95601e72860f74d9/public/sdk/inc/ntrtlstringandbuffer.h#L114
+	typedef struct _RTL_BUFFER {
+		PUCHAR Buffer;
+		PUCHAR StaticBuffer;
+		SIZE_T Size;
+		SIZE_T StaticSize;
+		SIZE_T ReservedForAllocatedSize; // for future doubling
+		PVOID ReservedForIMalloc; // for future pluggable growth
+	} RTL_BUFFER, * PRTL_BUFFER;
+
+	// https://github.com/x-tinkerer/WRK/blob/e2e25706c766e1f93b3e55ab95601e72860f74d9/public/sdk/inc/ntrtlstringandbuffer.h#L249
+	typedef struct _RTL_UNICODE_STRING_BUFFER {
+		UNICODE_STRING String;
+		RTL_BUFFER ByteBuffer;
+		UCHAR MinimumStaticBufferForTerminalNul[sizeof(WCHAR)];
+	} RTL_UNICODE_STRING_BUFFER, * PRTL_UNICODE_STRING_BUFFER;
+
+	// ======================== functions ========================
 	// https://learn.microsoft.com/en-us/previous-versions/windows/hardware/kernel/ff561132(v=vs.85)
 	NTSYSAPI WCHAR NTAPI RtlAnsiCharToUnicodeChar(
 		_Inout_ PUCHAR* SourceCharacter);
@@ -20,9 +58,9 @@ extern "C" {
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlansistringtounicodestring
 	// See winterl.h
 	NTSYSAPI NTSTATUS RtlAnsiStringToUnicodeString(
-		[in, out] PUNICODE_STRING DestinationString,
-		_In_      PCANSI_STRING   SourceString,
-		_In_      BOOLEAN         AllocateDestinationString);
+		_Inout_ PUNICODE_STRING DestinationString,
+		_In_ PCANSI_STRING   SourceString,
+		_In_ BOOLEAN         AllocateDestinationString);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI NTSTATUS NTAPI RtlAppendAsciizToString(
@@ -31,26 +69,26 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlappendstringtostring
 	NTSYSAPI NTSTATUS RtlAppendStringToString(
-		[in, out] PSTRING      Destination,
+		_Inout_ PSTRING      Destination,
 		_In_      const STRING* Source);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlansistringtounicodestring
 	NTSYSAPI NTSTATUS RtlAnsiStringToUnicodeString(
-		[in, out] PUNICODE_STRING DestinationString,
-		_In_      PCANSI_STRING   SourceString,
-		_In_      BOOLEAN         AllocateDestinationString);
+		_Inout_ PUNICODE_STRING DestinationString,
+		_In_ PCANSI_STRING   SourceString,
+		_In_ BOOLEAN         AllocateDestinationString);
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlappendunicodetostring
 	NTSYSAPI NTSTATUS RtlAppendUnicodeToString(
-		[in, out]      PUNICODE_STRING Destination,
+		_Inout_ PUNICODE_STRING Destination,
 		_In_opt_ PCWSTR          Source);
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/winternl/nf-winternl-rtlchartointeger
 	// See winterl.h
 	NTSTATUS RtlCharToInteger(
-		_In_           PCSZ   String,
+		_In_ PCSZ   String,
 		_In_opt_ ULONG  Base,
-		_Out_          PULONG Value);
+		_Out_ PULONG Value);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	_Must_inspect_result_ NTSYSAPI LONG NTAPI RtlCompareString(
@@ -79,7 +117,7 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcopyunicodestring
 	NTSYSAPI VOID RtlCopyUnicodeString(
-		[in, out]      PUNICODE_STRING  DestinationString,
+		_Inout_ PUNICODE_STRING  DestinationString,
 		_In_opt_ PCUNICODE_STRING SourceString);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcreateunicodestring
@@ -140,17 +178,17 @@ extern "C" {
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfreeansistring
 	// See winterl.h
 	NTSYSAPI VOID RtlFreeAnsiString(
-		[in, out] PANSI_STRING AnsiString);
+		_Inout_ PANSI_STRING AnsiString);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlfreeoemstring
 	// See winterl.h
 	NTSYSAPI VOID RtlFreeOemString(
-		[in, out] POEM_STRING OemString);
+		_Inout_ POEM_STRING OemString);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfreeunicodestring
 	// See winterl.h
 	NTSYSAPI VOID RtlFreeUnicodeString(
-		[in, out] PUNICODE_STRING UnicodeString);
+		_Inout_ PUNICODE_STRING UnicodeString);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfreeutf8string
 	NTSYSAPI VOID RtlFreeUTF8String(
@@ -216,9 +254,9 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlint64tounicodestring
 	NTSYSAPI NTSTATUS RtlInt64ToUnicodeString(
-		_In_           ULONGLONG       Value,
+		_In_ ULONGLONG       Value,
 		_In_opt_ ULONG           Base,
-		[in, out]      PUNICODE_STRING String);
+		_Inout_ PUNICODE_STRING String);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI NTSTATUS NTAPI RtlIntegerToChar(
@@ -229,9 +267,9 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlintegertounicodestring
 	NTSYSAPI NTSTATUS RtlIntegerToUnicodeString(
-		_In_           ULONG           Value,
+		_In_ ULONG           Value,
 		_In_opt_ ULONG           Base,
-		[in, out]      PUNICODE_STRING String);
+		_Inout_ PUNICODE_STRING String);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI NTSTATUS NTAPI RtlIsNormalizedString(
@@ -266,15 +304,15 @@ extern "C" {
 
 	// https://github.com/x-tinkerer/WRK/blob/master/public/sdk/inc/ntrtlstringandbuffer.h
 	NTSYSAPI NTSTATUS NTAPI RtlMultiAppendUnicodeStringBuffer(
-		OUT PRTL_UNICODE_STRING_BUFFER  Destination,
-		IN  ULONG                       NumberOfSources,
-		IN  const UNICODE_STRING* SourceArray);
+		_Out_ PRTL_UNICODE_STRING_BUFFER  Destination,
+		_In_ ULONG                       NumberOfSources,
+		_In_ const UNICODE_STRING* SourceArray);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlmultibytetounicoden
 	NTSYSAPI NTSTATUS RtlMultiByteToUnicodeN(
 		_Out_           PWCH       UnicodeString,
 		_In_            ULONG      MaxBytesInUnicodeString,
-		[out, optional] PULONG     BytesInUnicodeString,
+		_Out_opt_ PULONG     BytesInUnicodeString,
 		_In_            const CHAR* MultiByteString,
 		_In_            ULONG      BytesInMultiByteString);
 
@@ -300,11 +338,11 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtloemtounicoden
 	NTSYSAPI NTSTATUS RtlOemToUnicodeN(
-		_Out_           PWCH   UnicodeString,
-		_In_            ULONG  MaxBytesInUnicodeString,
-		[out, optional] PULONG BytesInUnicodeString,
-		_In_            PCCH   OemString,
-		_In_            ULONG  BytesInOemString);
+		_Out_ PWCH   UnicodeString,
+		_In_ ULONG  MaxBytesInUnicodeString,
+		_Out_opt_ PULONG BytesInUnicodeString,
+		_In_ PCCH   OemString,
+		_In_ ULONG  BytesInOemString);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI BOOLEAN NTAPI RtlPrefixString(
@@ -357,22 +395,25 @@ extern "C" {
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlutf8tounicoden
 	NTSYSAPI NTSTATUS RtlUTF8ToUnicodeN(
-		[out, optional] PWSTR  UnicodeStringDestination,
+		_Out_opt_ PWSTR  UnicodeStringDestination,
 		_In_            ULONG  UnicodeStringMaxByteCount,
 		_Out_           PULONG UnicodeStringActualByteCount,
 		_In_            PCCH   UTF8StringSource,
 		_In_            ULONG  UTF8StringByteCount);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlunicodestringtoansisize
+#define RtlUnicodeStringToOemSize RtlUnicodeStringToAnsiSize /* Alias */
+#define RtlxUnicodeStringToAnsiSize RtlUnicodeStringToAnsiSize /* Alias */
+#define RtlxUnicodeStringToOemSize RtlUnicodeStringToAnsiSize /* Alias */
 	NTSYSAPI void NTAPI RtlUnicodeStringToAnsiSize(
-		_In_  STRING);
+		_In_ PCUNICODE_STRING String);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlunicodestringtoansistring
 	// See winterl.h
 	NTSYSAPI NTSTATUS NTAPI RtlUnicodeStringToAnsiString(
-		[in, out] PANSI_STRING     DestinationString,
-		_In_      PCUNICODE_STRING SourceString,
-		_In_      BOOLEAN          AllocateDestinationString);
+		_Inout_ PANSI_STRING     DestinationString,
+		_In_ PCUNICODE_STRING SourceString,
+		_In_ BOOLEAN          AllocateDestinationString);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlunicodestringtocountedoemstring
 	NTSYSAPI NTSTATUS RtlUnicodeStringToCountedOemString(
@@ -382,16 +423,9 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlunicodestringtoansistring
 	NTSYSAPI NTSTATUS RtlUnicodeStringToAnsiString(
-		[in, out] PANSI_STRING     DestinationString,
-		_In_      PCUNICODE_STRING SourceString,
-		_In_      BOOLEAN          AllocateDestinationString);
-
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlxunicodestringtooemsize
-#define RtlUnicodeStringToOemSize RtlUnicodeStringToAnsiSize /* Alias */
-#define RtlxUnicodeStringToAnsiSize RtlUnicodeStringToAnsiSize /* Alias */
-#define RtlxUnicodeStringToOemSize RtlUnicodeStringToAnsiSize /* Alias */
-	NTSYSAPI ULONG NTAPI RtlUnicodeStringToAnsiSize(
-		PCUNICODE_STRING UnicodeString);
+		_Inout_ PANSI_STRING     DestinationString,
+		_In_ PCUNICODE_STRING SourceString,
+		_In_ BOOLEAN          AllocateDestinationString);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlunicodestringtooemstring
 	// See winterl.h
@@ -417,11 +451,11 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlunicodetomultibyten
 	NTSYSAPI NTSTATUS RtlUnicodeToMultiByteN(
-		_Out_           PCHAR  MultiByteString,
-		_In_            ULONG  MaxBytesInMultiByteString,
-		[out, optional] PULONG BytesInMultiByteString,
-		_In_            PCWCH  UnicodeString,
-		_In_            ULONG  BytesInUnicodeString);
+		_Out_ PCHAR  MultiByteString,
+		_In_ ULONG  MaxBytesInMultiByteString,
+		_Out_opt_ PULONG BytesInMultiByteString,
+		_In_ PCWCH  UnicodeString,
+		_In_ ULONG  BytesInUnicodeString);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlunicodetomultibytesize
 	// See winterl.h
@@ -432,11 +466,11 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlunicodetooemn
 	NTSYSAPI NTSTATUS RtlUnicodeToOemN(
-		_Out_           PCHAR  OemString,
-		_In_            ULONG  MaxBytesInOemString,
-		[out, optional] PULONG BytesInOemString,
-		_In_            PCWCH  UnicodeString,
-		_In_            ULONG  BytesInUnicodeString);
+		_Out_ PCHAR  OemString,
+		_In_ ULONG  MaxBytesInOemString,
+		_Out_opt_ PULONG BytesInOemString,
+		_In_ PCWCH  UnicodeString,
+		_In_ ULONG  BytesInUnicodeString);
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlunicodetoutf8n
 	NTSYSAPI NTSTATUS RtlUnicodeToUTF8N(
@@ -448,9 +482,9 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlupcaseunicodestring
 	NTSYSAPI NTSTATUS RtlUpcaseUnicodeString(
-		[in, out] PUNICODE_STRING  DestinationString,
-		_In_      PCUNICODE_STRING SourceString,
-		_In_      BOOLEAN          AllocateDestinationString);
+		_Inout_ PUNICODE_STRING  DestinationString,
+		_In_ PCUNICODE_STRING SourceString,
+		_In_ BOOLEAN          AllocateDestinationString);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlupcaseunicodestringtocountedoemstring
 	NTSYSAPI NTSTATUS RtlUpcaseUnicodeStringToCountedOemString(
@@ -475,19 +509,19 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlupcaseunicodetomultibyten
 	NTSYSAPI NTSTATUS RtlUpcaseUnicodeToMultiByteN(
-		_Out_           PCHAR  MultiByteString,
-		_In_            ULONG  MaxBytesInMultiByteString,
-		[out, optional] PULONG BytesInMultiByteString,
-		_In_            PCWCH  UnicodeString,
-		_In_            ULONG  BytesInUnicodeString);
+		_Out_ PCHAR  MultiByteString,
+		_In_ ULONG  MaxBytesInMultiByteString,
+		_Out_opt_ PULONG BytesInMultiByteString,
+		_In_ PCWCH  UnicodeString,
+		_In_ ULONG  BytesInUnicodeString);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlupcaseunicodetooemn
 	NTSYSAPI NTSTATUS RtlUpcaseUnicodeToOemN(
-		_Out_           PCHAR  OemString,
-		_In_            ULONG  MaxBytesInOemString,
-		[out, optional] PULONG BytesInOemString,
-		_In_            PCWCH  UnicodeString,
-		_In_            ULONG  BytesInUnicodeString);
+		_Out_ PCHAR  OemString,
+		_In_ ULONG  MaxBytesInOemString,
+		_Out_opt_ PULONG BytesInOemString,
+		_In_ PCWCH  UnicodeString,
+		_In_ ULONG  BytesInUnicodeString);
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlupperchar
 	NTSYSAPI CHAR RtlUpperChar(
@@ -495,8 +529,8 @@ extern "C" {
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlupperstring
 	NTSYSAPI VOID RtlUpperString(
-		[in, out] PSTRING      DestinationString,
-		_In_      const STRING* SourceString);
+		_Inout_ PSTRING      DestinationString,
+		_In_ const STRING* SourceString);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI NTSTATUS NTAPI RtlValidateUnicodeString(

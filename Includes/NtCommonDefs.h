@@ -22,7 +22,7 @@ typedef struct _UNICODE_STRING* PUNICODE_STRING;
 // Intrinsic types aliases
 typedef int BOOL, * PBOOL;
 typedef unsigned char BYTE;
-typedef char CHAR, * PCHAR;
+typedef char CHAR;
 typedef int DWORD;
 typedef void* HANDLE, * PHANDLE;
 typedef __int64 INT_PTR, * PINT_PTR;
@@ -60,6 +60,9 @@ typedef const VOID* PCVOID;
 #define DECLARE_HANDLE(name) struct name##__; typedef struct name##__ *name
 typedef size_t SIZE_T, * PSIZE_T;
 
+typedef _Null_terminated_ CHAR* LPCH, * LPSTR, * NPSTR, * PCH, * PCHAR, * PSTR, * PSZ;
+typedef _Null_terminated_ CONST char* LPCCH, * PCCH, * PCSZ;
+
 typedef WCHAR* PWCHAR, * LPWCH, * PWCH;
 typedef CONST WCHAR* LPCWCH, * PCWCH;
 
@@ -88,6 +91,14 @@ typedef CONST WCHAR UNALIGNED* LPCUWCHAR, * PCUWCHAR;
 #define NTSYSAPI __declspec(dllimport)
 #define NTSYSCALLAPI __declspec(dllimport)
 #define NTAPI __stdcall
+
+typedef struct _GUID {
+    unsigned long  Data1;
+    unsigned short Data2;
+    unsigned short Data3;
+    unsigned char  Data4[8];
+} GUID;
+typedef GUID* PGUID, REFGUID;
 
 typedef union _LARGE_INTEGER {
     struct {
@@ -126,8 +137,8 @@ typedef struct _STRING {
     USHORT MaximumLength;
     _Field_size_bytes_part_opt_(MaximumLength, Length) PCHAR Buffer;
 } STRING;
-typedef STRING ANSI_STRING, OEM_STRING, * PSTRING;
-typedef PSTRING PANSI_STRING, POEM_STRING;
+typedef STRING ANSI_STRING, CANSI_STRING, OEM_STRING, UTF8_STRING, *PSTRING;
+typedef PSTRING PANSI_STRING, PCANSI_STRING, POEM_STRING, PUTF8_STRING;
 typedef CONST STRING* PCOEM_STRING;
 
 typedef struct _UNICODE_STRING {
@@ -138,6 +149,7 @@ typedef struct _UNICODE_STRING {
 typedef const UNICODE_STRING* PCUNICODE_STRING;
 
 // Define some specificiation strings to prevent compilation errors.
+#define __drv_aliasesMem
 #define _Frees_ptr_opt_
 #define DECLSPEC_ALLOCATOR __declspec(allocator)
 #define DECLSPEC_NOALIAS __declspec(noalias)
