@@ -9,6 +9,14 @@ extern "C" {
 
 	// NO UNRESOLVED FUNCTIONS
 
+	typedef USHORT RTL_ATOM, * PRTL_ATOM;
+
+	typedef enum _ATOM_INFORMATION_CLASS {
+		AtomBasicInformation,
+		AtomTableInformation
+	} ATOM_INFORMATION_CLASS, * PATOM_INFORMATION_CLASS;
+
+	// ============================= functions =============================
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtAddAtom(
 		_In_ PWSTR AtomName,
@@ -16,7 +24,7 @@ extern "C" {
 		_Out_ PRTL_ATOM Atom);
 	//ZwAddAtom
 
-	//NtAddAtomEx
+	// https://github.com/lucasg/processhacker2/blob/8aab7a17ee6e91ce37eddc4f19a05501d19143c0/phnt/include/ntexapi.h#L3791
 	NTSYSCALLAPI NTSTATUS NTAPI NtAddAtomEx(
 		_In_ PWSTR AtomName,
 		_In_ ULONG AtomNameLength,
@@ -37,6 +45,7 @@ extern "C" {
 	//ZwFindAtom
 
 	// https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
+	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FAtoms%2FNtQueryInformationAtom.html
 	NTSYSCALLAPI NTSTATUS NTAPI NtQueryInformationAtom(
 		_In_ RTL_ATOM Atom,
 		_In_ ATOM_INFORMATION_CLASS AtomInformationClass,
@@ -63,7 +72,7 @@ extern "C" {
 
 	// https://doxygen.reactos.org/d7/d39/sdk_2lib_2rtl_2atom_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlDestroyAtomTable(
-		IN PRTL_ATOM_TABLE AtomTable);
+		_In_ HANDLE AtomTable);
 
 	//https://raw.githubusercontent.com/x64dbg/TitanEngine/refs/heads/x64dbg/TitanEngine/ntdll.h
 	NTSYSAPI NTSTATUS NTAPI RtlEmptyAtomTable(
@@ -79,7 +88,7 @@ extern "C" {
 	//https://www.cnblogs.com/ahuo/archive/2011/05/29/2062398.html
 	//https://github.com/mic101/windows/blob/master/WRK-v1.2/base/ntos/rtl/atom.c
 	NTSYSAPI NTSTATUS NTAPI RtlInitializeAtomPackage(
-		IN ULONG AllocationTag);
+		_In_ ULONG AllocationTag);
 
 	//https://raw.githubusercontent.com/x64dbg/TitanEngine/refs/heads/x64dbg/TitanEngine/ntdll.h
 	NTSYSAPI NTSTATUS NTAPI RtlLookupAtomInAtomTable(
@@ -89,8 +98,8 @@ extern "C" {
 
 	// https://doxygen.reactos.org/d7/d39/sdk_2lib_2rtl_2atom_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlPinAtomInAtomTable(
-		IN PRTL_ATOM_TABLE AtomTable,
-		IN RTL_ATOM Atom);
+		_In_ HANDLE AtomTable,
+		_In_ RTL_ATOM Atom);
 
 	//https://raw.githubusercontent.com/x64dbg/TitanEngine/refs/heads/x64dbg/TitanEngine/ntdll.h
 	NTSYSAPI NTSTATUS NTAPI RtlQueryAtomInAtomTable(

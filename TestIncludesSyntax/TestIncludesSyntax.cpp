@@ -3,7 +3,7 @@
 #include "NtCommonDefs.h"
 
 //#include "NtAsyincProcdureCalls.h"
-//#include "NtAtoms.h"
+#include "NtAtoms.h"
 //#include "NtClientServer.h"
 //#include "NtContexts.h"
 //#include "NTCRuntime.h"
