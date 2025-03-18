@@ -9,6 +9,24 @@ extern "C" {
 
     // NO UNRESOLVED FUNCTIONS
 
+    typedef ACCESS_MASK JOB_ACCESS_MASK;
+
+    // https://doxygen.reactos.org/d3/d61/include_2ndk_2pstypes_8h.html#aaf395c83558f6c49fd454c4b70d4e7ce
+    // Also _JOBOBJECTINFOCLASS
+    typedef enum _JOB_INFORMATION_CLASS {
+        JobObjectBasicAccountingInformation = 1,
+        JobObjectBasicLimitInformation,
+        JobObjectBasicProcessIdList,
+        JobObjectBasicUIRestrictions,
+        JobObjectSecurityLimitInformation,
+        JobObjectEndOfJobTimeInformation,
+        JobObjectAssociateCompletionPortInformation,
+        JobObjectBasicAndIoAccountingInformation,
+        JobObjectExtendedLimitInformation,
+        JobObjectJobSetInformation,
+        MaxJobObjectInfoClass
+    } JOB_INFORMATION_CLASS;
+
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtAssignProcessToJobObject(
         _In_ HANDLE JobHandle,
@@ -35,14 +53,14 @@ extern "C" {
         _In_opt_ HANDLE hJob);
     //ZwIsProcessInJob
     
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://doxygen.reactos.org/d0/dbc/ntoskrnl_2ps_2job_8c.html
     NTSYSCALLAPI NTSTATUS NTAPI NtOpenJobObject(
         _Out_ PHANDLE JobHandle,
-        _In_ JOB_ACCESS_MASK DesiredAccess,
+        _In_ ACCESS_MASK DesiredAccess,
         _In_ POBJECT_ATTRIBUTES ObjectAttributes);
     //ZwOpenJobObject
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://doxygen.reactos.org/d0/dbc/ntoskrnl_2ps_2job_8c.html
     NTSYSCALLAPI NTSTATUS NTAPI NtQueryInformationJobObject(
         _In_ HANDLE JobHandle,
         _In_ JOB_INFORMATION_CLASS JobInformationClass,

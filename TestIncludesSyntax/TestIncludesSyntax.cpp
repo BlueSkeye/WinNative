@@ -17,7 +17,7 @@
 //#include "NtEventTracing.h"
 //#include "NtExceptions.h"
 #include "NtFile.h"
-//#include "NtIo.h"
+#include "NtIo.h"
 //#include "NtLanguageSupport.h"
 //#include "NtLoader.h"
 //#include "NtLocalProcedureCalls.h"
