@@ -10,6 +10,116 @@ extern "C" {
 	// NO UNRESOLVED FUNCTIONS
 	// END OF UNRESOLVED FUNCTIONS
 
+	// Forward declarations
+	typedef struct _RTL_SRWLOCK RTL_SRWLOCK, * PRTL_SRWLOCK;
+
+	// https://github.com/winsiderss/systeminformer/blob/5d11186e6a48a7329cb30666131977365e78f591/phnt/include/ntrtl.h#L5582
+	typedef enum _HEAP_INFORMATION_CLASS {
+		HeapCompatibilityInformation = 0x0,
+		HeapEnableTerminationOnCorruption = 0x1,
+		HeapExtendedInformation = 0x2, // q; s: HEAP_EXTENDED_INFORMATION
+		HeapOptimizeResources = 0x3, // q; s: HEAP_OPTIMIZE_RESOURCES_INFORMATION
+		HeapTaggingInformation = 0x4,
+		HeapStackDatabase = 0x5, // q: RTL_HEAP_STACK_QUERY; s: RTL_HEAP_STACK_CONTROL
+		HeapMemoryLimit = 0x6, // since 19H2
+		HeapTag = 0x7, // since 20H1
+		HeapDetailedFailureInformation = 0x80000001,
+		HeapSetDebuggingInformation = 0x80000002 // q; s: HEAP_DEBUGGING_INFORMATION
+	} HEAP_INFORMATION_CLASS;
+
+	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ne-ntifs-_memory_information_class
+	typedef enum _MEMORY_INFORMATION_CLASS {
+		MemoryBasicInformation
+	} MEMORY_INFORMATION_CLASS;
+
+	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwsetinformationvirtualmemory
+	typedef struct _MEMORY_RANGE_ENTRY {
+		PVOID VirtualAddress;
+		SIZE_T NumberOfBytes;
+	} MEMORY_RANGE_ENTRY, * PMEMORY_RANGE_ENTRY;
+
+	typedef struct _NV_MEMORY_RANGE {
+		VOID* BaseAddress;
+		SIZE_T Length;
+	} NV_MEMORY_RANGE, * PNV_MEMORY_RANGE;
+
+	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nc-ntifs-rtl_heap_commit_routine
+	typedef NTSTATUS(NTAPI *PRTL_HEAP_COMMIT_ROUTINE)(
+		PVOID Base,
+		PVOID* CommitAddress,
+		PSIZE_T CommitSize);
+
+	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ns-ntifs-rtl_heap_parameters
+	typedef struct _RTL_HEAP_PARAMETERS {
+		ULONG                    Length;
+		SIZE_T                   SegmentReserve;
+		SIZE_T                   SegmentCommit;
+		SIZE_T                   DeCommitFreeBlockThreshold;
+		SIZE_T                   DeCommitTotalFreeThreshold;
+		SIZE_T                   MaximumAllocationSize;
+		SIZE_T                   VirtualMemoryThreshold;
+		SIZE_T                   InitialCommit;
+		SIZE_T                   InitialReserve;
+		PRTL_HEAP_COMMIT_ROUTINE CommitRoutine;
+		SIZE_T                   Reserved[2];
+	} RTL_HEAP_PARAMETERS, * PRTL_HEAP_PARAMETERS;
+
+	typedef struct _RTL_HEAP_TAG_INFO {
+		ULONG NumberOfAllocations;
+		ULONG NumberOfFrees;
+		SIZE_T BytesAllocated;
+	} RTL_HEAP_TAG_INFO, * PRTL_HEAP_TAG_INFO;
+
+	// https://github.com/winsiderss/systeminformer/blob/5d11186e6a48a7329cb30666131977365e78f591/phnt/include/ntrtl.h#L5548C1-L5572C46
+	typedef struct _RTL_HEAP_WALK_ENTRY {
+		PVOID DataAddress;
+		SIZE_T DataSize;
+		UCHAR OverheadBytes;
+		UCHAR SegmentIndex;
+		USHORT Flags;
+		union {
+			struct {
+				SIZE_T Settable;
+				USHORT TagIndex;
+				USHORT AllocatorBackTraceIndex;
+				ULONG Reserved[2];
+			} Block;
+			struct {
+				ULONG CommittedSize;
+				ULONG UnCommittedSize;
+				PVOID FirstEntry;
+				PVOID LastEntry;
+			} Segment;
+		};
+	} RTL_HEAP_WALK_ENTRY, * PRTL_HEAP_WALK_ENTRY;
+
+	struct _RTL_SRWLOCK {
+		PVOID Ptr;
+	};
+
+	typedef struct _RTL_MEMORY_ZONE {
+		RTL_SRWLOCK Lock; // @ offset 0x20
+		DWORD _28;
+		PVOID _30;
+	} RTL_MEMORY_ZONE, * PRTL_MEMORY_ZONE;
+
+	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+	typedef NTSTATUS(NTAPI* PRTL_ENUM_HEAPS_ROUTINE)(
+		_In_ PVOID HeapHandle,
+		_In_ PVOID Parameter);
+
+	// https://github.com/winsiderss/systeminformer/blob/5d11186e6a48a7329cb30666131977365e78f591/phnt/include/ntrtl.h#L10809C1-L10814C77
+	_Function_class_(RTL_SECURE_MEMORY_CACHE_CALLBACK)
+		typedef NTSTATUS(NTAPI RTL_SECURE_MEMORY_CACHE_CALLBACK)(
+			_In_ PVOID Address,
+			_In_ SIZE_T Length);
+	typedef RTL_SECURE_MEMORY_CACHE_CALLBACK* PRTL_SECURE_MEMORY_CACHE_CALLBACK;
+
+	typedef enum _VIRTUAL_MEMORY_INFORMATION_CLASS {
+		VmPrefetchInformation
+	} VIRTUAL_MEMORY_INFORMATION_CLASS;
+
+	// =========================== Functions ===========================
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSCALLAPI NTSTATUS NTAPI NtAllocateUserPhysicalPages(
 		_In_ HANDLE ProcessHandle,
@@ -84,10 +194,10 @@ extern "C" {
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwflushvirtualmemory
 	NTSYSAPI NTSTATUS NtFlushVirtualMemory(
-		_In_      HANDLE           ProcessHandle,
-		[in, out] PVOID* BaseAddress,
-		[in, out] PSIZE_T          RegionSize,
-		_Out_     PIO_STATUS_BLOCK IoStatus);
+		_In_ HANDLE ProcessHandle,
+		_Inout_ PVOID* BaseAddress,
+		_Inout_ PSIZE_T RegionSize,
+		_Out_ PIO_STATUS_BLOCK IoStatus);
 	//ZwFlushVirtualMemory
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -335,7 +445,7 @@ extern "C" {
 	NTSYSAPI VOID NTAPI RtlDetectHeapLeaks(VOID);
 
 	// https://learn.microsoft.com/en-us/windows/win32/devnotes/rtlsupportapi/nf-rtlsupportapi-rtldisownmoduleheapallocation
-	NTSYSAPI NTSTATUS WINAPI RtlDisownModuleHeapAllocation(
+	NTSYSAPI NTSTATUS NTAPI RtlDisownModuleHeapAllocation(
 		_In_ HANDLE HeapHandle,
 		_In_ PVOID Allocation);
 
@@ -350,11 +460,6 @@ extern "C" {
 		_In_ ULONG Increment);
 
 	// Reversed
-	typedef struct _RTL_MEMORY_ZONE {
-		RTL_SRWLOCK Lock; // @ offset 0x20
-		DWORD _28;
-		PVOID _30;
-	} RTL_MEMORY_ZONE, *PRTL_MEMORY_ZONE;
 	NTSYSAPI NTSTATUS NTAPI RtlExtendMemoryZone(
 		_In_ PRTL_MEMORY_ZONE MemoryZone,
 		_In_ PVOID NewSize);
@@ -406,8 +511,8 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlfreeheap
 	NTSYSAPI LOGICAL RtlFreeHeap(
-		_In_           PVOID                 HeapHandle,
-		_In_opt_ ULONG                 Flags,
+		_In_ PVOID HeapHandle,
+		_In_opt_ ULONG Flags,
 		_Frees_ptr_opt_ PVOID BaseAddress);
 
 	// https://github.com/winsiderss/systeminformer/blob/5d11186e6a48a7329cb30666131977365e78f591/phnt/include/ntrtl.h#L5991C1-L5997C7
@@ -495,9 +600,10 @@ extern "C" {
 
 	// https://doxygen.reactos.org/d8/dc5/sdk_2lib_2rtl_2heap_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlQueryProcessHeapInformation(
-		IN struct _DEBUG_BUFFER* DebugBuffer);
+		_In_ struct _DEBUG_BUFFER* DebugBuffer);
 
 	// https://github.com/winsiderss/systeminformer/blob/5d11186e6a48a7329cb30666131977365e78f591/phnt/include/ntrtl.h#L5446C1-L5455C7
+	// https://www.alex-ionescu.com/heap-tagging-is-broken/
 	NTSYSAPI PWSTR NTAPI RtlQueryTagHeap(
 		_In_ PVOID HeapHandle,
 		_In_ ULONG Flags,

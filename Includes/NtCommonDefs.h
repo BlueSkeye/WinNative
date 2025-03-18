@@ -42,9 +42,11 @@ typedef short WORD;
 // More derived types.
 typedef BYTE BOOLEAN, *PBOOLEAN;
 typedef DWORD LCID, *PLCID;
+typedef ULONG LOGICAL; 
 typedef LONG NTSTATUS;
 typedef VOID* PVOID, ** PPVOID;
 typedef void* POINTER_64 PVOID64;
+typedef const VOID* PCVOID;
 
 #define __int3264   __int64
 #ifndef FALSE
@@ -135,7 +137,10 @@ typedef struct _UNICODE_STRING {
 } UNICODE_STRING;
 typedef const UNICODE_STRING* PCUNICODE_STRING;
 
-// To be found in %SystemDrive%\Program Files (x86)\Windows Kits\10\Include\x.y.z.t\shared
-// #include <minwindef.h>
+// Define some specificiation strings to prevent compilation errors.
+#define _Frees_ptr_opt_
+#define DECLSPEC_ALLOCATOR __declspec(allocator)
+#define DECLSPEC_NOALIAS __declspec(noalias)
+#define DECLSPEC_RESTRICT __declspec(restrict)
 
 #endif // _NTCOMMONDEFS_

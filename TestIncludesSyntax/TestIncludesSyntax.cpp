@@ -21,7 +21,7 @@
 //#include "NtLanguageSupport.h"
 //#include "NtLoader.h"
 //#include "NtLocalProcedureCalls.h"
-//#include "NtMemory.h"
+#include "NtMemory.h"
 //#include "NtMemoryStream.h"
 //#include "NtNetwork.h"
 //#include "NtNotification.h"
