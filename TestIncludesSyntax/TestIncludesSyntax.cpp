@@ -12,7 +12,7 @@
 //#include "NtDevices.h"
 //#include "NtDll.h"
 //#include "NtEnclave.h"
-//#include "NtEnvironment.h"
+#include "NtEnvironment.h"
 //#include "NtEvents.h"
 //#include "NtEventTracing.h"
 //#include "NtExceptions.h"
