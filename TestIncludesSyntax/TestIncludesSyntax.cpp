@@ -2,7 +2,7 @@
 
 #include "NtCommonDefs.h"
 
-//#include "NtAsyincProcdureCalls.h"
+#include "NtAsyncProcdureCalls.h"
 #include "NtAtoms.h"
 #include "NtClientServer.h"
 #include "NtContexts.h"

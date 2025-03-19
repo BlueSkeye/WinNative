@@ -21,6 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Includes", "Includes", "{02
 		Includes\NtAtoms.h = Includes\NtAtoms.h
 		Includes\NtClientServer.h = Includes\NtClientServer.h
 		Includes\NtCommonDefs.h = Includes\NtCommonDefs.h
+		Includes\NtContext.h = Includes\NtContext.h
 		Includes\NtContexts.h = Includes\NtContexts.h
 		Includes\NTCRuntime.h = Includes\NTCRuntime.h
 		Includes\NtCrypto.h = Includes\NtCrypto.h

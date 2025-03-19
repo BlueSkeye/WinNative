@@ -21,6 +21,7 @@ typedef struct _SID_IDENTIFIER_AUTHORITY* PSID_IDENTIFIER_AUTHORITY;
 typedef struct _UNICODE_STRING* PUNICODE_STRING;
 
 // Intrinsic types aliases
+typedef void* LPVOID;
 typedef int BOOL, * PBOOL;
 typedef unsigned char BYTE;
 typedef char CHAR;
@@ -34,7 +35,7 @@ typedef __int64 LONGLONG, QWORD;
 typedef __int64 LONG_PTR, * PLONG_PTR;
 typedef short SHORT, * PSHORT;
 typedef unsigned char UCHAR, * PUCHAR;
-typedef unsigned __int64 UINT_PTR, * PUINT_PTR;
+typedef unsigned __int64 DWORD64, UINT_PTR, * PUINT_PTR;
 typedef unsigned long ULONG, * PULONG;
 typedef unsigned __int64 ULONGLONG, *PULONGLONG;
 typedef unsigned __int64 ULONG_PTR, * PULONG_PTR;
