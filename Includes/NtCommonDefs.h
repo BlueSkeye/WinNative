@@ -28,7 +28,7 @@ typedef int BOOL, * PBOOL;
 typedef unsigned char BYTE;
 typedef char CHAR;
 typedef short CSHORT; 
-typedef int DWORD;
+typedef int DWORD, *PDWORD;
 typedef unsigned __int64 ULONG64, UINT64, * PULONG64;
 typedef unsigned __int64 DWORD64, * PDWORD64;
 typedef void* HANDLE, * PHANDLE;
@@ -55,6 +55,7 @@ typedef VOID* PVOID, ** PPVOID;
 typedef void* POINTER_64 PVOID64;
 typedef const VOID* PCVOID;
 typedef ULONGLONG REGHANDLE, * PREGHANDLE;
+typedef __int64 intptr_t;
 
 #define __int3264   __int64
 #ifndef FALSE
