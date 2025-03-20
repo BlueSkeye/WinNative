@@ -23,6 +23,7 @@ typedef struct _UNICODE_STRING* PUNICODE_STRING;
 // Intrinsic types aliases
 typedef int errno_t;
 typedef void* LPVOID;
+typedef const void *LPCVOID;
 typedef int BOOL, * PBOOL;
 typedef unsigned char BYTE;
 typedef char CHAR;

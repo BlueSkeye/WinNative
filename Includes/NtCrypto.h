@@ -9,9 +9,16 @@ extern "C" {
 
 	// NO UNRESOLVED FUNCTIONS
 
+	typedef struct _A_SHA_CTX {
+		ULONG 	flag;
+		UCHAR 	hash[20];
+		ULONG 	state[5];
+		ULONG 	count[2];
+		UCHAR 	buffer[64];
+	} A_SHA_CTX, *PA_SHA_CTX;
+
 	//https://skanthak.hier-im-netz.de/download/NTDLL.H
-	typedef	struct _MD4_CTX
-	{
+	typedef	struct _MD4_CTX {
 		DWORD	State[4];	// = {0x67452301UL, 0xEFCDAB89UL, 0x98BADCFEUL, 0x10325476UL}
 		DWORD	Count[2];	// = {0UL, 0UL}
 		BYTE	Buffer[64];
@@ -27,31 +34,31 @@ extern "C" {
 		BYTE	Digest[16];
 	} MD5_CTX, *LPMD5_CTX, *PMD5_CTX;
 
-	// https://learn.microsoft.com/fr-fr/windows/win32/seccrypto/a-shafinal
-	NTSYSCALLAPI VOID RSA32API A_SHAFinal(
-		_Inout_ A_SHA_CTX* Context,
-		_Out_   UNSIGNED CHAR Result);
+	// https://processhacker.sourceforge.io/doc/sha_8h.html
+	NTSYSCALLAPI VOID NTAPI A_SHAFinal(
+		_Inout_ PA_SHA_CTX Context,
+		_Out_writes_bytes_(20) UCHAR* Hash);
 
-	// https://learn.microsoft.com/fr-fr/windows/win32/seccrypto/a-shainit
-	NTSYSCALLAPI void RSA32API A_SHAInit(
-		_Inout_ A_SHA_CTX* Context);
+	// https://processhacker.sourceforge.io/doc/sha_8h.html
+	NTSYSCALLAPI VOID NTAPI A_SHAInit(
+		_Inout_ PA_SHA_CTX Context);
 
-	//https://learn.microsoft.com/fr-fr/windows/win32/seccrypto/a-shaupdate
-	NTSYSCALLAPI void RSA32API A_SHAUpdate(
-		_Inout_ A_SHA_CTX* Context,
-		_In_    UNSIGNED CHAR* Buffer,
-		UNSIGNED INT  BufferSize);
+	// https://processhacker.sourceforge.io/doc/sha_8h.html
+	NTSYSCALLAPI void NTAPI A_SHAUpdate(
+		_Inout_ PA_SHA_CTX Context,
+		_In_ PUCHAR Buffer,
+		unsigned int BufferSize);
 
 	//https://skanthak.hier-im-netz.de/download/NTDLL.H
 	NTSYSCALLAPI VOID NTAPI	MD4Final(
-		MD4_CTX* Context);
+		PMD4_CTX Context);
 
 	//https://skanthak.hier-im-netz.de/download/NTDLL.H
 	NTSYSCALLAPI VOID NTAPI MD4Init(
-		MD4_CTX* Context);
+		PMD4_CTX Context);
 
 	//https://skanthak.hier-im-netz.de/download/NTDLL.H
-	NTSYSCALLAPI VOID NTAPI MD4Update(MD4_CTX* Context,
+	NTSYSCALLAPI VOID NTAPI MD4Update(PMD4_CTX Context,
 		LPCVOID Buffer,
 		DWORD   BufferSize);
 
