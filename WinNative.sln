@@ -32,6 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Includes", "Includes", "{02
 		Includes\NtEnvironment.h = Includes\NtEnvironment.h
 		Includes\NtEvents.h = Includes\NtEvents.h
 		Includes\NtEventTracing.h = Includes\NtEventTracing.h
+		Includes\NtExceptionRecord.h = Includes\NtExceptionRecord.h
 		Includes\NtExceptions.h = Includes\NtExceptions.h
 		Includes\NtFile.h = Includes\NtFile.h
 		Includes\NtIo.h = Includes\NtIo.h

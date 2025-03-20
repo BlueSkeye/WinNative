@@ -27,6 +27,7 @@ typedef const void *LPCVOID;
 typedef int BOOL, * PBOOL;
 typedef unsigned char BYTE;
 typedef char CHAR;
+typedef short CSHORT; 
 typedef int DWORD;
 typedef unsigned __int64 ULONG64, UINT64, * PULONG64;
 typedef unsigned __int64 DWORD64, * PDWORD64;
@@ -158,6 +159,12 @@ typedef struct _UNICODE_STRING {
 	PWSTR  Buffer;
 } UNICODE_STRING;
 typedef const UNICODE_STRING* PCUNICODE_STRING;
+
+// https://doxygen.reactos.org/d6/d6b/struct__CLIENT__ID.html
+typedef struct _CLIENT_ID {
+    HANDLE 	UniqueProcess;
+    HANDLE 	UniqueThread;
+} CLIENT_ID, * PCLIENT_ID;
 
 #ifndef _VA_LIST
 #define _VA_LIST char*

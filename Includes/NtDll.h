@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NtCommonDefs.h"
+#include "NtExceptionRecord.h"
 
 #ifndef _NTDLL_
 #define _NTDLL_
@@ -2007,7 +2008,7 @@ extern "C"
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI VOID NTAPI RtlRestoreContext(
 		_In_ PCONTEXT ContextRecord,
-		_In_opt_ struct _EXCEPTION_RECORD* ExceptionRecord);
+		_In_opt_ PEXCEPTION_RECORD ExceptionRecord);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI VOID NTAPI RtlRestoreLastWin32Error(

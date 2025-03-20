@@ -4,6 +4,7 @@
 #define _NTDEBUGGING_
 
 #include "NtCommonDefs.h"
+#include "NtExceptionRecord.h"
 
 extern "C" {
 
@@ -25,6 +26,149 @@ extern "C" {
     //RtlpTimeFieldsToTime
     //RtlpTimeToTimeFields
     // END OF UNRESOLVED FUNCTIONS
+
+    typedef enum _DBG_STATE {
+        DbgIdle,
+        DbgReplyPending,
+        DbgCreateThreadStateChange,
+        DbgCreateProcessStateChange,
+        DbgExitThreadStateChange,
+        DbgExitProcessStateChange,
+        DbgExceptionStateChange,
+        DbgBreakpointStateChange,
+        DbgSingleStepStateChange,
+        DbgLoadDllStateChange,
+        DbgUnloadDllStateChange
+    } DBG_STATE, *PDBG_STATE;
+
+    // https://processhacker.sourceforge.io/doc/struct___d_b_g_k_m___e_x_c_e_p_t_i_o_n.html
+    typedef struct _DBGKM_EXCEPTION {
+        EXCEPTION_RECORD ExceptionRecord;
+        ULONG FirstChance;
+    } DBGKM_EXCEPTION, *PDBGKM_EXCEPTION;
+
+    // https://processhacker.sourceforge.io/doc/struct___d_b_g_k_m___c_r_e_a_t_e___t_h_r_e_a_d.html
+    typedef struct _DBGKM_CREATE_THREAD {
+        ULONG SubSystemKey;
+        PVOID StartAddress;
+    } DBGKM_CREATE_THREAD;
+
+    // https://processhacker.sourceforge.io/doc/struct___d_b_g_u_i___c_r_e_a_t_e___t_h_r_e_a_d.html
+    typedef struct _DBGUI_CREATE_THREAD {
+        HANDLE HandleToThread;
+        DBGKM_CREATE_THREAD NewThread;
+    } DBGUI_CREATE_THREAD;
+
+    // https://processhacker.sourceforge.io/doc/struct___d_b_g_u_i___c_r_e_a_t_e___p_r_o_c_e_s_s.html
+    typedef struct _DBGUI_CREATE_PROCESS {
+        HANDLE HandleToProcess;
+        HANDLE HandleToThread;
+    } DBGUI_CREATE_PROCESS;
+
+    // https://processhacker.sourceforge.io/doc/struct___d_b_g_k_m___e_x_i_t___p_r_o_c_e_s_s.html
+    typedef struct _DBGKM_EXIT_PROCESS {
+        NTSTATUS ExitStatus;
+    } DBGKM_EXIT_PROCESS;
+
+    // https://processhacker.sourceforge.io/doc/struct___d_b_g_k_m___e_x_i_t___t_h_r_e_a_d.html
+    typedef struct _DBGKM_EXIT_THREAD {
+        NTSTATUS ExitStatus;
+    } DBGKM_EXIT_THREAD;
+
+    typedef struct _DBGKM_LOAD_DLL {
+        HANDLE FileHandle;
+        PVOID BaseOfDll;
+        ULONG DebugInfoFileOffset;
+        ULONG DebugInfoSize;
+        PVOID NamePointer;
+    } DBGKM_LOAD_DLL;
+
+    // https://processhacker.sourceforge.io/doc/struct___d_b_g_k_m___u_n_l_o_a_d___d_l_l.html
+    typedef struct _DBGKM_UNLOAD_DLL {
+        PVOID BaseAddress;
+    } DBGKM_UNLOAD_DLL;
+
+    // https://processhacker.sourceforge.io/doc/struct___d_b_g_u_i___w_a_i_t___s_t_a_t_e___c_h_a_n_g_e.html
+    typedef struct _DBGUI_WAIT_STATE_CHANGE {
+        DBG_STATE NewState;
+        CLIENT_ID AppClientId;
+        union {
+            DBGKM_EXCEPTION Exception;
+            DBGUI_CREATE_THREAD CreateThread;
+            DBGUI_CREATE_PROCESS CreateProcessInfo;
+            DBGKM_EXIT_THREAD ExitThread;
+            DBGKM_EXIT_PROCESS ExitProcess;
+            DBGKM_LOAD_DLL LoadDll;
+            DBGKM_UNLOAD_DLL UnloadDll;
+        } StateInfo;
+    } DBGUI_WAIT_STATE_CHANGE,*PDBGUI_WAIT_STATE_CHANGE;
+
+    // http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FProfile%2FKPROFILE_SOURCE.html
+    typedef enum _KPROFILE_SOURCE {
+        ProfileTime,
+        ProfileAlignmentFixup,
+        ProfileTotalIssues,
+        ProfilePipelineDry,
+        ProfileLoadInstructions,
+        ProfilePipelineFrozen,
+        ProfileBranchInstructions,
+        ProfileTotalNonissues,
+        ProfileDcacheMisses,
+        ProfileIcacheMisses,
+        ProfileCacheMisses,
+        ProfileBranchMispredictions,
+        ProfileStoreInstructions,
+        ProfileFpInstructions,
+        ProfileIntegerInstructions,
+        Profile2Issue,
+        Profile3Issue,
+        Profile4Issue,
+        ProfileSpecialInstructions,
+        ProfileTotalCycles,
+        ProfileIcacheIssues,
+        ProfileDcacheAccesses,
+        ProfileMemoryBarrierCycles,
+        ProfileLoadLinkedIssues,
+        ProfileMaximum
+    } KPROFILE_SOURCE, * PKPROFILE_SOURCE;
+
+    // https://processhacker.sourceforge.io/doc/ntdbg_8h.html#a60e21afaf5b5e7f2d9ec440747f63443
+    typedef enum _DEBUGOBJECTINFOCLASS {
+        DebugObjectFlags,
+        MaxDebugObjectInfoClass
+    } DEBUGOBJECTINFOCLASS;
+
+    typedef ULONG_PTR KAFFINITY;
+
+    // http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FDebug%2FNtSystemDebugControl.html
+    typedef enum _SYSDBG_COMMAND {
+        SysDbgQueryModuleInformation = 1,
+        SysDbgQueryTraceInformation,
+        SysDbgSetTracepoint,
+        SysDbgSetSpecialCall,
+        SysDbgClearSpecialCalls,
+        SysDbgQuerySpecialCalls
+    } SYSDBG_COMMAND, * PSYSDBG_COMMAND;
+
+    typedef struct _TIME_FIELDS {
+        CSHORT Year;
+        CSHORT Month;
+        CSHORT Day;
+        CSHORT Hour;
+        CSHORT Minute;
+        CSHORT Second;
+        CSHORT Milliseconds;
+        CSHORT Weekday;
+    } TIME_FIELDS, *PTIME_FIELDS;
+
+    // From ntdef.h
+    typedef struct _GROUP_AFFINITY {
+        KAFFINITY Mask;
+        USHORT Group;
+        USHORT Reserved[3];
+    } GROUP_AFFINITY, * PGROUP_AFFINITY;
+
+    // ============================== functions ==============================
 
     // https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/nf-wdm-dbgbreakpoint
     NTSYSAPI VOID DbgBreakPoint();
@@ -72,23 +216,23 @@ extern "C" {
         NTSTATUS status);
 
     // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-    NTSYSCALLAPI NTSTATUS NTAPI DbgUiConvertStateChangeStructure(
-        DBGUI_WAIT_STATE_CHANGE* state,
-        DEBUG_EVENT* event);
+    NTSYSAPI NTSTATUS NTAPI DbgUiConvertStateChangeStructure(
+        _In_ PDBGUI_WAIT_STATE_CHANGE StateChange,
+        _Out_ struct _DEBUG_EVENT* DebugEvent);
 
     //DbgUiConvertStateChangeStructureEx
     //https://unprotect.it/media/archive/2022/06/22/NtSetDebugFilterState.pdf
     NTSYSCALLAPI NTSTATUS NTAPI DbgSetDebugFilterState(
-        ULONG ComponentId,
-        ULONG Level,
-        BOOLEAN State);
+        ULONG ComponentId,
+        ULONG Level,
+        BOOLEAN State);
 
     // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-    NTSYSCALLAPI NTSTATUS WINAPI DbgUiDebugActiveProcess(
+    NTSYSCALLAPI NTSTATUS NTAPI DbgUiDebugActiveProcess(
         HANDLE process);
 
     // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-    NTSYSCALLAPI HANDLE WINAPI DbgUiGetThreadDebugObject(void);
+    NTSYSCALLAPI HANDLE NTAPI DbgUiGetThreadDebugObject(void);
 
     // https://processhacker.sourceforge.io/doc/ntdbg_8h.html#a6206168ba05b85ebb0cec355eca0e6d3
     NTSYSAPI NTSTATUS NTAPI DbgUiIssueRemoteBreakin(
@@ -99,22 +243,22 @@ extern "C" {
         _In_ PVOID Context);
 
     // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-    NTSYSCALLAPI void WINAPI DbgUiSetThreadDebugObject(
+    NTSYSCALLAPI void NTAPI DbgUiSetThreadDebugObject(
         HANDLE handle);
 
     // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-    NTSYSCALLAPI NTSTATUS WINAPI DbgUiStopDebugging(
+    NTSYSCALLAPI NTSTATUS NTAPI DbgUiStopDebugging(
         HANDLE process);
 
     // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-    NTSYSCALLAPI NTSTATUS WINAPI DbgUiWaitStateChange(
+    NTSYSCALLAPI NTSTATUS NTAPI DbgUiWaitStateChange(
         DBGUI_WAIT_STATE_CHANGE* state,
         LARGE_INTEGER* timeout);
 
     //https://processhacker.sourceforge.io/doc/ntrtl_8h.html
     NTSYSAPI VOID NTAPI DbgUserBreakPoint(VOID);
 
-    //https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FProfile%2FNtCreateProfile.html
     NTSYSCALLAPI NTSTATUS NTAPI NtCreateProfile(
         _Out_ PHANDLE ProfileHandle,
         _In_ HANDLE Process,
@@ -142,13 +286,13 @@ extern "C" {
     //ZwCreateProfileEx
 
     // http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
-    NTSYSCALLAPI NTSYSAPI NTSTATUS NTAPI NtDebugActiveProcess(
-        IN HANDLE               ProcessHandle,
-        IN HANDLE               DebugObjectHandle);
+    NTSYSAPI NTSTATUS NTAPI NtDebugActiveProcess(
+        _In_ HANDLE ProcessHandle,
+        _In_ HANDLE DebugObjectHandle);
     //ZwDebugActiveProcess
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-    NTSYSCALLAPI NTSTATUS NTAPI NtDebugContinue(
+    NTSYSAPI NTSTATUS NTAPI NtDebugContinue(
         _In_ HANDLE DebugHandle,
         _In_ PCLIENT_ID ClientId,
         _In_ NTSTATUS Status);
@@ -216,7 +360,7 @@ extern "C" {
         _In_ HANDLE ProfileHandle);
     //ZwStopProfile
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FDebug%2FNtSystemDebugControl.html
     NTSYSCALLAPI NTSTATUS NTAPI NtSystemDebugControl(
         _In_ SYSDBG_COMMAND Command,
         _In_ PVOID InputBuffer,

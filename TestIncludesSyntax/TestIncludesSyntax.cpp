@@ -8,7 +8,7 @@
 #include "NtContexts.h"
 #include "NTCRuntime.h"
 #include "NtCrypto.h"
-//#include "NtDebugging.h"
+#include "NtDebugging.h"
 //#include "NtDevices.h"
 //#include "NtDll.h"
 //#include "NtEnclave.h"

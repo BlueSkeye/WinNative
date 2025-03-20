@@ -5,26 +5,13 @@
 
 #include "NtCommonDefs.h"
 #include "NtContext.h"
+#include "NtExceptionRecord.h"
 
 extern "C" {
 
 	// NO UNRESOLVED FUNCTIONS
 	// https://repnz.github.io/posts/apc/user-apc/
 	// https://repnz.github.io/posts/apc/wow64-user-apc/
-
-#define EXCEPTION_MAXIMUM_PARAMETERS 15
-
-	typedef struct _EXCEPTION_RECORD* PEXCEPTION_RECORD;
-
-	// https://doxygen.reactos.org/d5/dde/struct__EXCEPTION__RECORD.html
-	struct _EXCEPTION_RECORD {
-		DWORD ExceptionCode;
-		DWORD ExceptionFlags;
-		PEXCEPTION_RECORD ExceptionRecord;
-		PVOID ExceptionAddress;
-		DWORD NumberParameters;
-		ULONG_PTR ExceptionInformation[EXCEPTION_MAXIMUM_PARAMETERS];
-	};
 
 	// ======================== functions ========================
 

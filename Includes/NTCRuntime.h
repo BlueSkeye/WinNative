@@ -4,6 +4,7 @@
 #define _NTCRUNTIME_
 
 #include "NtCommonDefs.h"
+#include "NtExceptionRecord.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,8 +21,8 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows/win32/devnotes/--c-specific-handler2
 	NTSYSAPI EXCEPTION_DISPOSITION __cdecl __C_specific_handler(
-		_In_    struct _EXCEPTION_RECORD* ExceptionRecord,
-		_In_    void* EstablisherFrame,
+		_In_ PEXCEPTION_RECORD ExceptionRecord,
+		_In_ void* EstablisherFrame,
 		_Inout_ struct _CONTEXT* ContextRecord,
 		_Inout_ struct _DISPATCHER_CONTEXT* DispatcherContext);
 

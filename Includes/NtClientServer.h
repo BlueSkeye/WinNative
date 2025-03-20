@@ -12,7 +12,6 @@ extern "C" {
 
 	// NO UNDEFINED FUNCTIONS
 
-	typedef struct _CLIENT_ID CLIENT_ID;
 	typedef struct _CSR_API_CONNECTINFO CSR_API_CONNECTINFO;
 	typedef struct _CSR_API_MSG CSR_API_MSG, * PCSR_API_MSG;
 	// https://doxygen.reactos.org/d4/de1/csrmsg_8h.html#adcbe9d8d973f321880e9fc4696439d4d
@@ -20,12 +19,6 @@ extern "C" {
 	typedef struct _CSR_CAPTURE_BUFFER CSR_CAPTURE_BUFFER,* PCSR_CAPTURE_BUFFER;
 	typedef struct _CSR_CLIENT_CONNECT CSR_CLIENT_CONNECT;
 	typedef struct _PORT_MESSAGE_HEADER PORT_MESSAGE;
-
-	// https://doxygen.reactos.org/d6/d6b/struct__CLIENT__ID.html
-	struct _CLIENT_ID {
-		HANDLE 	UniqueProcess;
-		HANDLE 	UniqueThread;
-	};
 
 	// https://doxygen.reactos.org/d2/db8/struct__PORT__MESSAGE__HEADER.html
 	struct _PORT_MESSAGE_HEADER {
