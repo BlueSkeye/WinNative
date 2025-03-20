@@ -9,7 +9,7 @@
 #include "NTCRuntime.h"
 #include "NtCrypto.h"
 #include "NtDebugging.h"
-//#include "NtDevices.h"
+#include "NtDevices.h"
 //#include "NtDll.h"
 //#include "NtEnclave.h"
 #include "NtEnvironment.h"
