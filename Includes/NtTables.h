@@ -20,7 +20,6 @@ extern "C" {
 	typedef struct _RTL_HANDLE_TABLE* PRTL_HANDLE_TABLE;
 	typedef struct _RTL_HANDLE_TABLE_ENTRY* PRTL_HANDLE_TABLE_ENTRY;
 	typedef struct _RTL_RB_TREE RTL_RB_TREE, * PRTL_RB_TREE;
-	typedef struct _RTL_SPLAY_LINKS RTL_SPLAY_LINKS, * PRTL_SPLAY_LINKS;
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html#ad7ef1aa11ee7738aac70bb450a9a8f51
 	typedef enum _RTL_GENERIC_COMPARE_RESULTS {
@@ -149,13 +148,6 @@ extern "C" {
 			ULONG Flags;
 			PRTL_HANDLE_TABLE_ENTRY NextFree;
 		};
-	};
-
-	// https://processhacker.sourceforge.io/doc/struct___r_t_l___s_p_l_a_y___l_i_n_k_s.html
-	struct _RTL_SPLAY_LINKS {
-		struct _RTL_SPLAY_LINKS* Parent;
-		struct _RTL_SPLAY_LINKS* LeftChild;
-		struct _RTL_SPLAY_LINKS* RightChild;
 	};
 
 	// ======================== functions ========================

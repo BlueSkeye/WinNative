@@ -9,7 +9,26 @@ extern "C" {
 
 	// NO UNRESOLVED FUNCTIONS
 
-	//https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L2445C1-L2452C44
+	typedef struct _PREFIX_TABLE_ENTRY {
+		CSHORT NodeTypeCode;
+		CSHORT NameLength;
+		struct _PREFIX_TABLE_ENTRY* NextPrefixTree;
+		RTL_SPLAY_LINKS Links;
+		PSTRING Prefix;
+	} PREFIX_TABLE_ENTRY, * PPREFIX_TABLE_ENTRY;
+
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L2454C1-L2459C32
+	typedef struct _PREFIX_TABLE {
+		CSHORT NodeTypeCode;
+		CSHORT NameLength;
+		PPREFIX_TABLE_ENTRY NextPrefixTree;
+	} PREFIX_TABLE, * PPREFIX_TABLE;
+
+	// =========================== functions
+
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L2485
+	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI PPREFIX_TABLE_ENTRY NTAPI PfxFindPrefix(
 		_In_ PPREFIX_TABLE PrefixTable,
 		_In_ PSTRING FullName);
