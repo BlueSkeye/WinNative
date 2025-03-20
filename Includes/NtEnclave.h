@@ -7,6 +7,11 @@
 
 extern "C" {
 
+	// UNREOLVED FUNCTIONS
+	// RtlEnclaveCallDispatch
+	// RtlEnclaveCallDispatchReturn
+	// END OF UNRESOLVED FUNCTIONS
+
 	// Enclave related functions have strict requirements which are summarized in :
 	// https://learn.microsoft.com/en-us/windows/win32/trusted-execution/enclaves
 	// Basically, they require some kind of strict electronic signature by Microsoft itself.
@@ -26,9 +31,6 @@ extern "C" {
 		_In_ PVOID BaseAddress,
 		_In_ BOOLEAN WaitForThread);
 	//ZwTerminateEnclave
-
-//RtlEnclaveCallDispatch
-//RtlEnclaveCallDispatchReturn
 
 }
 

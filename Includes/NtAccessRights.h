@@ -8,23 +8,41 @@
 
 extern "C" {
 
-    typedef DWORD ACCESS_MASK;
+    // typedef DWORD ACCESS_MASK;
 
-#define DELETE                           (0x00010000L)
-#define READ_CONTROL                     (0x00020000L)
-#define WRITE_DAC                        (0x00040000L)
-#define WRITE_OWNER                      (0x00080000L)
-#define SYNCHRONIZE                      (0x00100000L)
+    typedef enum _ACCESS_MASK {
+        DELETE = 0x00010000L,
+        READ_CONTROL = 0x00020000L,
+        WRITE_DAC = 0x00040000L,
+        WRITE_OWNER = 0x00080000L,
+        SYNCHRONIZE = 0x00100000L,
 
-#define STANDARD_RIGHTS_REQUIRED         (0x000F0000L)
+        STANDARD_RIGHTS_REQUIRED = 0x000F0000L,
 
-#define STANDARD_RIGHTS_READ             (READ_CONTROL)
-#define STANDARD_RIGHTS_WRITE            (READ_CONTROL)
-#define STANDARD_RIGHTS_EXECUTE          (READ_CONTROL)
+        STANDARD_RIGHTS_READ = READ_CONTROL,
+        STANDARD_RIGHTS_WRITE = READ_CONTROL,
+        STANDARD_RIGHTS_EXECUTE = READ_CONTROL,
 
-#define STANDARD_RIGHTS_ALL              (0x001F0000L)
+        STANDARD_RIGHTS_ALL = 0x001F0000L,
 
-#define SPECIFIC_RIGHTS_ALL              (0x0000FFFFL)
+        SPECIFIC_RIGHTS_ALL = 0x0000FFFFL
+    } ACCESS_MASK;
+
+//#define DELETE                           (0x00010000L)
+//#define READ_CONTROL                     (0x00020000L)
+//#define WRITE_DAC                        (0x00040000L)
+//#define WRITE_OWNER                      (0x00080000L)
+//#define SYNCHRONIZE                      (0x00100000L)
+//
+//#define STANDARD_RIGHTS_REQUIRED         (0x000F0000L)
+//
+//#define STANDARD_RIGHTS_READ             (READ_CONTROL)
+//#define STANDARD_RIGHTS_WRITE            (READ_CONTROL)
+//#define STANDARD_RIGHTS_EXECUTE          (READ_CONTROL)
+//
+//#define STANDARD_RIGHTS_ALL              (0x001F0000L)
+//
+//#define SPECIFIC_RIGHTS_ALL              (0x0000FFFFL)
 
     // File related
     typedef enum _FILE_ACCESS_MASK {
@@ -50,6 +68,11 @@ extern "C" {
         FILE_GENERIC_EXECUTE = (STANDARD_RIGHTS_EXECUTE | FILE_READ_ATTRIBUTES | FILE_EXECUTE | SYNCHRONIZE)
     } FILE_ACCESS_MASK;
 
+    typedef enum _EVENT_ACCESS_MASK {
+        EVENT_MODIFY_STATE = 0x0002,
+        EVENT_ALL_ACCESS = ( STANDARD_RIGHTS_REQUIRED |SYNCHRONIZE | 0x3) 
+    } EVENT_ACCESS_MASK;
+
     typedef enum _KEY_ACCESS_MASK {
         KEY_QUERY_VALUE  = 0x0001,
         KEY_SET_VALUE = 0x0002,
@@ -67,6 +90,16 @@ extern "C" {
         KEY_ALL_ACCESS = (STANDARD_RIGHTS_ALL | KEY_QUERY_VALUE | KEY_SET_VALUE | KEY_CREATE_SUB_KEY |
             KEY_ENUMERATE_SUB_KEYS | KEY_NOTIFY | KEY_CREATE_LINK) & (~SYNCHRONIZE)
     } KEY_ACCESS_MASK;
+
+    typedef enum _MUTANT_ACCESS_MASK {
+        MUTANT_QUERY_STATE = 0x0001,
+        MUTANT_ALL_ACCESS = (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | MUTANT_QUERY_STATE)
+    } MUTANT_ACCESS_MASK;
+
+    typedef enum _SEMAPHORE_ACCESS_MASK {
+        SEMAPHORE_MODIFY_STATE = 0x0002,
+        SEMAPHORE_ALL_ACCESS = (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x3)
+    }SEMAPHORE_ACCESS_MASK;
 
     typedef enum _TIMER_ACCESS_MASK {
         TIMER_QUERY_STATE = 0x0001,

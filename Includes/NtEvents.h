@@ -4,21 +4,102 @@
 #define _NTEVENTS_
 
 #include "NtCommonDefs.h"
+#include "NtAccessRights.h"
 
 extern "C" {
 
 	// UNRESOLVED FUNCTIONS
-//EvtIntReportAuthzEventAndSourceAsync
-//EvtIntReportEventAndSourceAsync
+	// EvtIntReportAuthzEventAndSourceAsync
+	// EvtIntReportEventAndSourceAsync
 	// END OF UNRESOLVED FUNCTIONS
+
+	typedef struct _EVENT_DESCRIPTOR {
+		USHORT    Id;
+		UCHAR     Version;
+		UCHAR     Channel;
+		UCHAR     Level;
+		UCHAR     Opcode;
+		USHORT    Task;
+		ULONGLONG Keyword;
+	} EVENT_DESCRIPTOR, * PEVENT_DESCRIPTOR;
+	typedef const EVENT_DESCRIPTOR* PCEVENT_DESCRIPTOR;
+
+	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FEvent%2FNtQueryEvent.html
+	typedef enum _EVENT_INFORMATION_CLASS {
+		EventBasicInformation
+	} EVENT_INFORMATION_CLASS, * PEVENT_INFORMATION_CLASS;
+
+	// https://learn.microsoft.com/en-us/windows/win32/api/evntprov/ns-evntprov-event_filter_descriptor
+	typedef struct _EVENT_FILTER_DESCRIPTOR {
+		ULONGLONG Ptr;
+		ULONG     Size;
+		ULONG     Type;
+	} EVENT_FILTER_DESCRIPTOR, * PEVENT_FILTER_DESCRIPTOR;
+
+	// https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nc-evntprov-penablecallback
+	typedef void (NTAPI* PENABLECALLBACK)(
+		_In_ LPCGUID SourceId,
+		_In_ ULONG IsEnabled,
+		_In_ UCHAR Level,
+		_In_ ULONGLONG MatchAnyKeyword,
+		ULONGLONG MatchAllKeyword,
+		_In_opt_ PEVENT_FILTER_DESCRIPTOR FilterData,
+		_In_opt_ PVOID CallbackContext);
+
+	// https://learn.microsoft.com/en-us/windows/win32/api/evntprov/ne-evntprov-event_info_class
+	typedef enum _EVENT_INFO_CLASS {
+		EventProviderBinaryTrackInfo,
+		EventProviderSetReserved1,
+		EventProviderSetTraits,
+		EventProviderUseDescriptorType,
+		MaxEventInfo
+	} EVENT_INFO_CLASS;
+
+	// https://learn.microsoft.com/en-us/windows/win32/api/evntprov/ns-evntprov-event_data_descriptor
+	typedef struct _EVENT_DATA_DESCRIPTOR {
+		ULONGLONG Ptr;
+		ULONG     Size;
+		union {
+			ULONG Reserved;
+			struct {
+				UCHAR  Type;
+				UCHAR  Reserved1;
+				USHORT Reserved2;
+			} DUMMYSTRUCTNAME;
+		} DUMMYUNIONNAME;
+	} EVENT_DATA_DESCRIPTOR, * PEVENT_DATA_DESCRIPTOR;
+
+	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FMutant%2FNtQueryMutant.html
+	typedef enum _MUTANT_INFORMATION_CLASS {
+		MutantBasicInformation
+	} MUTANT_INFORMATION_CLASS, * PMUTANT_INFORMATION_CLASS;
+
+	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FType%20independed%2FOBJECT_WAIT_TYPE.html
+	typedef enum _OBJECT_WAIT_TYPE {
+		WaitAllObject,
+		WaitAnyObject
+	} OBJECT_WAIT_TYPE, * POBJECT_WAIT_TYPE;
+
+	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FSemaphore%2FNtQuerySemaphore.html
+	typedef enum _SEMAPHORE_INFORMATION_CLASS {
+		SemaphoreBasicInformation
+	} SEMAPHORE_INFORMATION_CLASS, * PSEMAPHORE_INFORMATION_CLASS;
+
+	// https://doxygen.reactos.org/db/dd9/ntdef_8template_8h.html#a698d786b10840dc1198b09bb957b00f5
+	typedef enum _WAIT_TYPE {
+		WaitAll,
+		WaitAny
+	} WAIT_TYPE;
+
+	// =============================== functions ===============================
 
 	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventactivityidcontrol
 	// Forwarded from advapi32.dll:EventActivityIdControl
 	NTSYSAPI ULONG NTAPI EtwEventActivityIdControl(
-		_In_      ULONG  ControlCode,
-		[in, out] LPGUID ActivityId);
+		_In_ ULONG  ControlCode,
+		_Inout_ LPGUID ActivityId);
 
-	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventenabled
+	// https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventenabled
 	// Forwarded from advapi32.dll:EventEnabled
 	NTSYSAPI BOOLEAN NTAPI EtwEventEnabled(
 		_In_ REGHANDLE          RegHandle,
@@ -31,15 +112,15 @@ extern "C" {
 		_In_ UCHAR     Level,
 		_In_ ULONGLONG Keyword);
 
-	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventregister
+	// https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventregister
 	// Forwarded from advapi32.dll:EventRegister
 	NTSYSAPI ULONG NTAPI EtwEventRegister(
-		_In_           LPCGUID         ProviderId,
+		_In_ LPCGUID ProviderId,
 		_In_opt_ PENABLECALLBACK EnableCallback,
-		_In_opt_ PVOID           CallbackContext,
-		_Out_          PREGHANDLE      RegHandle);
+		_In_opt_ PVOID CallbackContext,
+		_Out_ PREGHANDLE RegHandle);
 
-	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventsetinformation
+	// https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventsetinformation
 	// Forwarded from advapi32.dll:EventSetInformation
 	NTSYSAPI ULONG NTAPI EtwEventSetInformation(
 		_In_ REGHANDLE        RegHandle,
@@ -52,12 +133,12 @@ extern "C" {
 	NTSYSAPI ULONG NTAPI EtwEventUnregister(
 		_In_ REGHANDLE RegHandle);
 
-	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventwrite
+	// https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventwrite
 	// Forwarded from advapi32.dll:EventWrite
 	NTSYSAPI ULONG NTAPI EtwEventWrite(
-		_In_           REGHANDLE              RegHandle,
-		_In_           PCEVENT_DESCRIPTOR     EventDescriptor,
-		_In_           ULONG                  UserDataCount,
+		_In_ REGHANDLE              RegHandle,
+		_In_ PCEVENT_DESCRIPTOR     EventDescriptor,
+		_In_ ULONG                  UserDataCount,
 		_In_opt_ PEVENT_DATA_DESCRIPTOR UserData);
 
 	//https://learn.microsoft.com/en-us/windows/win32/api/evntprov/nf-evntprov-eventwriteex
@@ -124,7 +205,7 @@ extern "C" {
 		_In_opt_ PEVENT_DATA_DESCRIPTOR UserData);
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtAcquireCrossVmMutant(
+	NTSYSAPI  NTSTATUS NTAPI NtAcquireCrossVmMutant(
 		_In_ HANDLE EventHandle,
 		_In_ PULONGLONG Unknown);
 	//ZwAcquireCrossVmMutant
@@ -132,57 +213,57 @@ extern "C" {
 
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtClearEvent(
-		IN HANDLE               EventHandle);
+		_In_ HANDLE               EventHandle);
 	//ZwClearEvent
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtCreateCrossVmEvent(
+	NTSYSAPI  NTSTATUS NTAPI NtCreateCrossVmEvent(
 		_Out_ PHANDLE EventHandle,
 		_In_ EVENT_ACCESS_MASK DesiredAccess,
 		_In_ POBJECT_ATTRIBUTES ObjectAttributes,
-		ULONG Unknown,
-		PVOID Unknown,
+		ULONG Unknown1,
+		PVOID Unknown2,
 		_In_ PGUID Guid);
 	//ZwCreateCrossVmEvent
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtCreateCrossVmMutant(
+	NTSYSAPI NTSTATUS NTAPI NtCreateCrossVmMutant(
 		_Out_ PHANDLE EventHandle,
 		_In_ MUTANT_ACCESS_MASK DesiredAccess,
 		_In_ POBJECT_ATTRIBUTES ObjectAttributes,
-		ULONG Unknown,
-		PVOID Unknown,
+		ULONG Unknown1,
+		PVOID Unknown2,
 		_In_ PGUID Guid);
 	//ZwCreateCrossVmMutant
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwcreateevent
-	NTSYSCALLAPI NTSYSAPI NTSTATUS NtCreateEvent(
-		_Out_          PHANDLE            EventHandle,
-		_In_           ACCESS_MASK        DesiredAccess,
+	NTSYSAPI NTSTATUS NtCreateEvent(
+		_Out_ PHANDLE EventHandle,
+		_In_ ACCESS_MASK DesiredAccess,
 		_In_opt_ POBJECT_ATTRIBUTES ObjectAttributes,
-		_In_           EVENT_TYPE         EventType,
-		_In_           BOOLEAN            InitialState);
+		_In_ EVENT_TYPE EventType,
+		_In_ BOOLEAN InitialState);
 	//ZwCreateEvent
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
-	NTSYSCALLAPI NTSYSAPI NTSTATUS NTAPI NtCreateEventPair(
-		OUT PHANDLE             EventPairHandle,
-		IN ACCESS_MASK          DesiredAccess,
-		IN POBJECT_ATTRIBUTES   ObjectAttributes OPTIONAL);
+	NTSYSAPI NTSTATUS NTAPI NtCreateEventPair(
+		_Out_ PHANDLE EventPairHandle,
+		_In_ ACCESS_MASK DesiredAccess,
+		_In_opt_ POBJECT_ATTRIBUTES   ObjectAttributes);
 	//ZwCreateEventPair
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
-	NTSYSCALLAPI NTSYSAPI NTSTATUS NTAPI NtCreateKeyedEvent(
-		OUT PHANDLE             KeyedEventHandle,
-		IN ACCESS_MASK          DesiredAccess,
+	NTSYSAPI NTSTATUS NTAPI NtCreateKeyedEvent(
+		_Out_ PHANDLE KeyedEventHandle,
+		_In_ ACCESS_MASK DesiredAccess,
 		_In_opt_ POBJECT_ATTRIBUTES   ObjectAttributes,
-		IN ULONG                Reserved);
+		_In_ ULONG Reserved);
 	//ZwCreateKeyedEvent
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtCreateMutant(
+	NTSYSAPI NTSTATUS NTAPI NtCreateMutant(
 		_Out_ PHANDLE MutantHandle,
 		_In_ MUTANT_ACCESS_MASK DesiredAccess,
 		_In_ POBJECT_ATTRIBUTES ObjectAttributes,
@@ -190,7 +271,7 @@ extern "C" {
 	//ZwCreateMutant
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtCreateSemaphore(
+	NTSYSAPI  NTSTATUS NTAPI NtCreateSemaphore(
 		_Out_ PHANDLE SemaphoreHandle,
 		_In_ SEMAPHORE_ACCESS_MASK DesiredAccess,
 		_In_ POBJECT_ATTRIBUTES ObjectAttributes,
@@ -199,25 +280,25 @@ extern "C" {
 	//ZwCreateSemaphore
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-zwopenevent
-	NTSYSCALLAPI NTSTATUS NtOpenEvent(
-		_Out_ PHANDLE            EventHandle,
-		_In_  ACCESS_MASK        DesiredAccess,
+	NTSYSAPI  NTSTATUS NtOpenEvent(
+		_Out_ PHANDLE EventHandle,
+		_In_  ACCESS_MASK DesiredAccess,
 		_In_  POBJECT_ATTRIBUTES ObjectAttributes);
 	//ZwOpenEvent
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtOpenEventPair(
-		OUT PHANDLE             EventPairHandle,
-		IN ACCESS_MASK          DesiredAccess,
-		IN POBJECT_ATTRIBUTES   ObjectAttributes);
+		_Out_ PHANDLE EventPairHandle,
+		_In_ ACCESS_MASK DesiredAccess,
+		_In_ POBJECT_ATTRIBUTES ObjectAttributes);
 	//ZwOpenEventPair
 
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtOpenKeyedEvent(
-		OUT PHANDLE             KeyedEventHandle,
-		IN ACCESS_MASK          DesiredAccess,
-		IN POBJECT_ATTRIBUTES   ObjectAttributes OPTIONAL);
+		_Out_ PHANDLE KeyedEventHandle,
+		_In_ ACCESS_MASK DesiredAccess,
+		_In_opt_ POBJECT_ATTRIBUTES ObjectAttributes);
 	//ZwOpenKeyedEvent
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -237,18 +318,18 @@ extern "C" {
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtPulseEvent(
-		IN HANDLE               EventHandle,
-		OUT PLONG               PreviousState OPTIONAL);
+		_In_ HANDLE EventHandle,
+		_Out_opt_ PLONG PreviousState);
 	//ZwPulseEvent
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtQueryEvent(
-		IN HANDLE               EventHandle,
-		IN EVENT_INFORMATION_CLASS EventInformationClass,
-		OUT PVOID               EventInformation,
-		IN ULONG                EventInformationLength,
-		OUT PULONG              ReturnLength OPTIONAL);
+		_In_ HANDLE EventHandle,
+		_In_ EVENT_INFORMATION_CLASS EventInformationClass,
+		_Out_ PVOID EventInformation,
+		_In_ ULONG EventInformationLength,
+		_Out_opt_ PULONG ReturnLength);
 	//ZwQueryEvent
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -272,10 +353,10 @@ extern "C" {
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtReleaseKeyedEvent(
-		IN HANDLE               KeyedEventHandle,
-		IN PVOID                Key,
-		IN BOOLEAN              Alertable,
-		IN PLARGE_INTEGER       Timeout OPTIONAL);
+		_In_ HANDLE KeyedEventHandle,
+		_In_ PVOID Key,
+		_In_ BOOLEAN Alertable,
+		_In_opt_ PLARGE_INTEGER Timeout);
 	//ZwReleaseKeyedEvent
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -294,58 +375,58 @@ extern "C" {
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtResetEvent(
-		IN HANDLE               EventHandle,
-		OUT PLONG               PreviousState OPTIONAL);
+		_In_ HANDLE EventHandle,
+		_Out_opt_ PLONG PreviousState);
 	//ZwResetEvent
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwsetevent
 	NTSYSAPI NTSTATUS NtSetEvent(
-		_In_            HANDLE EventHandle,
-		[out, optional] PLONG  PreviousState);
+		_In_ HANDLE EventHandle,
+		_Out_opt_ PLONG PreviousState);
 	//ZwSetEvent
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtSetEventBoostPriority(
-		IN HANDLE               EventHandle);
+		_In_ HANDLE EventHandle);
 	//ZwSetEventBoostPriority
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtSetHighEventPair(
-		IN HANDLE               EventPairHandle);
+		_In_ HANDLE EventPairHandle);
 	//ZwSetHighEventPair
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtSetHighWaitLowEventPair(
-		IN HANDLE               EventPairHandle);
+		_In_ HANDLE EventPairHandle);
 	//ZwSetHighWaitLowEventPair
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtSetLowEventPair(
-		IN HANDLE               EventPairHandle);
+		_In_ HANDLE EventPairHandle);
 	//ZwSetLowEventPair
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtSetLowWaitHighEventPair(
-		IN HANDLE               EventPairHandle);
+		_In_ HANDLE EventPairHandle);
 	//ZwSetLowWaitHighEventPair
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtSignalAndWaitForSingleObject(
-		IN HANDLE               ObjectToSignal,
-		IN HANDLE               WaitableObject,
-		IN BOOLEAN              Alertable,
-		IN PLARGE_INTEGER       Time OPTIONAL);
+		_In_ HANDLE ObjectToSignal,
+		_In_ HANDLE WaitableObject,
+		_In_ BOOLEAN Alertable,
+		_In_opt_ PLARGE_INTEGER Time);
 	//ZwSignalAndWaitForSingleObject
 
 	// https://www.geoffchappell.com/studies/windows/km/ntoskrnl/api/etw/traceapi/control/index.htm?ta=7.839996337890625&tx=27,29,32,41&ts=0,160
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtTraceControl(
+	NTSYSAPI  NTSTATUS NTAPI NtTraceControl(
 		_In_ ULONG CtrlCode,
 		_In_ PVOID InputBuffer,
 		_In_ ULONG InputBufferLength,
@@ -366,20 +447,20 @@ extern "C" {
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtWaitForKeyedEvent(
-		IN HANDLE               KeyedEventHandle,
-		IN PVOID                Key,
-		IN BOOLEAN              Alertable,
-		IN PLARGE_INTEGER       Timeout OPTIONAL);
+		_In_ HANDLE KeyedEventHandle,
+		_In_ PVOID Key,
+		_In_ BOOLEAN Alertable,
+		_In_opt_ PLARGE_INTEGER Timeout);
 	//ZwWaitForKeyedEvent
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtWaitForMultipleObjects(
-		IN ULONG                ObjectCount,
-		IN PHANDLE              ObjectsArray,
-		IN OBJECT_WAIT_TYPE     WaitType,
-		IN BOOLEAN              Alertable,
-		IN PLARGE_INTEGER       TimeOut OPTIONAL);
+		_In_ ULONG ObjectCount,
+		_In_ PHANDLE ObjectsArray,
+		_In_ OBJECT_WAIT_TYPE WaitType,
+		_In_ BOOLEAN Alertable,
+		_In_opt_ PLARGE_INTEGER TimeOut);
 	//ZwWaitForMultipleObjects
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -394,7 +475,7 @@ extern "C" {
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwwaitforsingleobject
 	// See winternl.h
 	// https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
-	NTSYSCALLAPI NTSTATUS NTAPI ZwWaitForSingleObject(
+	NTSYSAPI  NTSTATUS NTAPI ZwWaitForSingleObject(
 		_In_ HANDLE Handle,
 		_In_ BOOLEAN Alertable,
 		_In_opt_ PLARGE_INTEGER Timeout);
@@ -403,13 +484,13 @@ extern "C" {
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtWaitHighEventPair(
-		IN HANDLE               EventPairHandle);
+		_In_ HANDLE EventPairHandle);
 	//ZwWaitHighEventPair
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FFile%2FNtWriteFileGather.html
 	NTSYSAPI NTSTATUS NTAPI NtWaitLowEventPair(
-		IN HANDLE               EventPairHandle);
+		_In_ HANDLE EventPairHandle);
 	//ZwWaitLowEventPair
 
 }

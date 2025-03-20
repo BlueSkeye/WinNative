@@ -54,6 +54,7 @@ typedef LONG NTSTATUS;
 typedef VOID* PVOID, ** PPVOID;
 typedef void* POINTER_64 PVOID64;
 typedef const VOID* PCVOID;
+typedef ULONGLONG REGHANDLE, * PREGHANDLE;
 
 #define __int3264   __int64
 #ifndef FALSE
@@ -99,13 +100,19 @@ typedef CONST WCHAR UNALIGNED* LPCUWCHAR, * PCUWCHAR;
 #define NTSYSCALLAPI __declspec(dllimport)
 #define NTAPI __stdcall
 
+typedef enum _EVENT_TYPE {
+    NotificationEvent,
+    SynchronizationEvent
+} EVENT_TYPE;
+
 typedef struct _GUID {
     unsigned long  Data1;
     unsigned short Data2;
     unsigned short Data3;
     unsigned char  Data4[8];
 } GUID;
-typedef GUID* PGUID, REFGUID;
+typedef GUID * PGUID, * LPGUID, REFGUID;
+typedef const GUID * LPCGUID;
 
 typedef union _LARGE_INTEGER {
     struct {
