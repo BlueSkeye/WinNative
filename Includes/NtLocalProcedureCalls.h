@@ -9,6 +9,128 @@ extern "C" {
 
     // NO UNRESOLVED FUNCTION
 
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L556C1-L571C31
+    typedef enum _ALPC_PORT_INFORMATION_CLASS {
+        AlpcBasicInformation, // q: out ALPC_BASIC_INFORMATION
+        AlpcPortInformation, // s: in ALPC_PORT_ATTRIBUTES
+        AlpcAssociateCompletionPortInformation, // s: in ALPC_PORT_ASSOCIATE_COMPLETION_PORT
+        AlpcConnectedSIDInformation, // q: in SID
+        AlpcServerInformation, // q: inout ALPC_SERVER_INFORMATION
+        AlpcMessageZoneInformation, // s: in ALPC_PORT_MESSAGE_ZONE_INFORMATION
+        AlpcRegisterCompletionListInformation, // s: in ALPC_PORT_COMPLETION_LIST_INFORMATION
+        AlpcUnregisterCompletionListInformation, // s: VOID
+        AlpcAdjustCompletionListConcurrencyCountInformation, // s: in ULONG
+        AlpcRegisterCallbackInformation, // s: ALPC_REGISTER_CALLBACK // kernel-mode only
+        AlpcCompletionListRundownInformation, // s: VOID // 10
+        AlpcWaitForPortReferences,
+        AlpcServerSessionInformation // q: ALPC_SERVER_SESSION_INFORMATION // since 19H2
+    } ALPC_PORT_INFORMATION_CLASS;
+
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L13C1-L44C32
+    typedef struct _PORT_MESSAGE {
+        union {
+            struct {
+                CSHORT DataLength;
+                CSHORT TotalLength;
+            } s1;
+            ULONG Length;
+        } u1;
+        union {
+            struct {
+                CSHORT Type;
+                CSHORT DataInfoOffset;
+            } s2;
+            ULONG ZeroInit;
+        } u2;
+        union {
+            CLIENT_ID ClientId;
+            double DoNotUseThisField;
+        };
+        ULONG MessageId;
+        union {
+            SIZE_T ClientViewSize; // only valid for LPC_CONNECTION_REQUEST messages
+            ULONG CallbackId; // only valid for LPC_REQUEST messages
+        };
+    } PORT_MESSAGE, * PPORT_MESSAGE;
+
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L92C1-L100C26
+    typedef struct _PORT_VIEW {
+        ULONG Length;
+        HANDLE SectionHandle;
+        ULONG SectionOffset;
+        SIZE_T ViewSize;
+        PVOID ViewBase;
+        PVOID ViewRemoteBase;
+    } PORT_VIEW, * PPORT_VIEW;
+
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L102C1-L107C40
+    typedef struct _REMOTE_PORT_VIEW {
+        ULONG Length;
+        SIZE_T ViewSize;
+        PVOID ViewBase;
+    } REMOTE_PORT_VIEW, * PREMOTE_PORT_VIEW;
+
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L406C1-L421C1
+    typedef struct _ALPC_PORT_ATTRIBUTES {
+        ULONG Flags;
+        SECURITY_QUALITY_OF_SERVICE SecurityQos;
+        SIZE_T MaxMessageLength;
+        SIZE_T MemoryBandwidth;
+        SIZE_T MaxPoolUsage;
+        SIZE_T MaxSectionSize;
+        SIZE_T MaxViewSize;
+        SIZE_T MaxTotalSectionSize;
+        ULONG DupObjectTypes;
+        ULONG Reserved;
+    } ALPC_PORT_ATTRIBUTES, * PALPC_PORT_ATTRIBUTES;
+
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L480C1-L487C42
+    typedef struct _ALPC_CONTEXT_ATTR {
+        PVOID PortContext;
+        PVOID MessageContext;
+        ULONG Sequence;
+        ULONG MessageId;
+        ULONG CallbackId;
+    } ALPC_CONTEXT_ATTR, * PALPC_CONTEXT_ATTR;
+
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L430C1-L434C54
+    typedef struct _ALPC_MESSAGE_ATTRIBUTES {
+        ULONG AllocatedAttributes;
+        ULONG ValidAttributes;
+    } ALPC_MESSAGE_ATTRIBUTES, * PALPC_MESSAGE_ATTRIBUTES;
+
+    typedef HANDLE ALPC_HANDLE, * PALPC_HANDLE;
+
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L547C1-L554C1
+    typedef struct _ALPC_DATA_VIEW_ATTR {
+        ULONG Flags;
+        ALPC_HANDLE SectionHandle;
+        PVOID ViewBase; // must be zero on input
+        SIZE_T ViewSize;
+    } ALPC_DATA_VIEW_ATTR, * PALPC_DATA_VIEW_ATTR;
+
+    typedef struct _ALPC_SECURITY_ATTR {
+        ULONG Flags;
+        PSECURITY_QUALITY_OF_SERVICE QoS;
+        ALPC_HANDLE ContextHandle; // dbg
+    } ALPC_SECURITY_ATTR, * PALPC_SECURITY_ATTR;
+
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L637C1-L645C1
+    typedef enum _ALPC_MESSAGE_INFORMATION_CLASS {
+        AlpcMessageSidInformation, // q: out SID
+        AlpcMessageTokenModifiedIdInformation,  // q: out LUID
+        AlpcMessageDirectStatusInformation,
+        AlpcMessageHandleInformation, // ALPC_MESSAGE_HANDLE_INFORMATION
+        MaxAlpcMessageInfoClass
+    } ALPC_MESSAGE_INFORMATION_CLASS, * PALPC_MESSAGE_INFORMATION_CLASS;
+
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L351C1-L355C26
+    typedef enum _PORT_INFORMATION_CLASS {
+        PortBasicInformation,
+        PortDumpInformation
+    } PORT_INFORMATION_CLASS;
+    // ============================== functions
+
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtAcceptConnectPort(
         _Out_ PHANDLE PortHandle,
@@ -56,16 +178,16 @@ extern "C" {
         _In_opt_ PLARGE_INTEGER Timeout);
     //ZwAlpcConnectPort
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L827C1-L842C7
     NTSYSCALLAPI NTSTATUS NTAPI NtAlpcConnectPortEx(
         _Out_ PHANDLE PortHandle,
-        _In_ PUNICODE_STRING PortName,
-        _In_ POBJECT_ATTRIBUTES ObjectAttributes,
-        _In_ PALPC_INFO PortInformation,
-        _In_ ULONG ConnectionFlags,
-        _In_ PSECURITY_DESCRIPTOR pSelfRelativeSD,
-        _Inout_ PPORT_MESSAGE ConnectionMessage,
-        _Inout_opt_ PULONG BufferLength,
+        _In_ POBJECT_ATTRIBUTES ConnectionPortObjectAttributes,
+        _In_opt_ POBJECT_ATTRIBUTES ClientPortObjectAttributes,
+        _In_opt_ PALPC_PORT_ATTRIBUTES PortAttributes,
+        _In_ ULONG Flags,
+        _In_opt_ PSECURITY_DESCRIPTOR ServerSecurityRequirements,
+        _Inout_updates_bytes_to_opt_(*BufferLength, *BufferLength) PPORT_MESSAGE ConnectionMessage,
+        _Inout_opt_ PSIZE_T BufferLength,
         _Inout_opt_ PALPC_MESSAGE_ATTRIBUTES OutMessageAttributes,
         _Inout_opt_ PALPC_MESSAGE_ATTRIBUTES InMessageAttributes,
         _In_opt_ PLARGE_INTEGER Timeout);
@@ -74,8 +196,8 @@ extern "C" {
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtAlpcCreatePort(
         _Out_ PHANDLE PortHandle,
-        _In_ POBJECT_ATTRIBUTES ObjectAttributes,
-        _Inout_opt_ PALPC_INFO PortInformation);
+        _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes,
+        _In_opt_ PALPC_PORT_ATTRIBUTES PortAttributes);
     //ZwAlpcCreatePort
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -98,9 +220,9 @@ extern "C" {
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtAlpcCreateSectionView(
-        HANDLE PortHandle,
-        ULONG FlagUnusedMustbeZero,
-        PALPC_MESSAGE_VIEW pMessageBuffer);
+        _In_ HANDLE PortHandle,
+        _Reserved_ ULONG Flags,
+        _Inout_ PALPC_DATA_VIEW_ATTR ViewAttributes);
     //ZwAlpcCreateSectionView
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -178,23 +300,24 @@ extern "C" {
         _In_ POBJECT_ATTRIBUTES ObjectAttributes);
     //ZwAlpcOpenSenderThread
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L680
     NTSYSCALLAPI NTSTATUS NTAPI NtAlpcQueryInformation(
         _In_ HANDLE PortHandle,
         _In_ ALPC_PORT_INFORMATION_CLASS PortInformationClass,
-        _Out_ PVOID PortInformation,
+        _Inout_updates_bytes_to_(Length, *ReturnLength)  PVOID PortInformation,
         _In_ ULONG Length,
         _Out_opt_ PULONG ReturnLength);
     //ZwAlpcQueryInformation
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L788
     NTSYSCALLAPI NTSTATUS NTAPI NtAlpcQueryInformationMessage(
         _In_ HANDLE PortHandle,
         _In_ PPORT_MESSAGE PortMessage,
         _In_ ALPC_MESSAGE_INFORMATION_CLASS MessageInformationClass,
-        _Out_ PVOID MessageInformation,
+        _Out_writes_bytes_to_opt_(Length, *ReturnLength) PVOID MessageInformation,
         _In_ ULONG Length,
         _Out_opt_ PULONG ReturnLength);
+
     //ZwAlpcQueryInformationMessage
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -204,13 +327,13 @@ extern "C" {
         _In_ HANDLE ContextHandle);
     //ZwAlpcRevokeSecurityContext
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L860
     NTSYSCALLAPI NTSTATUS NTAPI NtAlpcSendWaitReceivePort(
         _In_ HANDLE PortHandle,
         _In_ ULONG SendFlags,
-        _In_opt_ PLPC_MESSAGE SendMessage,
+        _In_reads_bytes_opt_(SendMessage->u1.s1.TotalLength) PPORT_MESSAGE SendMessage,
         _Inout_opt_ PVOID InMessageBuffer,
-        _Out_opt_ PLPC_MESSAGE ReceiveBuffer,
+        _Out_writes_bytes_to_opt_(*BufferLength, *BufferLength) PPORT_MESSAGE ReceiveBuffer,
         _Inout_opt_ PULONG ReceiveBufferSize,
         _Inout_opt_ PVOID OutMessageBuffer,
         _In_opt_ PLARGE_INTEGER Timeout);
@@ -260,23 +383,23 @@ extern "C" {
         _In_ ULONG MaxPoolUsage);
     //ZwCreateWaitablePort
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L319
     NTSYSCALLAPI NTSTATUS NTAPI NtImpersonateClientOfPort(
         _In_ HANDLE PortHandle,
-        _In_ PLPC_MESSAGE Message);
+        _In_ PPORT_MESSAGE Message);
     //ZwImpersonateClientOfPort
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L234
     NTSYSCALLAPI NTSTATUS NTAPI NtListenPort(
         _In_ HANDLE Handle,
-        _Out_ PLPC_MESSAGE ConnectionData);
+        _Out_ PPORT_MESSAGE ConnectionData);
     //ZwListenPort
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtQueryInformationPort(
         _In_ HANDLE JobHandle,
         _In_ PORT_INFORMATION_CLASS PortInformationClass,
-        _Out_ PVOID PortInformation,
+        _Out_writes_bytes_to_(Length, *ReturnLength) PVOID PortInformation,
         _In_ ULONG Length,
         _Out_opt_ PULONG ReturnLength);
     //ZwQueryInformationPort
@@ -285,56 +408,56 @@ extern "C" {
     NTSYSCALLAPI NTSTATUS NTAPI NtQueryPortInformationProcess();
     //ZwQueryPortInformationProcess
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L327
     NTSYSCALLAPI NTSTATUS NTAPI NtReadRequestData(
         _In_ HANDLE Handle,
-        _In_ PLPC_MESSAGE Request,
+        _In_ PPORT_MESSAGE Request,
         _In_ ULONG Index,
-        _Out_ PVOID Buffer,
+        _Out_writes_bytes_to_(BufferSize, *NumberOfBytesRead) PVOID Buffer,
         _In_ ULONG BufferLength,
         _Out_opt_ PULONG ReturnLength);
     //ZwReadRequestData
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L282
     NTSYSCALLAPI NTSTATUS NTAPI NtReplyPort(
         _In_ HANDLE PortHandle,
-        _In_ PLPC_MESSAGE pMessage);
+        _In_reads_bytes_(ReplyMessage->u1.s1.TotalLength) PPORT_MESSAGE pMessage);
     //ZwReplyPort
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    //https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L273
     NTSYSCALLAPI NTSTATUS NTAPI NtReplyWaitReceivePort(
         _In_ HANDLE PortHandle,
         _Out_ PHANDLE ReceiveHandle,
-        _In_ PLPC_MESSAGE pMessage,
-        _Out_ PLPC_MESSAGE pMessage2);
+        _In_reads_bytes_(RequestMessage->u1.s1.TotalLength) PPORT_MESSAGE RequestMessage,
+        _Out_ PPORT_MESSAGE ReplyMessage);
     //ZwReplyWaitReceivePort
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L308
     NTSYSCALLAPI NTSTATUS NTAPI NtReplyWaitReceivePortEx(
         _In_ HANDLE PortHandle,
         _Out_ PHANDLE ReceiveHandle,
-        _In_ PLPC_MESSAGE pMessage,
-        _Out_ PLPC_MESSAGE pMessage2,
+        _In_reads_bytes_opt_(ReplyMessage->u1.s1.TotalLength) PPORT_MESSAGE ReplyMessage,
+        _Out_ PPORT_MESSAGE ReceiveMessage,
         _In_ PLARGE_INTEGER Timeout);
     //ZwReplyWaitReceivePortEx
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L290
     NTSYSCALLAPI NTSTATUS NTAPI NtReplyWaitReplyPort(
         _In_ HANDLE PortHandle,
-        _Inout_ PLPC_MESSAGE pMessage);
+        _Inout_ PPORT_MESSAGE pMessage);
     //ZwReplyWaitReplyPort
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L265
     NTSYSCALLAPI NTSTATUS NTAPI NtRequestPort(
         _In_ HANDLE PortHandle,
-        _In_ PLPC_MESSAGE RequestMessage);
+        _In_reads_bytes_(RequestMessage->u1.s1.TotalLength) PPORT_MESSAGE RequestMessage);
     //ZwRequestPort
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L273
     NTSYSCALLAPI NTSTATUS NTAPI NtRequestWaitReplyPort(
         _In_ HANDLE PortHandle,
-        _In_ PLPC_MESSAGE pRequestMessage,
-        _Out_ PLPC_MESSAGE pReplyMessage);
+        _In_reads_bytes_(RequestMessage->u1.s1.TotalLength) PPORT_MESSAGE RequestMessage,
+        _Out_ PPORT_MESSAGE ReplyMessage);
     //ZwRequestWaitReplyPort
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
@@ -350,12 +473,12 @@ extern "C" {
         _Inout_opt_ PULONG ConnectDataLength);
     //ZwSecureConnectPort
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://github.com/winsiderss/systeminformer/blob/0b59400ca381a9c8681abb07a66d77cc55115e63/phnt/include/ntlpcapi.h#L339
     NTSYSCALLAPI NTSTATUS NTAPI NtWriteRequestData(
         _In_ HANDLE PortHandle,
-        _In_ PLPC_MESSAGE Message,
+        _In_ PPORT_MESSAGE Message,
         _In_ ULONG Index,
-        _In_ PVOID Buffer,
+        _In_reads_bytes_(BufferSize) PVOID Buffer,
         _In_ ULONG BufferLength,
         _Out_opt_ PULONG ReturnLength);
     //ZwWriteRequestData

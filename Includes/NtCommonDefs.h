@@ -179,6 +179,27 @@ typedef struct _CLIENT_ID {
     HANDLE 	UniqueThread;
 } CLIENT_ID, * PCLIENT_ID;
 
+// From winnt.h
+typedef enum _SECURITY_IMPERSONATION_LEVEL {
+    SecurityAnonymous,
+    SecurityIdentification,
+    SecurityImpersonation,
+    SecurityDelegation
+} SECURITY_IMPERSONATION_LEVEL, * PSECURITY_IMPERSONATION_LEVEL;
+
+// From winnt.h
+typedef BOOLEAN SECURITY_CONTEXT_TRACKING_MODE, * PSECURITY_CONTEXT_TRACKING_MODE;
+
+// From winnt.h
+typedef struct _SECURITY_QUALITY_OF_SERVICE {
+    DWORD Length;
+    SECURITY_IMPERSONATION_LEVEL ImpersonationLevel;
+    SECURITY_CONTEXT_TRACKING_MODE ContextTrackingMode;
+    BOOLEAN EffectiveOnly;
+} SECURITY_QUALITY_OF_SERVICE, * PSECURITY_QUALITY_OF_SERVICE;
+
+typedef PVOID PSECURITY_DESCRIPTOR;
+
 #ifndef _VA_LIST
 #define _VA_LIST char*
 #endif

@@ -20,7 +20,7 @@
 #include "NtIo.h"
 #include "NtLanguageSupport.h"
 #include "NtLoader.h"
-//#include "NtLocalProcedureCalls.h"
+#include "NtLocalProcedureCalls.h"
 #include "NtMemory.h"
 //#include "NtMemoryStream.h"
 //#include "NtNetwork.h"

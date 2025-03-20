@@ -18,10 +18,9 @@ extern "C" {
 	typedef ULONG CSR_API_NUMBER;
 	typedef struct _CSR_CAPTURE_BUFFER CSR_CAPTURE_BUFFER,* PCSR_CAPTURE_BUFFER;
 	typedef struct _CSR_CLIENT_CONNECT CSR_CLIENT_CONNECT;
-	typedef struct _PORT_MESSAGE_HEADER PORT_MESSAGE;
 
 	// https://doxygen.reactos.org/d2/db8/struct__PORT__MESSAGE__HEADER.html
-	struct _PORT_MESSAGE_HEADER {
+	typedef struct _PORT_MESSAGE_HEADER {
 		USHORT DataSize;
 		USHORT MessageSize;
 		USHORT MessageType;
@@ -29,7 +28,7 @@ extern "C" {
 		CLIENT_ID ClientId;
 		ULONG MessageId;
 		ULONG SectionSize;
-	};
+	} PORT_MESSAGE_HEADER;
 
 	// https://doxygen.reactos.org/da/d28/struct__CSR__API__CONNECTINFO.html
 	struct _CSR_API_CONNECTINFO {
@@ -55,7 +54,7 @@ extern "C" {
 	// Expected size from 6.0 to 10.0 is 0x01B0
 	// https://doxygen.reactos.org/da/db7/struct__CSR__API__MESSAGE.html
 	struct _CSR_API_MSG {
-		PORT_MESSAGE Header;
+		PORT_MESSAGE_HEADER Header;
 		union {
 			CSR_API_CONNECTINFO ConnectionInfo;
 			struct {
@@ -117,7 +116,7 @@ extern "C" {
 		_In_ ULONG 	Milliseconds,
 		_Out_ PLARGE_INTEGER Timeout);
 
-	//https://www.geoffchappell.com/studies/windows/win32/ntdll/api/csrutil/clientcallserver.htm
+	// https://www.geoffchappell.com/studies/windows/win32/ntdll/api/csrutil/clientcallserver.htm
 	NTSYSAPI NTSTATUS NTAPI CsrClientCallServer(
 		PCSR_API_MSG ApiMsg,
 		PVOID CaptureBuffer,
