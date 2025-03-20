@@ -42,6 +42,7 @@ typedef unsigned __int64 DWORD64, UINT_PTR, * PUINT_PTR;
 typedef unsigned long ULONG, * PULONG;
 typedef unsigned __int64 ULONGLONG, *PULONGLONG;
 typedef unsigned __int64 ULONG_PTR, * PULONG_PTR;
+typedef unsigned char UINT8, * PUINT8;
 typedef unsigned short USHORT, * PUSHORT;
 typedef wchar_t WCHAR;    // wc,   16-bit UNICODE character
 typedef short WORD;
