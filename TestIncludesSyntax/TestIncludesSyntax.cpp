@@ -24,7 +24,7 @@
 #include "NtMemory.h"
 #include "NtMemoryStream.h"
 #include "NtNetwork.h"
-//#include "NtNotification.h"
+#include "NtNotification.h"
 //#include "NtObjects.h"
 //#include "NtPartition.h"
 //#include "NtPrefixes.h"

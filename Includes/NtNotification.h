@@ -9,7 +9,32 @@ extern "C" {
 
     // NO UNRESOLVED FUNCTIONS
 
-    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcommitcomplete
+    typedef struct _WNF_STATE_NAME {
+        ULONG Data[2];
+    } WNF_STATE_NAME, * PWNF_STATE_NAME;
+    typedef const struct _WNF_STATE_NAME* PCWNF_STATE_NAME;
+
+    typedef ULONG WNF_CHANGE_STAMP, * PWNF_CHANGE_STAMP;
+
+    // https://github.com/sbousseaden/injection-1/blob/ed54f267471df1261b08731fca5f0c2010c2c848/wnf/wnf.h#L87C1-L90C1
+    typedef struct _WNF_TYPE_ID {
+        GUID TypeId;
+    } WNF_TYPE_ID, * PWNF_TYPE_ID;
+
+    // https://github.com/sbousseaden/injection-1/blob/ed54f267471df1261b08731fca5f0c2010c2c848/wnf/wnf.h#L95
+    typedef struct _WNF_DELIVERY_DESCRIPTOR {
+        ULONG64 SubscriptionId;
+        WNF_STATE_NAME StateName;
+        WNF_CHANGE_STAMP ChangeStamp;
+        ULONG StateDataSize;
+        ULONG EventMask;
+        WNF_TYPE_ID TypeId;
+        ULONG StateDataOffset;
+    } WNF_DELIVERY_DESCRIPTOR, * PWNF_DELIVERY_DESCRIPTOR;
+
+    // =========================== functions ===========================
+
+    // https://github.com/sbousseaden/injection-1/blob/ed54f267471df1261b08731fca5f0c2010c2c848/wnf/wnf.h#L170
     NTSYSCALLAPI NTSTATUS NTAPI NtCreateWnfStateName(
         _Out_ PCWNF_STATE_NAME StateName,
         _In_ ULONG Lifetime,
@@ -20,24 +45,24 @@ extern "C" {
         _In_ PSECURITY_DESCRIPTOR SecurityDescriptor);
     //ZwCreateWnfStateName
 
-    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcommitcomplete
+    // https://github.com/sbousseaden/injection-1/blob/ed54f267471df1261b08731fca5f0c2010c2c848/wnf/wnf.h#L203
     NTSYSCALLAPI NTSTATUS NTAPI NtDeleteWnfStateData(
         _In_ PCWNF_STATE_NAME StateName,
         _In_opt_ PVOID ExplicitScope);
     //ZwDeleteWnfStateData
 
-    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcommitcomplete
+    // https://github.com/sbousseaden/injection-1/blob/ed54f267471df1261b08731fca5f0c2010c2c848/wnf/wnf.h#L183
     NTSYSCALLAPI NTSTATUS NTAPI NtDeleteWnfStateName(
         _In_ PCWNF_STATE_NAME StateName);
     //ZwDeleteWnfStateName
 
-    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcommitcomplete
+    // https://github.com/sbousseaden/injection-1/blob/ed54f267471df1261b08731fca5f0c2010c2c848/wnf/wnf.h#L251
     NTSYSCALLAPI NTSTATUS NTAPI NtGetCompleteWnfStateSubscription(
         _In_opt_ PWNF_STATE_NAME OldDescriptorStateName,
         _In_opt_ PULONG OldSubscriptionId,
         _In_opt_ ULONG OldDescriptorEventMask,
         _In_opt_ ULONG OldDescriptorStatus,
-        _Out_ PVOID NewDeliveryDescriptor,
+        _Out_writes_bytes_(DescriptorSize) PWNF_DELIVERY_DESCRIPTOR NewDeliveryDescriptor,
         _In_ ULONG DescriptorSize);
     //ZwGetCompleteWnfStateSubscription
 
