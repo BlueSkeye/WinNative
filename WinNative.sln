@@ -46,6 +46,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Includes", "Includes", "{02
 		Includes\NtObjects.h = Includes\NtObjects.h
 		Includes\NtPartition.h = Includes\NtPartition.h
 		Includes\NtPebTeb.h = Includes\NtPebTeb.h
+		Includes\NtPeImage.h = Includes\NtPeImage.h
 		Includes\NtPrefixes.h = Includes\NtPrefixes.h
 		Includes\NtProcesses.h = Includes\NtProcesses.h
 		Includes\NtRegistry.h = Includes\NtRegistry.h

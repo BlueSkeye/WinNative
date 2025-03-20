@@ -56,6 +56,7 @@ typedef void* POINTER_64 PVOID64;
 typedef const VOID* PCVOID;
 typedef ULONGLONG REGHANDLE, * PREGHANDLE;
 typedef __int64 intptr_t;
+typedef USHORT LANGID;
 
 #define __int3264   __int64
 #ifndef FALSE
@@ -131,6 +132,10 @@ typedef struct _LIST_ENTRY {
     struct _LIST_ENTRY* Flink;
     struct _LIST_ENTRY* Blink;
 } LIST_ENTRY, * PLIST_ENTRY, PRLIST_ENTRY;
+
+typedef struct _SINGLE_LIST_ENTRY {
+    struct _SINGLE_LIST_ENTRY* Next;
+} SINGLE_LIST_ENTRY, * PSINGLE_LIST_ENTRY;
 
 typedef struct _OBJECT_ATTRIBUTES {
     ULONG           Length;

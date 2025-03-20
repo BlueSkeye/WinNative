@@ -4,17 +4,11 @@
 #define _NTTABLES_
 
 #include "NtCommonDefs.h"
+#include "NtPeImage.h"
 
 extern "C" {
 
-#define IMAGE_NUMBEROF_DIRECTORY_ENTRIES    16
-
-	typedef struct _IMAGE_DATA_DIRECTORY IMAGE_DATA_DIRECTORY, * PIMAGE_DATA_DIRECTORY;
-	typedef struct _IMAGE_FILE_HEADER IMAGE_FILE_HEADER, * PIMAGE_FILE_HEADER;
-	typedef struct _IMAGE_NT_HEADERS64 IMAGE_NT_HEADERS64, * PIMAGE_NT_HEADERS64;
-	typedef struct _IMAGE_OPTIONAL_HEADER64  IMAGE_OPTIONAL_HEADER64, * PIMAGE_OPTIONAL_HEADER64;
 	typedef struct _RTL_AVL_TABLE RTL_AVL_TABLE, * PRTL_AVL_TABLE;
-	typedef struct _RTL_BALANCED_NODE RTL_BALANCED_NODE, * PRTL_BALANCED_NODE;
 	typedef struct _RTL_BALANCED_LINKS RTL_BALANCED_LINKS, *PRTL_BALANCED_LINKS;
 	typedef struct _RTL_DYNAMIC_HASH_TABLE_CONTEXT RTL_DYNAMIC_HASH_TABLE_CONTEXT,
 		* PRTL_DYNAMIC_HASH_TABLE_CONTEXT;
@@ -27,7 +21,6 @@ extern "C" {
 	typedef struct _RTL_HANDLE_TABLE_ENTRY* PRTL_HANDLE_TABLE_ENTRY;
 	typedef struct _RTL_RB_TREE RTL_RB_TREE, * PRTL_RB_TREE;
 	typedef struct _RTL_SPLAY_LINKS RTL_SPLAY_LINKS, * PRTL_SPLAY_LINKS;
-
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html#ad7ef1aa11ee7738aac70bb450a9a8f51
 	typedef enum _RTL_GENERIC_COMPARE_RESULTS {
@@ -70,79 +63,6 @@ extern "C" {
 		TableInsertAsLeft,
 		TableInsertAsRight
 	} TABLE_SEARCH_RESULT, *PTABLE_SEARCH_RESULT;
-
-	struct _IMAGE_DATA_DIRECTORY {
-		DWORD VirtualAddress;
-		DWORD Size;
-	};
-
-	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_file_header
-	struct _IMAGE_FILE_HEADER {
-		WORD  Machine;
-		WORD  NumberOfSections;
-		DWORD TimeDateStamp;
-		DWORD PointerToSymbolTable;
-		DWORD NumberOfSymbols;
-		WORD  SizeOfOptionalHeader;
-		WORD  Characteristics;
-	};
-
-	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_optional_header64
-	struct _IMAGE_OPTIONAL_HEADER64 {
-		WORD                 Magic;
-		BYTE                 MajorLinkerVersion;
-		BYTE                 MinorLinkerVersion;
-		DWORD                SizeOfCode;
-		DWORD                SizeOfInitializedData;
-		DWORD                SizeOfUninitializedData;
-		DWORD                AddressOfEntryPoint;
-		DWORD                BaseOfCode;
-		ULONGLONG            ImageBase;
-		DWORD                SectionAlignment;
-		DWORD                FileAlignment;
-		WORD                 MajorOperatingSystemVersion;
-		WORD                 MinorOperatingSystemVersion;
-		WORD                 MajorImageVersion;
-		WORD                 MinorImageVersion;
-		WORD                 MajorSubsystemVersion;
-		WORD                 MinorSubsystemVersion;
-		DWORD                Win32VersionValue;
-		DWORD                SizeOfImage;
-		DWORD                SizeOfHeaders;
-		DWORD                CheckSum;
-		WORD                 Subsystem;
-		WORD                 DllCharacteristics;
-		ULONGLONG            SizeOfStackReserve;
-		ULONGLONG            SizeOfStackCommit;
-		ULONGLONG            SizeOfHeapReserve;
-		ULONGLONG            SizeOfHeapCommit;
-		DWORD                LoaderFlags;
-		DWORD                NumberOfRvaAndSizes;
-		IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
-	};
-
-	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_nt_headers64
-	struct _IMAGE_NT_HEADERS64 {
-		DWORD Signature;
-		IMAGE_FILE_HEADER FileHeader;
-		IMAGE_OPTIONAL_HEADER64 OptionalHeader;
-	};
-
-	// https://processhacker.sourceforge.io/doc/struct___r_t_l___b_a_l_a_n_c_e_d___n_o_d_e.html
-	struct _RTL_BALANCED_NODE {
-		union {
-			PRTL_BALANCED_NODE Children[2];
-			struct {
-				PRTL_BALANCED_NODE Left;
-				PRTL_BALANCED_NODE Right;
-			} DUMMYSTRUCTNAME;
-		};
-		union {
-			UCHAR Red : 1;
-			UCHAR Balance : 2;
-			ULONG_PTR ParentValue;
-		} DUMMYUNIONNAME;
-	};
 
 	struct _RTL_BALANCED_LINKS {
 		struct _RTL_BALANCED_LINKS* Parent;
