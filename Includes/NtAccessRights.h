@@ -5,7 +5,6 @@
 
 #include "NtCommonDefs.h"
 
-
 extern "C" {
 
     // typedef DWORD ACCESS_MASK;
@@ -28,21 +27,14 @@ extern "C" {
         SPECIFIC_RIGHTS_ALL = 0x0000FFFFL
     } ACCESS_MASK;
 
-//#define DELETE                           (0x00010000L)
-//#define READ_CONTROL                     (0x00020000L)
-//#define WRITE_DAC                        (0x00040000L)
-//#define WRITE_OWNER                      (0x00080000L)
-//#define SYNCHRONIZE                      (0x00100000L)
-//
-//#define STANDARD_RIGHTS_REQUIRED         (0x000F0000L)
-//
-//#define STANDARD_RIGHTS_READ             (READ_CONTROL)
-//#define STANDARD_RIGHTS_WRITE            (READ_CONTROL)
-//#define STANDARD_RIGHTS_EXECUTE          (READ_CONTROL)
-//
-//#define STANDARD_RIGHTS_ALL              (0x001F0000L)
-//
-//#define SPECIFIC_RIGHTS_ALL              (0x0000FFFFL)
+    typedef enum _DIRECTORY_ACCESS_MASK {
+        DIRECTORY_QUERY = 0x0001,
+        DIRECTORY_TRAVERSE = 0x0002,
+        DIRECTORY_CREATE_OBJECT = 0x0004,
+        DIRECTORY_CREATE_SUBDIRECTORY = 0x0008,
+
+        DIRECTORY_ALL_ACCESS = STANDARD_RIGHTS_REQUIRED | 0xF
+    } DIRECTORY_ACCESS_MASK;
 
     // File related
     typedef enum _FILE_ACCESS_MASK {

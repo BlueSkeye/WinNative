@@ -199,6 +199,27 @@ typedef struct _SECURITY_QUALITY_OF_SERVICE {
     BOOLEAN EffectiveOnly;
 } SECURITY_QUALITY_OF_SERVICE, * PSECURITY_QUALITY_OF_SERVICE;
 
+// From wtypebase.h
+typedef struct _SECURITY_ATTRIBUTES {
+    DWORD nLength;
+    LPVOID lpSecurityDescriptor;
+    BOOL bInheritHandle;
+} SECURITY_ATTRIBUTES, *PSECURITY_ATTRIBUTES;
+
+// From winnt.h
+typedef struct _LUID {
+    DWORD LowPart;
+    LONG HighPart;
+} LUID, * PLUID;
+
+// From winnt.h
+typedef struct _LUID_AND_ATTRIBUTES {
+    LUID Luid;
+    DWORD Attributes;
+} LUID_AND_ATTRIBUTES, * PLUID_AND_ATTRIBUTES;
+typedef LUID_AND_ATTRIBUTES LUID_AND_ATTRIBUTES_ARRAY[ANYSIZE_ARRAY];
+typedef LUID_AND_ATTRIBUTES_ARRAY* PLUID_AND_ATTRIBUTES_ARRAY;
+
 typedef PVOID PSECURITY_DESCRIPTOR;
 
 #ifndef _VA_LIST
