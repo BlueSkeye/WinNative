@@ -13,7 +13,6 @@ extern "C" {
 	typedef struct _IMAGE_FILE_HEADER IMAGE_FILE_HEADER, * PIMAGE_FILE_HEADER;
 	typedef struct _IMAGE_NT_HEADERS64 IMAGE_NT_HEADERS64, * PIMAGE_NT_HEADERS64;
 	typedef struct _IMAGE_OPTIONAL_HEADER64  IMAGE_OPTIONAL_HEADER64, * PIMAGE_OPTIONAL_HEADER64;
-	typedef struct _IMAGE_RUNTIME_FUNCTION_ENTRY RUNTIME_FUNCTION, * PRUNTIME_FUNCTION;
 	typedef struct _RTL_AVL_TABLE RTL_AVL_TABLE, * PRTL_AVL_TABLE;
 	typedef struct _RTL_BALANCED_NODE RTL_BALANCED_NODE, * PRTL_BALANCED_NODE;
 	typedef struct _RTL_BALANCED_LINKS RTL_BALANCED_LINKS, *PRTL_BALANCED_LINKS;
@@ -128,15 +127,6 @@ extern "C" {
 		IMAGE_FILE_HEADER FileHeader;
 		IMAGE_OPTIONAL_HEADER64 OptionalHeader;
 	};
-
-	typedef struct _IMAGE_RUNTIME_FUNCTION_ENTRY {
-		DWORD BeginAddress;
-		DWORD EndAddress;
-		union {
-			DWORD UnwindInfoAddress;
-			DWORD UnwindData;
-		} DUMMYUNIONNAME;
-	} _IMAGE_RUNTIME_FUNCTION_ENTRY, * _PIMAGE_RUNTIME_FUNCTION_ENTRY;
 
 	// https://processhacker.sourceforge.io/doc/struct___r_t_l___b_a_l_a_n_c_e_d___n_o_d_e.html
 	struct _RTL_BALANCED_NODE {

@@ -4,6 +4,7 @@
 #define _NTEXCEPTIONS_
 
 #include "NtCommonDefs.h"
+#include "NtRuntimeFunctions.h"
 
 extern "C" {
 
@@ -13,38 +14,68 @@ extern "C" {
 	//WerReportExceptionWorker
 	// END OF UNRESOLVED FUNCTIONS
 
+	typedef struct _EXCEPTION_POINTERS {
+		PEXCEPTION_RECORD ExceptionRecord;
+		PCONTEXT          ContextRecord;
+	} EXCEPTION_POINTERS, * PEXCEPTION_POINTERS;
+
+	// From errhandlingapi.h
+	typedef LONG(NTAPI* PTOP_LEVEL_EXCEPTION_FILTER)(
+		_In_ struct _EXCEPTION_POINTERS* ExceptionInfo);
+	typedef PTOP_LEVEL_EXCEPTION_FILTER LPTOP_LEVEL_EXCEPTION_FILTER;
+
+	// From rtlsupportapi.h
+#define UNWIND_HISTORY_TABLE_SIZE 12
+	typedef struct _UNWIND_HISTORY_TABLE_ENTRY {
+		ULONG_PTR ImageBase;
+		PRUNTIME_FUNCTION FunctionEntry;
+	} UNWIND_HISTORY_TABLE_ENTRY, * PUNWIND_HISTORY_TABLE_ENTRY;
+	typedef struct _UNWIND_HISTORY_TABLE {
+		ULONG Count;
+		UCHAR LocalHint;
+		UCHAR GlobalHint;
+		UCHAR Search;
+		UCHAR Once;
+		ULONG_PTR LowAddress;
+		ULONG_PTR HighAddress;
+		UNWIND_HISTORY_TABLE_ENTRY Entry[UNWIND_HISTORY_TABLE_SIZE];
+	} UNWIND_HISTORY_TABLE, * PUNWIND_HISTORY_TABLE;
+
+	// https://doxygen.reactos.org/d5/df7/ndk_2rtltypes_8h.html#a7261fc01cbea64ed8c51ca805a82c31b
+	typedef LONG(NTAPI* PVECTORED_EXCEPTION_HANDLER) (PEXCEPTION_POINTERS ExceptionPointers);
+
+	// =============================== functions ===============================
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtContinue(
+	NTSYSAPI NTSTATUS NTAPI NtContinue(
 		_In_ PCONTEXT Context,
 		_In_ BOOLEAN bTest);
 	//ZwContinue
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtContinueEx(
+	NTSYSAPI NTSTATUS NTAPI NtContinueEx(
 		_In_ PCONTEXT Context,
 		_In_ BOOLEAN bTest);
 	//ZwContinueEx
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtRaiseException(
+	NTSYSAPI NTSTATUS NTAPI NtRaiseException(
 		_In_ PEXCEPTION_RECORD Record,
 		_In_ PCONTEXT Context,
 		_In_ BOOL SearchFrames);
 	//ZwRaiseException
 
 	// https://github.com/reactos/wine/blob/master/dlls/ntdll/exception.c
-	NTSYSAPI PVOID WINAPI RtlAddVectoredContinueHandler(
+	NTSYSAPI PVOID NTAPI RtlAddVectoredContinueHandler(
 		ULONG first,
 		PVECTORED_EXCEPTION_HANDLER func);
 
 	// https://github.com/reactos/wine/blob/master/dlls/ntdll/exception.c
-	NTSYSAPI PVOID WINAPI DECLSPEC_HOTPATCH RtlAddVectoredExceptionHandler(
+	NTSYSAPI PVOID NTAPI /*DECLSPEC_HOTPATCH*/ RtlAddVectoredExceptionHandler(
 		ULONG first,
 		PVECTORED_EXCEPTION_HANDLER func);
 
-
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntxcapi.h#L111
-	_Analysis_noreturn_ NTSYSCALLAPI DECLSPEC_NORETURN VOID NTAPI RtlAssert(
+	_Analysis_noreturn_ NTSYSAPI __declspec(noreturn) VOID NTAPI RtlAssert(
 		_In_ PVOID VoidFailedAssertion,
 		_In_ PVOID VoidFileName,
 		_In_ ULONG LineNumber,
@@ -58,20 +89,20 @@ extern "C" {
 	NTSYSAPI VOID NTAPI RtlRaiseExceptionForReturnAddressHijack(VOID);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntxcapi.h#L44
-	_Analysis_noreturn_ NTSYSAPI DECLSPEC_NORETURN VOID NTAPI RtlRaiseNoncontinuableException(
+	_Analysis_noreturn_ NTSYSAPI __declspec(noreturn) VOID NTAPI RtlRaiseNoncontinuableException(
 		_In_ PEXCEPTION_RECORD ExceptionRecord,
 		_In_ PCONTEXT ContextRecord);
 
 	// https://github.com/reactos/wine/blob/master/dlls/ntdll/exception.c
-	NTSYSAPI VOID WINAPI RtlRaiseStatus(
+	NTSYSAPI VOID NTAPI RtlRaiseStatus(
 		NTSTATUS status);
 
 	// https://github.com/reactos/wine/blob/master/dlls/ntdll/exception.c
-	NTSYSAPI ULONG WINAPI RtlRemoveVectoredContinueHandler(
+	NTSYSAPI ULONG NTAPI RtlRemoveVectoredContinueHandler(
 		PVOID handler);
 
 	// https://github.com/reactos/wine/blob/master/dlls/ntdll/exception.c
-	NTSYSAPI ULONG WINAPI RtlRemoveVectoredExceptionHandler(
+	NTSYSAPI ULONG NTAPI RtlRemoveVectoredExceptionHandler(
 		PVOID handler);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
