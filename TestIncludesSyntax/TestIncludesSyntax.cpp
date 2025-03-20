@@ -6,7 +6,7 @@
 #include "NtAtoms.h"
 #include "NtClientServer.h"
 #include "NtContexts.h"
-//#include "NTCRuntime.h"
+#include "NTCRuntime.h"
 //#include "NtCrypto.h"
 //#include "NtDebugging.h"
 //#include "NtDevices.h"

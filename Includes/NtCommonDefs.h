@@ -21,6 +21,7 @@ typedef struct _SID_IDENTIFIER_AUTHORITY* PSID_IDENTIFIER_AUTHORITY;
 typedef struct _UNICODE_STRING* PUNICODE_STRING;
 
 // Intrinsic types aliases
+typedef int errno_t;
 typedef void* LPVOID;
 typedef int BOOL, * PBOOL;
 typedef unsigned char BYTE;
@@ -156,6 +157,11 @@ typedef struct _UNICODE_STRING {
 	PWSTR  Buffer;
 } UNICODE_STRING;
 typedef const UNICODE_STRING* PCUNICODE_STRING;
+
+#ifndef _VA_LIST
+#define _VA_LIST char*
+#endif
+typedef _VA_LIST va_list;
 
 // Define some specificiation strings to prevent compilation errors.
 #define __drv_aliasesMem

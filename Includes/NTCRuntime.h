@@ -11,8 +11,15 @@ extern "C" {
 
 	// NO UNDEFINED FUNCTIONS
 
+	typedef enum _EXCEPTION_DISPOSITION {
+		ExceptionContinueExecution,
+		ExceptionContinueSearch,
+		ExceptionNestedException,
+		ExceptionCollidedUnwind
+	} EXCEPTION_DISPOSITION;
+
 	// https://learn.microsoft.com/en-us/windows/win32/devnotes/--c-specific-handler2
-	_CRTIMP __C_specific_handler(
+	NTSYSAPI EXCEPTION_DISPOSITION __cdecl __C_specific_handler(
 		_In_    struct _EXCEPTION_RECORD* ExceptionRecord,
 		_In_    void* EstablisherFrame,
 		_Inout_ struct _CONTEXT* ContextRecord,
@@ -73,7 +80,7 @@ extern "C" {
 		int radix);
 
 	//https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/itoa-s-itow-s?view=msvc-170
-	NTSYSAPI errno_t NTAPPI _i64tow_s(
+	NTSYSAPI errno_t NTAPI _i64tow_s(
 		long long value,
 		wchar_t* buffer,
 		size_t size,
@@ -168,16 +175,12 @@ extern "C" {
 
 	//https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/setjmp?view=msvc-170
 	// https://learn.microsoft.com/en-us/cpp/cpp/using-setjmp-longjmp?view=msvc-170
-#ifndef _JMP_BUF_DEFINED
-#define _JMP_BUF_DEFINED
-	typedef struct _VCRT_ALIGN(16) _SETJMP_FLOAT128
-	{
+	typedef struct /* _VCRT_ALIGN(16) */ _SETJMP_FLOAT128 {
 		unsigned __int64 Part[2];
-	} SETJMP_FLOAT128;
+	} SETJMP_FLOAT128, _JBTYPE;
 #define _JBLEN  16
-	typedef SETJMP_FLOAT128 _JBTYPE;
 	typedef _JBTYPE jmp_buf[_JBLEN];
-#endif
+
 	NTSYSAPI int __cdecl setjmp(
 		jmp_buf env);
 
@@ -186,48 +189,48 @@ extern "C" {
 		jmp_buf env);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/snprintf-snprintf-snprintf-l-snwprintf-snwprintf-l?view=msvc-170
-	NTSYSAPI int NTAPI _snprintf(
+	NTSYSAPI int __cdecl _snprintf(
 		char* buffer,
 		size_t count,
-		const char* format[,
-		argument] ...);
+		const char* format,
+		...);
 	
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/snprintf-s-snprintf-s-l-snwprintf-s-snwprintf-s-l?view=msvc-170
-	NTSYSAPI int NTAPI _snprintf_s(
+	NTSYSAPI int __cdecl _snprintf_s(
 		char* buffer,
 		size_t sizeOfBuffer,
 		size_t count,
-		const char* format[,
-		argument] ...);
+		const char* format,
+		...);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/snscanf-s-snscanf-s-l-snwscanf-s-snwscanf-s-l?view=msvc-170
 	NTSYSAPI int __cdecl _snscanf_s(
 		const char* input,
 		size_t length,
-		const char* format[,
-		argument_list]);
+		const char* format,
+		...);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/snprintf-snprintf-snprintf-l-snwprintf-snwprintf-l?view=msvc-170
-	NTSYSAPI int NTAPI _snwprintf(
+	NTSYSAPI int __cdecl _snwprintf(
 		wchar_t* buffer,
 		size_t count,
-		const wchar_t* format[,
-		argument] ...);
+		const wchar_t* format,
+		...);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/snprintf-s-snprintf-s-l-snwprintf-s-snwprintf-s-l?view=msvc-170
 	NTSYSAPI int __cdecl _snwprintf_s(
 		wchar_t* buffer,
 		size_t sizeOfBuffer,
 		size_t count,
-		const wchar_t* format[,
-		argument] ...);
+		const wchar_t* format,
+		...);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/snscanf-s-snscanf-s-l-snwscanf-s-snwscanf-s-l?view=msvc-170
 	NTSYSAPI int __cdecl _snwscanf_s(
 		const wchar_t* input,
 		size_t length,
-		const wchar_t* format[,
-		argument_list]);
+		const wchar_t* format,
+		...);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/splitpath-wsplitpath?view=msvc-170
 	NTSYSAPI void NTAPI _splitpath(
@@ -293,10 +296,10 @@ extern "C" {
 		size_t numberOfElements);
 	
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/sprintf-sprintf-l-swprintf-swprintf-l-swprintf-l?view=msvc-170
-	NTSYSAPI int NTAPI _swprintf(
+	NTSYSAPI int __cdecl _swprintf(
 		wchar_t* buffer,
-		const wchar_t* format[,
-		argument]...);
+		const wchar_t* format,
+		...);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/itoa-itow?view=msvc-170
 	NTSYSAPI char* NTAPI _ui64toa(
@@ -580,44 +583,44 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/isalnum-iswalnum-isalnum-l-iswalnum-l?view=msvc-170
 	NTSYSAPI int NTAPI iswalnum(
-		wint_t c);
+		wchar_t c);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/isalpha-iswalpha-isalpha-l-iswalpha-l?view=msvc-170
 	NTSYSAPI int NTAPI iswalpha(
-		wint_t c);
+		wchar_t c);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/isascii-isascii-iswascii?view=msvc-170
 	NTSYSAPI int NTAPI iswascii(
-		wint_t c);
+		wchar_t c);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/isctype-iswctype-isctype-l-iswctype-l?view=msvc-170
 	NTSYSAPI int NTAPI iswctype(
-		wint_t c,
-		wctype_t desc);
+		wchar_t c,
+		wchar_t desc);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/isdigit-iswdigit-isdigit-l-iswdigit-l?view=msvc-170
 	NTSYSAPI int NTAPI iswdigit(
-		wint_t c);
+		wchar_t c);
 
 	//https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/isgraph-iswgraph-isgraph-l-iswgraph-l?view=msvc-170
 	NTSYSAPI int NTAPI iswgraph(
-		wint_t c);
+		wchar_t c);
 
 	//https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/islower-iswlower-islower-l-iswlower-l?view=msvc-170
 	NTSYSAPI int NTAPI iswlower(
-		wint_t c);
+		wchar_t c);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/isprint-iswprint-isprint-l-iswprint-l?view=msvc-170
 	NTSYSAPI int NTAPI iswprint(
-		wint_t c);
+		wchar_t c);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/isspace-iswspace-isspace-l-iswspace-l?view=msvc-170
 	NTSYSAPI int NTAPI iswspace(
-		wint_t c);
+		wchar_t c);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/isxdigit-iswxdigit-isxdigit-l-iswxdigit-l?view=msvc-170
 	NTSYSAPI int NTAPI iswxdigit(
-		wint_t c);
+		wchar_t c);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/isxdigit-iswxdigit-isxdigit-l-iswxdigit-l?view=msvc-170
 	NTSYSAPI int NTAPI isxdigit(
@@ -719,8 +722,8 @@ extern "C" {
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/sprintf-sprintf-l-swprintf-swprintf-l-swprintf-l?view=msvc-170
 	NTSYSAPI int __cdecl sprintf(
 		char* buffer,
-		const char* format[,
-		argument] ...);
+		const char* format,
+		...);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/sprintf-s-sprintf-s-l-swprintf-s-swprintf-s-l?view=msvc-170
 	NTSYSAPI int __cdecl sprintf_s(
@@ -736,14 +739,14 @@ extern "C" {
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/sscanf-sscanf-l-swscanf-swscanf-l?view=msvc-170
 	NTSYSAPI int __cdecl sscanf(
 		const char* buffer,
-		const char* format[,
-		argument] ...);
+		const char* format,
+		...);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/sscanf-s-sscanf-s-l-swscanf-s-swscanf-s-l?view=msvc-170
 	NTSYSAPI int __cdecl sscanf_s(
 		const char* buffer,
-		const char* format[,
-		argument] ...);
+		const char* format,
+		...);
 	
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/strcat-wcscat-mbscat?view=msvc-170
 	NTSYSAPI char* NTAPI strcat(
@@ -778,7 +781,7 @@ extern "C" {
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/strcpy-s-wcscpy-s-mbscpy-s?view=msvc-170
 	NTSYSAPI errno_t NTAPI strcpy_s(
 		char* dest,
-		rsize_t dest_size,
+		size_t dest_size,
 		const char* src);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/strcspn-wcscspn-mbscspn-mbscspn-l?view=msvc-170
@@ -883,8 +886,8 @@ extern "C" {
 	NTSYSAPI int __cdecl swprintf(
 		wchar_t* buffer,
 		size_t count,
-		const wchar_t* format[,
-		argument]...);
+		const wchar_t* format,
+		...);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/sprintf-s-sprintf-s-l-swprintf-s-swprintf-s-l?view=msvc-170
 	NTSYSAPI int __cdecl swprintf_s(
@@ -896,8 +899,8 @@ extern "C" {
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/sscanf-s-sscanf-s-l-swscanf-s-swscanf-s-l?view=msvc-170
 	NTSYSAPI int __cdecl swscanf_s(
 		const wchar_t* buffer,
-		const wchar_t* format[,
-		argument] ...);
+		const wchar_t* format,
+		...);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/tan-tanf-tanl?view=msvc-170
 	NTSYSAPI double NTAPI tan(
@@ -913,11 +916,11 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/tolower-tolower-towlower-tolower-l-towlower-l?view=msvc-170
 	NTSYSAPI int NTAPI towlower(
-		wint_t c);
+		wchar_t c);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/toupper-toupper-towupper-toupper-l-towupper-l?view=msvc-170
 	NTSYSAPI int NTAPI towupper(
-		wint_t c);
+		wchar_t c);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-vdbgprintex
 	NTSYSAPI ULONG NTAPI vDbgPrintEx(
@@ -990,7 +993,7 @@ extern "C" {
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/strcpy-s-wcscpy-s-mbscpy-s?view=msvc-170
 	NTSYSAPI errno_t NTAPI wcscpy_s(
 		wchar_t* dest,
-		rsize_t dest_size,
+		size_t dest_size,
 		const wchar_t* src);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/strcspn-wcscspn-mbscspn-mbscspn-l?view=msvc-170
