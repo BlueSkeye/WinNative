@@ -2,3 +2,6 @@
 https://www.x86matthew.com/view_post?id=lognt32_p2
 Return-address hijacking implemented to improve efficiency
 Interesting for an explanation of the benefits from using fastcall convention.
+
+https://tools.yxqweb.men/book/Windows%20Native%20API%20Programming%20%28Pavel%20Yosifovich%29.pdf
+A full book from Pavel Yosifovich.

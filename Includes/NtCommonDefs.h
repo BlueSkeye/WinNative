@@ -34,22 +34,24 @@ typedef unsigned __int64 DWORD64, * PDWORD64;
 typedef void* HANDLE, * PHANDLE;
 typedef __int64 INT_PTR, * PINT_PTR;
 typedef long LONG, * PLONG;
-typedef __int64 LONGLONG, LONG64, * PLONG64, QWORD;
+typedef __int64 INT64, LONGLONG, LONG64, * PLONG64, QWORD;
 typedef __int64 LONG_PTR, * PLONG_PTR;
+typedef signed __int64 int64_t;
 typedef short SHORT, * PSHORT;
 typedef unsigned char UCHAR, * PUCHAR;
+typedef unsigned int UINT32;
 typedef unsigned __int64 DWORD64, UINT_PTR, * PUINT_PTR;
 typedef unsigned long ULONG, * PULONG;
 typedef unsigned __int64 ULONGLONG, *PULONGLONG;
 typedef unsigned __int64 ULONG_PTR, * PULONG_PTR;
 typedef unsigned char UINT8, * PUINT8;
-typedef unsigned short USHORT, * PUSHORT;
+typedef unsigned short UINT16, *PUINT16, USHORT, * PUSHORT;
 typedef wchar_t WCHAR;    // wc,   16-bit UNICODE character
 typedef short WORD;
 
 // More derived types.
 typedef BYTE BOOLEAN, *PBOOLEAN, *PBYTE;
-typedef DWORD LCID, *PLCID;
+typedef DWORD INT32, LCID, *PLCID;
 typedef ULONG CLONG, LOGICAL; 
 typedef LONG NTSTATUS, *PNTSTATUS;
 typedef VOID* PVOID, ** PPVOID;
@@ -239,6 +241,15 @@ typedef struct _ACL {
     USHORT AceCount;
     USHORT Sbz2;
 } ACL, *PACL;
+
+typedef ULONG_PTR KAFFINITY;
+
+// From ntdef.h
+typedef struct _GROUP_AFFINITY {
+    KAFFINITY Mask;
+    USHORT Group;
+    USHORT Reserved[3];
+} GROUP_AFFINITY, * PGROUP_AFFINITY;
 
 #ifndef _VA_LIST
 #define _VA_LIST char*

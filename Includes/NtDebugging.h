@@ -161,13 +161,6 @@ extern "C" {
         CSHORT Weekday;
     } TIME_FIELDS, *PTIME_FIELDS;
 
-    // From ntdef.h
-    typedef struct _GROUP_AFFINITY {
-        KAFFINITY Mask;
-        USHORT Group;
-        USHORT Reserved[3];
-    } GROUP_AFFINITY, * PGROUP_AFFINITY;
-
     // ============================== functions ==============================
 
     // https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/nf-wdm-dbgbreakpoint
