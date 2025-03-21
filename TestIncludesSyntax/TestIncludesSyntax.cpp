@@ -38,7 +38,7 @@
 #include "NtTables.h"
 #include "NtThreadPool.h"
 #include "NtTime.h"
-//#include "NtTransaction.h"
+#include "NtTransaction.h"
 
 extern "C" void NTAPI NtProcessStartup(PVOID /*PPEB*/ peb)
 {

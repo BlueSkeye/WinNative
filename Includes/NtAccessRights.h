@@ -36,6 +36,32 @@ extern "C" {
         DIRECTORY_ALL_ACCESS = STANDARD_RIGHTS_REQUIRED | 0xF
     } DIRECTORY_ACCESS_MASK;
 
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcreateenlistment
+    typedef enum ENLISTMENT_ACCESS_MASK {
+        // Query information about the enlistment(see ZwQueryInformationEnlistment).
+        ENLISTMENT_QUERY_INFORMATION = 0x0001,
+        // Set information for the enlistment(see ZwSetInformationEnlistment).
+        ENLISTMENT_SET_INFORMATION = 0x0002,
+        // Recover the enlistment(see ZwRecoverEnlistment).
+        ENLISTMENT_RECOVER = 0x0004,
+        // Perform operations that a resource manager that is not superior performs(
+        // see ZwRollbackEnlistment, ZwPrePrepareComplete, ZwPrepareComplete, ZwCommitComplete,
+        // ZwRollbackComplete, ZwSinglePhaseReject, ZwReadOnlyEnlistment).
+        ENLISTMENT_SUBORDINATE_RIGHTS = 0x0008,
+        // Perform operations that a superior transaction manager must perform(
+        // see ZwPrepareEnlistment, ZwPrePrepareEnlistment, ZwCommitEnlistment).
+        ENLISTMENT_SUPERIOR_RIGHTS = 0x0010,
+
+        ENLISTMENT_GENERIC_READ	= STANDARD_RIGHTS_READ | ENLISTMENT_QUERY_INFORMATION,
+        ENLISTMENT_GENERIC_WRITE = STANDARD_RIGHTS_WRITE | ENLISTMENT_SET_INFORMATION |
+            ENLISTMENT_RECOVER /* | ENLISTMENT_REFERENCE */ | ENLISTMENT_SUBORDINATE_RIGHTS |
+            ENLISTMENT_SUPERIOR_RIGHTS,
+        ENLISTMENT_GENERIC_EXECUTE = STANDARD_RIGHTS_EXECUTE | ENLISTMENT_RECOVER |
+            ENLISTMENT_SUBORDINATE_RIGHTS | ENLISTMENT_SUPERIOR_RIGHTS,
+        ENLISTMENT_ALL_ACCESS = STANDARD_RIGHTS_REQUIRED | ENLISTMENT_GENERIC_READ |
+            ENLISTMENT_GENERIC_WRITE | ENLISTMENT_GENERIC_EXECUTE
+    };
+
     // File related
     typedef enum _FILE_ACCESS_MASK {
         FILE_READ_DATA = 0x0001, // file & pipe
