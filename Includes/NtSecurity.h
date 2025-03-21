@@ -9,7 +9,363 @@ extern "C" {
 
     // NO UNRESOLVED FUNCTIONS
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    typedef struct _OBJECT_BOUNDARY_DESCRIPTOR {
+        ULONG Version;
+        ULONG Items;
+        ULONG TotalSize;
+        union {
+            ULONG Flags;
+            struct {
+                ULONG AddAppContainerSid : 1;
+                ULONG Reserved : 31;
+            } DUMMYSTRUCTNAME;
+        } DUMMYUNIONNAME;
+        //OBJECT_BOUNDARY_ENTRY Entries[1];
+    } OBJECT_BOUNDARY_DESCRIPTOR, * POBJECT_BOUNDARY_DESCRIPTOR;
+
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_generic_mapping
+    typedef struct _GENERIC_MAPPING {
+        ACCESS_MASK GenericRead;
+        ACCESS_MASK GenericWrite;
+        ACCESS_MASK GenericExecute;
+        ACCESS_MASK GenericAll;
+    } GENERIC_MAPPING, *PGENERIC_MAPPING;
+
+    // From WTypeBase.h
+    typedef struct _SID_AND_ATTRIBUTES {
+        SID* Sid;
+        DWORD Attributes;
+    } SID_AND_ATTRIBUTES, * PSID_AND_ATTRIBUTES;
+
+    // From Winnt.h
+#define SID_HASH_SIZE 32
+    typedef ULONG_PTR SID_HASH_ENTRY, * PSID_HASH_ENTRY;
+    typedef struct _SID_AND_ATTRIBUTES_HASH {
+        DWORD SidCount;
+        PSID_AND_ATTRIBUTES SidAttr;
+        SID_HASH_ENTRY Hash[SID_HASH_SIZE];
+    } SID_AND_ATTRIBUTES_HASH, * PSID_AND_ATTRIBUTES_HASH;
+
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntpsapi.h#L1166C1-L1181C34
+    /* The PS_PROTECTION structure is used to define the protection level of a process. */
+    typedef struct _PS_PROTECTION {
+        union {
+            UCHAR Level;
+            struct {
+                UCHAR Type : 3;
+                UCHAR Audit : 1;
+                UCHAR Signer : 4;
+            } DUMMYSTRUCTNAME;
+        } DUMMYUNIONNAME;
+    } PS_PROTECTION, * PPS_PROTECTION;
+
+    typedef enum _SECURITY_INFORMATION {
+        OWNER_SECURITY_INFORMATION = 0x00000001L,
+        GROUP_SECURITY_INFORMATION = 0x00000002L,
+        DACL_SECURITY_INFORMATION = 0x00000004L,
+        SACL_SECURITY_INFORMATION = 0x00000008L,
+        LABEL_SECURITY_INFORMATION = 0x00000010L,
+        ATTRIBUTE_SECURITY_INFORMATION = 0x00000020L,
+        SCOPE_SECURITY_INFORMATION = 0x00000040L,
+        PROCESS_TRUST_LABEL_SECURITY_INFORMATION = 0x00000080L,
+        ACCESS_FILTER_SECURITY_INFORMATION = 0x00000100L,
+        BACKUP_SECURITY_INFORMATION = 0x00010000L,
+
+        PROTECTED_DACL_SECURITY_INFORMATION = 0x80000000L,
+        PROTECTED_SACL_SECURITY_INFORMATION = 0x40000000L,
+        UNPROTECTED_DACL_SECURITY_INFORMATION = 0x20000000L,
+        UNPROTECTED_SACL_SECURITY_INFORMATION = 0x10000000L
+    } SECURITY_INFORMATION;
+
+    // https://learn.microsoft.com/en-us/windows/win32/secauthz/security-descriptor-control
+    typedef enum _SECURITY_DESCRIPTOR_CONTROL {
+        // Indicates a required security descriptor in which the discretionary access control
+        // list(DACL) is set up to support automatic propagation of inheritable access control
+        // entries(ACEs) to existing child objects. For access control lists(ACLs) that support
+        // auto inheritance, this bit is always set.Protected servers can call the
+        // ConvertToAutoInheritPrivateObjectSecurity function to convert a security descriptor
+        // and set this flag.
+        SE_DACL_AUTO_INHERIT_REQ = 0x0100,
+        // Indicates a security descriptor in which the discretionary access control list(DACL)
+        // is set up to support automatic propagation of inheritable access control entries(ACEs)
+        // to existing child objects. For access control lists(ACLs) that support auto inheritance,
+        // this bit is always set. Protected servers can call the
+        // ConvertToAutoInheritPrivateObjectSecurity function to convert a security descriptor
+        // and set this flag.
+        SE_DACL_AUTO_INHERITED = 0x0400,
+        // Indicates a security descriptor with a default DACL.For example, if the creator an
+        // object does not specify a DACL, the object receives the default DACL from the access
+        // token of the creator. This flag can affect how the system treats the DACL with respect
+        // to ACE inheritance.The system ignores this flag if the SE_DACL_PRESENT flag is not set.
+        // This flag is used to determine how the final DACL on the object is to be computed and
+        // is not stored physically in the security descriptor control of the securable object.
+        // To set this flag, use the SetSecurityDescriptorDacl function.
+        SE_DACL_DEFAULTED = 0x0008,
+        // Indicates a security descriptor that has a DACL.If this flag is not set, or if this
+        // flag is set and the DACL is NULL, the security descriptor allows full access to everyone.
+        // This flag is used to hold the security information specified by a caller until the
+        // security descriptor is associated with a securable object.After the security descriptor
+        // is associated with a securable object, the SE_DACL_PRESENT flag is always set in the
+        // security descriptor control. To set this flag, use the SetSecurityDescriptorDacl function.
+        SE_DACL_PRESENT = 0x0004,
+        // Prevents the DACL of the security descriptor from being modified by inheritable ACEs.
+        // To set this flag, use the SetSecurityDescriptorControl function.
+        SE_DACL_PROTECTED = 0x1000,
+        // Indicates that the security identifier(SID) of the security descriptor group was provided
+        // by a default mechanism. This flag can be used by a resource manager to identify objects
+        // whose security descriptor group was set by a default mechanism. To set this flag, use
+        // the SetSecurityDescriptorGroup function.
+        SE_GROUP_DEFAULTED = 0x0002,
+        // Indicates that the SID of the owner of the security descriptor was provided by a default
+        // mechanism. This flag can be used by a resource manager to identify objects whose owner
+        // was set by a default mechanism. To set this flag, use the SetSecurityDescriptorOwner
+        // function.
+        SE_OWNER_DEFAULTED = 0x0001,
+        // Indicates that the resource manager control is valid.
+        SE_RM_CONTROL_VALID = 0x4000,
+        // Indicates a required security descriptor in which the system access control list(SACL)
+        // is set up to support automatic propagation of inheritable ACEs to existing child objects.
+        // The system sets this bit when it performs the automatic inheritance algorithm for the
+        // object and its existing child objects. To convert a security descriptor and set this
+        // flag, protected servers can call the ConvertToAutoInheritPrivateObjectSecurity function.
+        SE_SACL_AUTO_INHERIT_REQ = 0x0200,
+        // Indicates a security descriptor in which the system access control list(SACL) is set
+        // up to support automatic propagation of inheritable ACEs to existing child objects.
+        // The system sets this bit when it performs the automatic inheritance algorithm for the
+        // object and its existing child objects.To convert a security descriptor and set this
+        // flag, protected servers can call the ConvertToAutoInheritPrivateObjectSecurity function.
+        SE_SACL_AUTO_INHERITED = 0x0800,
+        // A default mechanism, rather than the original provider of the security descriptor,
+        // provided the SACL. This flag can affect how the system treats the SACL, with respect
+        // to ACE inheritance.The system ignores this flag if the SE_SACL_PRESENT flag is not set.
+        // To set this flag, use the SetSecurityDescriptorSacl function.
+        SE_SACL_DEFAULTED = 0x0020,
+        // Indicates a security descriptor that has a SACL.To set this flag, use the
+        // SetSecurityDescriptorSacl function.
+        SE_SACL_PRESENT = 0x0010,
+        // Prevents the SACL of the security descriptor from being modified by inheritable ACEs.
+        // To set this flag, use the SetSecurityDescriptorControl function.
+        SE_SACL_PROTECTED = 0x2000,
+        // Indicates a self - relative security descriptor. If this flag is not set, the security
+        // descriptor is in absolute format. For more information, see Absolute and Self - Relative
+        // Security Descriptors.
+        SE_SELF_RELATIVE = 0x8000
+    } SECURITY_DESCRIPTOR_CONTROL, *PSECURITY_DESCRIPTOR_CONTROL;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ne-winnt-acl_information_class
+    typedef enum _ACL_INFORMATION_CLASS {
+        AclRevisionInformation = 1,
+        AclSizeInformation
+    } ACL_INFORMATION_CLASS;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ne-winnt-audit_event_type
+    typedef enum _AUDIT_EVENT_TYPE {
+        AuditEventObjectAccess,
+        AuditEventDirectoryServiceAccess
+    } AUDIT_EVENT_TYPE, * PAUDIT_EVENT_TYPE;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-object_type_list
+    typedef struct _OBJECT_TYPE_LIST {
+        WORD Level;
+        WORD Sbz;
+        GUID* ObjectType;
+    } OBJECT_TYPE_LIST, * POBJECT_TYPE_LIST;
+
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L10285C1-L10292C50
+    typedef enum _APPCONTAINER_SID_TYPE {
+        NotAppContainerSidType,
+        ChildAppContainerSidType,
+        ParentAppContainerSidType,
+        InvalidAppContainerSidType,
+        MaxAppContainerSidType
+    } APPCONTAINER_SID_TYPE, * PAPPCONTAINER_SID_TYPE;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ne-winnt-token_type
+    typedef enum _TOKEN_TYPE {
+        TokenPrimary = 1,
+        TokenImpersonation
+    } TOKEN_TYPE;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-token_user
+    typedef struct _TOKEN_USER {
+        SID_AND_ATTRIBUTES User;
+    } TOKEN_USER, * PTOKEN_USER;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-token_groups
+    typedef struct _TOKEN_GROUPS {
+        DWORD              GroupCount;
+        SID_AND_ATTRIBUTES Groups[ANYSIZE_ARRAY];
+    } TOKEN_GROUPS, * PTOKEN_GROUPS;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-token_privileges
+    typedef struct _TOKEN_PRIVILEGES {
+        DWORD               PrivilegeCount;
+        LUID_AND_ATTRIBUTES Privileges[ANYSIZE_ARRAY];
+    } TOKEN_PRIVILEGES, * PTOKEN_PRIVILEGES;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-token_owner
+    typedef struct _TOKEN_OWNER {
+        PSID Owner;
+    } TOKEN_OWNER, * PTOKEN_OWNER;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-claim_security_attribute_fqbn_value
+    typedef struct _CLAIM_SECURITY_ATTRIBUTE_FQBN_VALUE {
+        DWORD64 Version;
+        PWSTR   Name;
+    } CLAIM_SECURITY_ATTRIBUTE_FQBN_VALUE, * PCLAIM_SECURITY_ATTRIBUTE_FQBN_VALUE;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-claim_security_attribute_octet_string_value
+    typedef struct _CLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE {
+        PVOID pValue;
+        DWORD ValueLength;
+    } CLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE, * PCLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-claim_security_attribute_v1
+    typedef enum _CLAIM_SECURITY_ATTRIBUTE_TYPE {
+        // The Values member refers to an array of LONG64 values.
+        CLAIM_SECURITY_ATTRIBUTE_TYPE_INT64 = 0x0001,
+        // The Values member refers to an array of ULONG64 values
+        CLAIM_SECURITY_ATTRIBUTE_TYPE_UINT64 = 0x0002,
+        // The Values member refers to an array of pointers to Unicode string values
+        CLAIM_SECURITY_ATTRIBUTE_TYPE_STRING = 0x0003,
+        // The Values member refers to an array of CLAIM_SECURITY_ATTRIBUTE_FQBN_VALUE values
+        CLAIM_SECURITY_ATTRIBUTE_TYPE_FQBN = 0x0004,
+        // The Values member refers to an array of CLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE
+        // values where the pValue member of each CLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE
+        // is a PSID.
+        CLAIM_SECURITY_ATTRIBUTE_TYPE_SID = 0x0005,
+        // The Values member refers to an array of ULONG64 values where each element indicates
+        // a Boolean value.The value 1 indicates TRUE and the value 0 indicates FALSE
+        CLAIM_SECURITY_ATTRIBUTE_TYPE_BOOLEAN = 0x0006,
+        // The Values member refers to an array of CLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE
+        // values.
+        CLAIM_SECURITY_ATTRIBUTE_TYPE_OCTET_STRING = 0x0010
+    } CLAIM_SECURITY_ATTRIBUTE_TYPE;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-claim_security_attribute_v1
+    typedef enum _CLAIM_SECURITY_ATTRIBUTE_FLAGS {
+        // This attribute is ignored by the operating system.This claim security attribute is
+        // not inherited across processes.
+        CLAIM_SECURITY_ATTRIBUTE_VALUE_CASE_SENSITIVE = 0x0001,
+        // The value of the claim security attribute is case sensitive.This flag is valid for
+        // values that contain string types
+        CLAIM_SECURITY_ATTRIBUTE_NON_INHERITABLE = 0x0002,
+        // The claim security attribute is considered only for deny access control entries(ACEs).
+        CLAIM_SECURITY_ATTRIBUTE_USE_FOR_DENY_ONLY = 0x0004,
+        // The claim security attribute is disabled by default.
+        CLAIM_SECURITY_ATTRIBUTE_DISABLED_BY_DEFAULT = 0x0008,
+        // The claim security attribute is disabled and will not be applied by the AccessCheck
+        // function.
+        CLAIM_SECURITY_ATTRIBUTE_DISABLED = 0x0010,
+        // The claim security attribute is mandatory.
+        CLAIM_SECURITY_ATTRIBUTE_MANDATORY = 0x0020
+    } CLAIM_SECURITY_ATTRIBUTE_FLAGS;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-claim_security_attribute_v1
+    typedef struct _CLAIM_SECURITY_ATTRIBUTE_V1 {
+        PWSTR Name;
+        CLAIM_SECURITY_ATTRIBUTE_TYPE ValueType;
+        WORD  Reserved;
+        CLAIM_SECURITY_ATTRIBUTE_FLAGS Flags;
+        DWORD ValueCount;
+        union {
+            PLONG64 pInt64;
+            PDWORD64 pUint64;
+            PWSTR* ppString;
+            PCLAIM_SECURITY_ATTRIBUTE_FQBN_VALUE pFqbn;
+            PCLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE pOctetString;
+        } Values;
+    } CLAIM_SECURITY_ATTRIBUTE_V1, * PCLAIM_SECURITY_ATTRIBUTE_V1;
+
+    //https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-claim_security_attributes_information
+    typedef struct _CLAIM_SECURITY_ATTRIBUTES_INFORMATION {
+        WORD  Version;
+        WORD  Reserved;
+        DWORD AttributeCount;
+        union {
+            PCLAIM_SECURITY_ATTRIBUTE_V1 pAttributeV1;
+        } Attribute;
+    } CLAIM_SECURITY_ATTRIBUTES_INFORMATION, * PCLAIM_SECURITY_ATTRIBUTES_INFORMATION;
+
+    typedef enum _TOKEN_INFORMATION_CLASS {
+        TokenUser = 1, // q: TOKEN_USER, SE_TOKEN_USER
+        TokenGroups, // q: TOKEN_GROUPS
+        TokenPrivileges, // q: TOKEN_PRIVILEGES
+        TokenOwner, // q; s: TOKEN_OWNER
+        TokenPrimaryGroup, // q; s: TOKEN_PRIMARY_GROUP
+        TokenDefaultDacl, // q; s: TOKEN_DEFAULT_DACL
+        TokenSource, // q: TOKEN_SOURCE
+        TokenType, // q: TOKEN_TYPE
+        TokenImpersonationLevel, // q: SECURITY_IMPERSONATION_LEVEL
+        TokenStatistics, // q: TOKEN_STATISTICS // 10
+        TokenRestrictedSids, // q: TOKEN_GROUPS
+        TokenSessionId, // q; s: ULONG (requires SeTcbPrivilege)
+        TokenGroupsAndPrivileges, // q: TOKEN_GROUPS_AND_PRIVILEGES
+        TokenSessionReference, // s: ULONG (requires SeTcbPrivilege)
+        TokenSandBoxInert, // q: ULONG
+        TokenAuditPolicy, // q; s: TOKEN_AUDIT_POLICY (requires SeSecurityPrivilege/SeTcbPrivilege)
+        TokenOrigin, // q; s: TOKEN_ORIGIN (requires SeTcbPrivilege)
+        TokenElevationType, // q: TOKEN_ELEVATION_TYPE
+        TokenLinkedToken, // q; s: TOKEN_LINKED_TOKEN (requires SeCreateTokenPrivilege)
+        TokenElevation, // q: TOKEN_ELEVATION // 20
+        TokenHasRestrictions, // q: ULONG
+        TokenAccessInformation, // q: TOKEN_ACCESS_INFORMATION
+        TokenVirtualizationAllowed, // q; s: ULONG (requires SeCreateTokenPrivilege)
+        TokenVirtualizationEnabled, // q; s: ULONG
+        TokenIntegrityLevel, // q; s: TOKEN_MANDATORY_LABEL
+        TokenUIAccess, // q; s: ULONG (requires SeTcbPrivilege)
+        TokenMandatoryPolicy, // q; s: TOKEN_MANDATORY_POLICY (requires SeTcbPrivilege)
+        TokenLogonSid, // q: TOKEN_GROUPS
+        TokenIsAppContainer, // q: ULONG // since WIN8
+        TokenCapabilities, // q: TOKEN_GROUPS // 30
+        TokenAppContainerSid, // q: TOKEN_APPCONTAINER_INFORMATION
+        TokenAppContainerNumber, // q: ULONG
+        TokenUserClaimAttributes, // q: CLAIM_SECURITY_ATTRIBUTES_INFORMATION
+        TokenDeviceClaimAttributes, // q: CLAIM_SECURITY_ATTRIBUTES_INFORMATION
+        TokenRestrictedUserClaimAttributes, // q: CLAIM_SECURITY_ATTRIBUTES_INFORMATION
+        TokenRestrictedDeviceClaimAttributes, // q: CLAIM_SECURITY_ATTRIBUTES_INFORMATION
+        TokenDeviceGroups, // q: TOKEN_GROUPS
+        TokenRestrictedDeviceGroups, // q: TOKEN_GROUPS
+        TokenSecurityAttributes, // q; s: TOKEN_SECURITY_ATTRIBUTES_[AND_OPERATION_]INFORMATION (requires SeTcbPrivilege)
+        TokenIsRestricted, // q: ULONG // 40
+        TokenProcessTrustLevel, // q: TOKEN_PROCESS_TRUST_LEVEL // since WINBLUE
+        TokenPrivateNameSpace, // q; s: ULONG (requires SeTcbPrivilege) // since THRESHOLD
+        TokenSingletonAttributes, // q: TOKEN_SECURITY_ATTRIBUTES_INFORMATION // since REDSTONE
+        TokenBnoIsolation, // q: TOKEN_BNO_ISOLATION_INFORMATION // since REDSTONE2
+        TokenChildProcessFlags, // s: ULONG  (requires SeTcbPrivilege) // since REDSTONE3
+        TokenIsLessPrivilegedAppContainer, // q: ULONG // since REDSTONE5
+        TokenIsSandboxed, // q: ULONG // since 19H1
+        TokenIsAppSilo, // q: ULONG // since WIN11 22H2 // previously TokenOriginatingProcessTrustLevel // q: TOKEN_PROCESS_TRUST_LEVEL
+        TokenLoggingInformation, // TOKEN_LOGGING_INFORMATION // since 24H2
+        MaxTokenInfoClass
+    } TOKEN_INFORMATION_CLASS, * PTOKEN_INFORMATION_CLASS;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-token_primary_group
+    typedef struct _TOKEN_PRIMARY_GROUP {
+        PSID PrimaryGroup;
+    } TOKEN_PRIMARY_GROUP, * PTOKEN_PRIMARY_GROUP;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-token_mandatory_policy
+    typedef struct _TOKEN_MANDATORY_POLICY {
+        DWORD Policy;
+    } TOKEN_MANDATORY_POLICY, * PTOKEN_MANDATORY_POLICY;
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-token_default_dacl
+    typedef struct _TOKEN_DEFAULT_DACL {
+        PACL DefaultDacl;
+    } TOKEN_DEFAULT_DACL, * PTOKEN_DEFAULT_DACL;
+
+    // From winnt.h
+#define TOKEN_SOURCE_LENGTH 8
+    // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-token_source
+    typedef struct _TOKEN_SOURCE {
+        CHAR SourceName[TOKEN_SOURCE_LENGTH];
+        LUID SourceIdentifier;
+    } TOKEN_SOURCE, * PTOKEN_SOURCE;
+
+    // ============================= functions 
+    
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntseapi.h#L668
     NTSYSCALLAPI NTSTATUS NTAPI NtAccessCheck(
         _In_ PSECURITY_DESCRIPTOR SecurityDescriptor,
         _In_ HANDLE ClientToken,
@@ -106,24 +462,25 @@ extern "C" {
         _Out_ PULONG GenerateOnClose);
     //ZwAccessCheckByTypeResultListAndAuditAlarm
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-accesscheckbytyperesultlistandauditalarmbyhandlea
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntseapi.h#L853
     NTSYSCALLAPI NTSTATUS NTAPI NtAccessCheckByTypeResultListAndAuditAlarmByHandle(
         _In_ PUNICODE_STRING SubsystemName,
-        _In_ PVOID HandleId,
+        _In_opt_ PVOID HandleId,
         _In_ HANDLE TokenHandle,
         _In_ PUNICODE_STRING ObjectTypeName,
         _In_ PUNICODE_STRING ObjectName,
         _In_ PSECURITY_DESCRIPTOR SecurityDescriptor,
-        _In_ PSID PrincipalSelfSid,
+        _In_opt_ PSID PrincipalSelfSid,
         _In_ TOKEN_ACCESS_MASK DesiredAccess,
         _In_ AUDIT_EVENT_TYPE AuditType,
         _In_ ULONG Flags,
-        _In_ POBJECT_TYPE_LIST ObjectTypeList,
+        _In_reads_opt_(ObjectTypeListLength) POBJECT_TYPE_LIST ObjectTypeList,
         _In_ ULONG ObjectTypeListLength,
         _In_ PGENERIC_MAPPING GenericMapping,
         _In_ BOOLEAN ObjectCreation,
-        _Out_ PACCESS_MASK GrantedAccessList,
-        _Out_ PNTSTATUS AccessStatusList,
+        _Out_writes_(ObjectTypeListLength) PACCESS_MASK GrantedAccessList,
+        _Out_writes_(ObjectTypeListLength) PNTSTATUS AccessStatusList,
         _Out_ PULONG GenerateOnClose);
     //ZwAccessCheckByTypeResultListAndAuditAlarmByHandle
 
@@ -153,13 +510,13 @@ extern "C" {
         _In_ BOOLEAN UserResetToDefault,
         _In_ BOOLEAN DeviceResetToDefault,
         _In_ BOOLEAN DeviceGroupsResetToDefault,
-        _In_opt_ PTOKEN_SECURITY_ATTRIBUTES_INFORMATION NewUserState,
-        _In_opt_ PTOKEN_SECURITY_ATTRIBUTES_INFORMATION NewDeviceState,
+        _In_opt_ PCLAIM_SECURITY_ATTRIBUTE_V1 NewUserState,
+        _In_opt_ PCLAIM_SECURITY_ATTRIBUTE_V1 NewDeviceState,
         _In_opt_ PTOKEN_GROUPS NewDeviceGroupsState,
         _In_ ULONG UserBufferLength,
-        _Out_ PTOKEN_SECURITY_ATTRIBUTES_INFORMATION PreviousUserState,
+        _Out_ PCLAIM_SECURITY_ATTRIBUTE_V1 PreviousUserState,
         _In_ ULONG DeviceBufferLength,
-        _Out_ PTOKEN_SECURITY_ATTRIBUTES_INFORMATION PreviousDeviceState,
+        _Out_ PCLAIM_SECURITY_ATTRIBUTE_V1 PreviousDeviceState,
         _In_ ULONG DeviceGroupsBufferLength,
         _Out_ PTOKEN_GROUPS PreviousDeviceGroups,
         _Out_opt_ PULONG UserReturnLength,
@@ -200,7 +557,7 @@ extern "C" {
         _In_ PVOID LowBoxStruct);
     //ZwCreateLowBoxToken
 
-    // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntseapi.h#L323
     NTSYSCALLAPI NTSTATUS NTAPI NtCreateToken(
         _Out_ PHANDLE TokenHandle,
         _In_ TOKEN_ACCESS_MASK    DesiredAccess,
@@ -228,8 +585,8 @@ extern "C" {
         _In_ PTOKEN_USER User,
         _In_ PTOKEN_GROUPS Groups,
         _In_ PTOKEN_PRIVILEGES Privileges,
-        _In_opt_ PTOKEN_SECURITY_ATTRIBUTES_INFORMATION UserAttributes,
-        _In_opt_ PTOKEN_SECURITY_ATTRIBUTES_INFORMATION DeviceAttributes,
+        _In_opt_ PCLAIM_SECURITY_ATTRIBUTE_V1 UserAttributes,
+        _In_opt_ PCLAIM_SECURITY_ATTRIBUTE_V1 DeviceAttributes,
         _In_opt_ PTOKEN_GROUPS DeviceGroups,
         _In_opt_ PTOKEN_MANDATORY_POLICY TokenMandatoryPolicy,
         _In_opt_ PTOKEN_OWNER Owner,
@@ -286,8 +643,8 @@ extern "C" {
         _In_ ULONG  DisableDeviceClaimsCount,
         _In_opt_ PUNICODE_STRING  DeviceClaimsToDisable,
         _In_opt_ PTOKEN_GROUPS  DeviceGroupsToDisable,
-        _In_opt_ PTOKEN_SECURITY_ATTRIBUTES_INFORMATION  RestrictedUserAttributes,
-        _In_opt_ PTOKEN_SECURITY_ATTRIBUTES_INFORMATION  RestrictedDeviceAttributes,
+        _In_opt_ PCLAIM_SECURITY_ATTRIBUTE_V1 RestrictedUserAttributes,
+        _In_opt_ PCLAIM_SECURITY_ATTRIBUTE_V1 RestrictedDeviceAttributes,
         _In_opt_ PTOKEN_GROUPS  RestrictedDeviceGroups,
         _Out_ PHANDLE  NewTokenHandle);
     //ZwFilterTokenEx
@@ -454,25 +811,25 @@ extern "C" {
     NTSYSAPI NTSTATUS RtlAbsoluteToSelfRelativeSD(
         _In_      PSECURITY_DESCRIPTOR AbsoluteSecurityDescriptor,
         _Out_     PSECURITY_DESCRIPTOR SelfRelativeSecurityDescriptor,
-        [in, out] PULONG               BufferLength);
+        _Inout_ PULONG               BufferLength);
 
     // https://github.com/mirror/reactos/blob/master/reactos/lib/rtl/priv.c
     NTSYSAPI NTSTATUS NTAPI RtlAcquirePrivilege(
-        IN PULONG Privilege,
-        IN ULONG NumPriv,
-        IN ULONG Flags,
-        OUT PVOID* ReturnedState);
+        _In_ PULONG Privilege,
+        _In_ ULONG NumPriv,
+        _In_ ULONG Flags,
+        _Out_ PVOID* ReturnedState);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtladdaccessallowedace
     NTSYSAPI NTSTATUS RtlAddAccessAllowedAce(
-        [in, out] PACL        Acl,
+        _Inout_ PACL        Acl,
         _In_      ULONG       AceRevision,
         _In_      ACCESS_MASK AccessMask,
         _In_      PSID        Sid);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtladdaccessallowedaceex
     NTSYSAPI NTSTATUS RtlAddAccessAllowedAceEx(
-        [in, out] PACL        Acl,
+        _Inout_ PACL        Acl,
         _In_      ULONG       AceRevision,
         _In_      ULONG       AceFlags,
         _In_      ACCESS_MASK AccessMask,
@@ -514,7 +871,7 @@ extern "C" {
         _In_ PSID Sid);
 
     //Guessed prototype. Unreliable.
-    NTSYSAPI __int64 __usercall RtlAddAccessFilterAce(
+    NTSYSAPI __int64 /*__usercall*/ RtlAddAccessFilterAce(
         PACL Acl,
         char,
         int,
@@ -531,43 +888,43 @@ extern "C" {
 
     // https://doxygen.reactos.org/dc/de0/sdk_2lib_2rtl_2acl_8c.html
     NTSYSAPI NTSTATUS NTAPI RtlAddAuditAccessAce(
-        IN PACL Acl,
-        IN ULONG Revision,
-        IN ACCESS_MASK AccessMask,
-        IN PSID Sid,
-        IN BOOLEAN Success,
-        IN BOOLEAN Failure);
+        _In_ PACL Acl,
+        _In_ ULONG Revision,
+        _In_ ACCESS_MASK AccessMask,
+        _In_ PSID Sid,
+        _In_ BOOLEAN Success,
+        _In_ BOOLEAN Failure);
 
     // https://doxygen.reactos.org/dc/de0/sdk_2lib_2rtl_2acl_8c.html
     NTSYSAPI NTSTATUS NTAPI RtlAddAuditAccessAceEx(
-        IN PACL Acl,
-        IN ULONG Revision,
-        IN ULONG Flags,
-        IN ACCESS_MASK AccessMask,
-        IN PSID Sid,
-        IN BOOLEAN Success,
-        IN BOOLEAN Failure);
+        _In_ PACL Acl,
+        _In_ ULONG Revision,
+        _In_ ULONG Flags,
+        _In_ ACCESS_MASK AccessMask,
+        _In_ PSID Sid,
+        _In_ BOOLEAN Success,
+        _In_ BOOLEAN Failure);
 
     // https://doxygen.reactos.org/dc/de0/sdk_2lib_2rtl_2acl_8c.html
     NTSYSAPI NTSTATUS NTAPI RtlAddAuditAccessObjectAce(
-        IN PACL Acl,
-        IN ULONG Revision,
-        IN ULONG Flags,
-        IN ACCESS_MASK AccessMask,
-        IN GUID* ObjectTypeGuid OPTIONAL,
-        IN GUID* InheritedObjectTypeGuid OPTIONAL,
-        IN PSID Sid,
-        IN BOOLEAN Success,
-        IN BOOLEAN Failure);
+        _In_ PACL Acl,
+        _In_ ULONG Revision,
+        _In_ ULONG Flags,
+        _In_ ACCESS_MASK AccessMask,
+        _In_opt_ GUID* ObjectTypeGuid,
+        _In_opt_ GUID* InheritedObjectTypeGuid,
+        _In_ PSID Sid,
+        _In_ BOOLEAN Success,
+        _In_ BOOLEAN Failure);
 
     // https://raw.githubusercontent.com/mic101/windows/refs/heads/master/WRK-v1.2/base/ntos/rtl/acledit.c
     NTSYSAPI NTSTATUS NTAPI RtlAddCompoundAce(
-        IN PACL Acl,
-        IN ULONG AceRevision,
-        IN UCHAR CompoundAceType,
-        IN ACCESS_MASK AccessMask,
-        IN PSID ServerSid,
-        IN PSID ClientSid);
+        _In_ PACL Acl,
+        _In_ ULONG AceRevision,
+        _In_ UCHAR CompoundAceType,
+        _In_ ACCESS_MASK AccessMask,
+        _In_ PSID ServerSid,
+        _In_ PSID ClientSid);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
     NTSYSAPI NTSTATUS NTAPI RtlAddIntegrityLabelToBoundaryDescriptor(
@@ -584,7 +941,7 @@ extern "C" {
         _In_ ACCESS_MASK 	AccessMask);
 
     // https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/sec.c
-    NTSYSAPI NTSTATUS WINAPI RtlAddProcessTrustLabelAce(
+    NTSYSAPI NTSTATUS NTAPI RtlAddProcessTrustLabelAce(
         PACL acl,
         DWORD revision,
         DWORD flags,
@@ -592,7 +949,7 @@ extern "C" {
         DWORD type,
         DWORD mask);
 
-    // https://github.com/winsiderss/phnt/blob/master/ntrtl.h
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L8550
     NTSYSAPI NTSTATUS NTAPI RtlAddResourceAttributeAce(
         _Inout_ PACL Acl,
         _In_ ULONG AceRevision,
@@ -602,7 +959,7 @@ extern "C" {
         _In_ PCLAIM_SECURITY_ATTRIBUTES_INFORMATION AttributeInfo,
         _Out_ PULONG ReturnLength);
 
-    // https://github.com/winsiderss/phnt/blob/master/ntrtl.h
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L8883
     NTSYSAPI NTSTATUS NTAPI RtlAddSIDToBoundaryDescriptor(
         _Inout_ POBJECT_BOUNDARY_DESCRIPTOR* BoundaryDescriptor,
         _In_ PSID RequiredSid);
@@ -656,7 +1013,7 @@ extern "C" {
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlconvertsidtounicodestring
     // See winterl.h
     NTSYSAPI NTSTATUS NTAPI RtlConvertSidToUnicodeString(
-        [in, out] PUNICODE_STRING UnicodeString,
+        _Inout_ PUNICODE_STRING UnicodeString,
         _In_      PSID            Sid,
         _In_      BOOLEAN         AllocateDestinationString);
 
@@ -681,13 +1038,13 @@ extern "C" {
         _In_ PSID  SourceSid);
 
     // https://doxygen.reactos.org/dd/da4/sdk_2lib_2rtl_2sid_8c_source.html
-    NTSTATUS NTAPI RtlCopySidAndAttributesArray(IN ULONG Count,
-        IN PSID_AND_ATTRIBUTES Src,
-        IN ULONG SidAreaSize,
-        IN PSID_AND_ATTRIBUTES Dest,
-        IN PSID SidArea,
-        OUT PSID* RemainingSidArea,
-        OUT PULONG RemainingSidAreaSize);
+    NTSTATUS NTAPI RtlCopySidAndAttributesArray(_In_ ULONG Count,
+        _In_ PSID_AND_ATTRIBUTES Src,
+        _In_ ULONG SidAreaSize,
+        _In_ PSID_AND_ATTRIBUTES Dest,
+        _In_ PSID SidArea,
+        _Out_ PSID* RemainingSidArea,
+        _Out_ PULONG RemainingSidAreaSize);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcreateacl
     NTSYSAPI NTSTATUS RtlCreateAcl(
@@ -697,11 +1054,11 @@ extern "C" {
 
     // https://github.com/mirror/reactos/blob/master/reactos/lib/rtl/security.c
     NTSTATUS NTAPI RtlCreateAndSetSD(
-        IN PVOID AceData,
-        IN ULONG AceCount,
-        IN PSID OwnerSid OPTIONAL,
-        IN PSID GroupSid OPTIONAL,
-        OUT PSECURITY_DESCRIPTOR* NewDescriptor);
+        _In_ PVOID AceData,
+        _In_ ULONG AceCount,
+        _In_opt_ PSID OwnerSid,
+        _In_opt_ PSID GroupSid,
+        _Out_ PSECURITY_DESCRIPTOR* NewDescriptor);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
     NTSYSAPI PVOID NTAPI RtlCreateBoundaryDescriptor(
@@ -728,7 +1085,7 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtldeleteace
     NTSYSAPI NTSTATUS RtlDeleteAce(
-        [in, out] PACL  Acl,
+        _Inout_ PACL  Acl,
         _In_      ULONG AceIndex);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
@@ -776,7 +1133,7 @@ extern "C" {
         _In_  ULONG AceIndex,
         _Out_ PVOID* Ace);
 
-    // https://ntdoc.m417z.com/rtlgetappcontainersidtype
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L10296
     NTSYSAPI NTSTATUS NTAPI RtlGetAppContainerSidType(
         _In_ PSID AppContainerSid,
         _Out_ PAPPCONTAINER_SID_TYPE AppContainerSidType);
@@ -895,8 +1252,8 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlmapgenericmask
     NTSYSAPI VOID RtlMapGenericMask(
-        [in, out] PACCESS_MASK          AccessMask,
-        _In_      const GENERIC_MAPPING* GenericMapping);
+        _Inout_ PACCESS_MASK AccessMask,
+        _In_ const GENERIC_MAPPING* GenericMapping);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
     NTSYSAPI NTSTATUS NTAPI RtlNewInstanceSecurityObject(
@@ -913,12 +1270,12 @@ extern "C" {
 
     // https://doxygen.reactos.org/da/d08/sdk_2lib_2rtl_2security_8c.html
     NTSYSAPI NTSTATUS NTAPI RtlNewSecurityGrantedAccess(
-        IN ACCESS_MASK DesiredAccess,
-        OUT PPRIVILEGE_SET Privileges,
-        IN OUT PULONG Length,
-        IN HANDLE Token,
-        IN PGENERIC_MAPPING GenericMapping,
-        OUT PACCESS_MASK RemainingDesiredAccess);
+        _In_ ACCESS_MASK DesiredAccess,
+        _Out_ PPRIVILEGE_SET Privileges,
+        _In_ _Out_ PULONG Length,
+        _In_ HANDLE Token,
+        _In_ PGENERIC_MAPPING GenericMapping,
+        _Out_ PACCESS_MASK RemainingDesiredAccess);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
     NTSYSAPI NTSTATUS NTAPI RtlNewSecurityObject(
@@ -964,12 +1321,25 @@ extern "C" {
     NTSYSAPI BOOLEAN NTAPI RtlOwnerAcesPresent(
         _In_ PACL pAcl);
 
-    // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
-    NTSYSAPI NTSTATUS NTAPI RtlQueryInformationAcl(
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L7970C1-L7980C15
+    /* The RtlValidRelativeSecurityDescriptor routine checks the validity of a self-relative
+    * security descriptor.
+    * \param SecurityDescriptorInput A pointer to the buffer that contains the security
+    * descriptor in self-relative format.
+    * The buffer must begin with a SECURITY_DESCRIPTOR structure, which is followed by the rest
+    * of the security descriptor data.
+    * \param SecurityDescriptorLength The size of the SecurityDescriptorInput structure.
+    * \param RequiredInformation A SECURITY_INFORMATION value that specifies the information
+    * that is required to be contained in the security descriptor.
+    * @return RtlValidRelativeSecurityDescriptor returns TRUE if the security descriptor is
+    * valid and includes the information that the RequiredInformation parameter specifies.
+    * Otherwise, this routine returns FALSE.
+    * @see https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlvalidrelativesecuritydescriptor*/
+    _Check_return_ NTSYSAPI NTSTATUS NTAPI RtlQueryInformationAcl(
         _In_ PACL Acl,
         _Out_writes_bytes_(AclInformationLength) PVOID AclInformation,
         _In_ ULONG AclInformationLength,
-        _In_ ACL_INFORMATION_CLASS AclInformationClass);
+        _In_ SECURITY_INFORMATION AclInformationClass);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
     NTSYSAPI NTSTATUS NTAPI RtlQuerySecurityObject(
@@ -1008,24 +1378,24 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlselfrelativetoabsolutesd
     NTSYSAPI NTSTATUS RtlSelfRelativeToAbsoluteSD(
-        _In_      PSECURITY_DESCRIPTOR SelfRelativeSecurityDescriptor,
-        _Out_     PSECURITY_DESCRIPTOR AbsoluteSecurityDescriptor,
-        [in, out] PULONG               AbsoluteSecurityDescriptorSize,
-        _Out_     PACL                 Dacl,
-        [in, out] PULONG               DaclSize,
-        _Out_     PACL                 Sacl,
-        [in, out] PULONG               SaclSize,
-        _Out_     PSID                 Owner,
-        [in, out] PULONG               OwnerSize,
-        _Out_     PSID                 PrimaryGroup,
-        [in, out] PULONG               PrimaryGroupSize);
+        _In_ PSECURITY_DESCRIPTOR SelfRelativeSecurityDescriptor,
+        _Out_ PSECURITY_DESCRIPTOR AbsoluteSecurityDescriptor,
+        _Inout_ PULONG               AbsoluteSecurityDescriptorSize,
+        _Out_ PACL                 Dacl,
+        _Inout_ PULONG               DaclSize,
+        _Out_ PACL                 Sacl,
+        _Inout_ PULONG               SaclSize,
+        _Out_ PSID                 Owner,
+        _Inout_ PULONG               OwnerSize,
+        _Out_ PSID                 PrimaryGroup,
+        _Inout_ PULONG               PrimaryGroupSize);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
     NTSYSAPI NTSTATUS NTAPI RtlSelfRelativeToAbsoluteSD2(
         _Inout_ PSECURITY_DESCRIPTOR pSelfRelativeSecurityDescriptor,
         _Inout_ PULONG pBufferSize);
 
-    // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L8008
     NTSYSAPI NTSTATUS NTAPI RtlSetAttributesSecurityDescriptor(
         _Inout_ PSECURITY_DESCRIPTOR SecurityDescriptor,
         _In_ SECURITY_DESCRIPTOR_CONTROL Control,
@@ -1039,14 +1409,14 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlsetdaclsecuritydescriptor
     NTSYSAPI NTSTATUS RtlSetDaclSecurityDescriptor(
-        [in, out]      PSECURITY_DESCRIPTOR SecurityDescriptor,
+        _Inout_      PSECURITY_DESCRIPTOR SecurityDescriptor,
         _In_           BOOLEAN              DaclPresent,
         _In_opt_ PACL                 Dacl,
         _In_opt_ BOOLEAN              DaclDefaulted);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlsetgroupsecuritydescriptor
     NTSYSAPI NTSTATUS RtlSetGroupSecurityDescriptor(
-        [in, out]      PSECURITY_DESCRIPTOR SecurityDescriptor,
+        _Inout_      PSECURITY_DESCRIPTOR SecurityDescriptor,
         _In_opt_ PSID                 Group,
         _In_opt_ BOOLEAN              GroupDefaulted);
 
@@ -1059,9 +1429,9 @@ extern "C" {
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlsetownersecuritydescriptor
     NTSYSAPI NTSTATUS RtlSetOwnerSecurityDescriptor(
-        [in, out]      PSECURITY_DESCRIPTOR SecurityDescriptor,
-        _In_opt_ PSID                 Owner,
-        _In_opt_ BOOLEAN              OwnerDefaulted);
+        _Inout_ PSECURITY_DESCRIPTOR SecurityDescriptor,
+        _In_opt_ PSID Owner,
+        _In_opt_ BOOLEAN OwnerDefaulted);
 
     // https://github.com/winsiderss/systeminformer/blob/daf4737ce0399fa92d17df118bcb3aba5cdc794f/phnt/include/ntrtl.h#L10787
     NTSYSAPI ULONG NTAPI RtlSetProxiedProcessId(
@@ -1138,11 +1508,23 @@ extern "C" {
     NTSYSAPI BOOLEAN NTAPI RtlValidAcl(
         _In_ PACL Acl);
 
-    // https://github.com/winsiderss/systeminformer/blob/daf4737ce0399fa92d17df118bcb3aba5cdc794f/phnt/include/ntrtl.h#L3334
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L3345
     NTSYSAPI BOOLEAN NTAPI RtlValidProcessProtection(
         _In_ PS_PROTECTION ProcessProtection);
 
-    // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L7970C1-L7979C4
+    /* The RtlValidRelativeSecurityDescriptor routine checks the validity of a self-relative
+    * security descriptor.
+    * \param SecurityDescriptorInput A pointer to the buffer that contains the security
+    * descriptor in self-relative format.
+    * The buffer must begin with a SECURITY_DESCRIPTOR structure, which is followed by
+    * the rest of the security descriptor data.
+    * \param SecurityDescriptorLength The size of the SecurityDescriptorInput structure.
+    * \param RequiredInformation A SECURITY_INFORMATION value that specifies the information
+    * that is required to be contained in the security descriptor.
+    * @return RtlValidRelativeSecurityDescriptor returns TRUE if the security descriptor
+    * is valid and includes the information that the RequiredInformation parameter specifies. Otherwise, this routine returns FALSE.
+    * @see https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlvalidrelativesecuritydescriptor*/
     _Check_return_ NTSYSAPI BOOLEAN NTAPI RtlValidRelativeSecurityDescriptor(
         _In_reads_bytes_(SecurityDescriptorLength) PSECURITY_DESCRIPTOR SecurityDescriptorInput,
         _In_ ULONG SecurityDescriptorLength,

@@ -34,7 +34,7 @@ typedef unsigned __int64 DWORD64, * PDWORD64;
 typedef void* HANDLE, * PHANDLE;
 typedef __int64 INT_PTR, * PINT_PTR;
 typedef long LONG, * PLONG;
-typedef __int64 LONGLONG, QWORD;
+typedef __int64 LONGLONG, LONG64, * PLONG64, QWORD;
 typedef __int64 LONG_PTR, * PLONG_PTR;
 typedef short SHORT, * PSHORT;
 typedef unsigned char UCHAR, * PUCHAR;
@@ -48,10 +48,10 @@ typedef wchar_t WCHAR;    // wc,   16-bit UNICODE character
 typedef short WORD;
 
 // More derived types.
-typedef BYTE BOOLEAN, *PBOOLEAN;
+typedef BYTE BOOLEAN, *PBOOLEAN, *PBYTE;
 typedef DWORD LCID, *PLCID;
 typedef ULONG CLONG, LOGICAL; 
-typedef LONG NTSTATUS;
+typedef LONG NTSTATUS, *PNTSTATUS;
 typedef VOID* PVOID, ** PPVOID;
 typedef void* POINTER_64 PVOID64;
 typedef const VOID* PCVOID;
@@ -230,6 +230,15 @@ struct _RTL_SPLAY_LINKS {
     struct _RTL_SPLAY_LINKS* LeftChild;
     struct _RTL_SPLAY_LINKS* RightChild;
 };
+
+// From wtypesbase.h
+typedef struct _ACL {
+    UCHAR AclRevision;
+    UCHAR Sbz1;
+    USHORT AclSize;
+    USHORT AceCount;
+    USHORT Sbz2;
+} ACL, *PACL;
 
 #ifndef _VA_LIST
 #define _VA_LIST char*

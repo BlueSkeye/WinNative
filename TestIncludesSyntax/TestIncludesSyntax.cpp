@@ -32,7 +32,7 @@
 #include "NtRegistry.h"
 #include "NTRuntimeLib.h"
 #include "NtSection.h"
-//#include "NtSecurity.h"
+#include "NtSecurity.h"
 //#include "NTSoftwareQualityMgmt.h"
 #include "NtStrings.h"
 #include "NtTables.h"
