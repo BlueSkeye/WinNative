@@ -28,7 +28,7 @@
 #include "NtObjects.h"
 #include "NtPartition.h"
 #include "NtPrefixes.h"
-//#include "NtProcesses.h"
+#include "NtProcesses.h"
 #include "NtRegistry.h"
 //#include "NTRuntimeLib.h"
 //#include "NtSection.h"
