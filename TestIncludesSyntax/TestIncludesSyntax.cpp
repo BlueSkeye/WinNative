@@ -2,9 +2,11 @@
 
 #include "NtCommonDefs.h"
 
+#include "NtAccessRights.h"
 #include "NtAsyncProcdureCalls.h"
 #include "NtAtoms.h"
 #include "NtClientServer.h"
+#include "NtContext.h"
 #include "NtContexts.h"
 #include "NTCRuntime.h"
 #include "NtCrypto.h"
@@ -15,6 +17,7 @@
 #include "NtEnvironment.h"
 #include "NtEvents.h"
 #include "NtEventTracing.h"
+#include "NtExceptionRecord.h"
 #include "NtExceptions.h"
 #include "NtFile.h"
 #include "NtHotPatching.h"
@@ -28,10 +31,12 @@
 #include "NtNotification.h"
 #include "NtObjects.h"
 #include "NtPartition.h"
+#include "NtPebTeb.h"
+#include "NtPeImage.h"
 #include "NtPrefixes.h"
 #include "NtProcesses.h"
 #include "NtRegistry.h"
-#include "NTRuntimeLib.h"
+#include "NtRuntimeFunctions.h"
 #include "NtSection.h"
 #include "NtSecurity.h"
 #include "NTSoftwareQualityMgmt.h"
@@ -40,6 +45,7 @@
 #include "NtThreadPool.h"
 #include "NtTime.h"
 #include "NtTransaction.h"
+#include "NtWOW64.h"
 
 extern "C" void NTAPI NtProcessStartup(PVOID /*PPEB*/ peb)
 {
