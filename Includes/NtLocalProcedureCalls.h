@@ -129,7 +129,115 @@ extern "C" {
         PortBasicInformation,
         PortDumpInformation
     } PORT_INFORMATION_CLASS;
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h_source.html
+    typedef struct _ALPC_COMPLETION_LIST_STATE {
+        union {
+            struct {
+                ULONG64 Head : 24;
+                ULONG64 Tail : 24;
+                ULONG64 ActiveThreadCount : 16;
+            } s1;
+            ULONG64 Value;
+        } u1;
+    } ALPC_COMPLETION_LIST_STATE, * PALPC_COMPLETION_LIST_STATE;
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h_source.html
+    typedef struct __declspec(align(128)) _ALPC_COMPLETION_LIST_HEADER {
+        ULONG64 StartMagic;
+        ULONG TotalSize;
+        ULONG ListOffset;
+        ULONG ListSize;
+        ULONG BitmapOffset;
+        ULONG BitmapSize;
+        ULONG DataOffset;
+        ULONG DataSize;
+        ULONG AttributeFlags;
+        ULONG AttributeSize;       
+        __declspec(align(128)) ALPC_COMPLETION_LIST_STATE State;
+        ULONG LastMessageId;
+        ULONG LastCallbackId;
+        __declspec(align(128)) ULONG PostCount;
+        __declspec(align(128)) ULONG ReturnCount;
+        __declspec(align(128)) ULONG LogSequenceNumber;
+        __declspec(align(128)) RTL_SRWLOCK UserLock;
+        ULONG64 EndMagic;
+    } ALPC_COMPLETION_LIST_HEADER, * PALPC_COMPLETION_LIST_HEADER;
+
     // ============================== functions
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI NTSTATUS NTAPI AlpcAdjustCompletionListConcurrencyCount(
+        _In_ HANDLE PortHandle,
+        _In_ ULONG ConcurrencyCount);
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI VOID NTAPI AlpcFreeCompletionListMessage(
+        _Inout_ PVOID CompletionList,
+        _In_ PPORT_MESSAGE Message);
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI VOID NTAPI AlpcGetCompletionListLastMessageInformation(
+        _In_ PVOID CompletionList,
+        _Out_ PULONG LastMessageId,
+        _Out_ PULONG LastCallbackId);
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI PALPC_MESSAGE_ATTRIBUTES NTAPI AlpcGetCompletionListMessageAttributes(
+        _In_ PVOID CompletionList,
+        _In_ PPORT_MESSAGE Message);
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI ULONG NTAPI AlpcGetHeaderSize(
+        _In_ ULONG Flags);
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI PVOID NTAPI AlpcGetMessageAttribute(
+        _In_ PALPC_MESSAGE_ATTRIBUTES 	Buffer,
+        _In_ ULONG 	AttributeFlag);
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI PPORT_MESSAGE NTAPI AlpcGetMessageFromCompletionList(
+        _In_ PVOID CompletionList,
+        _Out_opt_ PALPC_MESSAGE_ATTRIBUTES* MessageAttributes);
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI ULONG NTAPI AlpcGetOutstandingCompletionListMessageCount(
+        _In_ PVOID CompletionList);
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI NTSTATUS NTAPI AlpcInitializeMessageAttribute(
+        _In_ ULONG 	AttributeFlags,
+        _Out_opt_ PALPC_MESSAGE_ATTRIBUTES 	Buffer,
+        _In_ ULONG 	BufferSize,
+        _Out_ PULONG 	RequiredBufferSize);
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI ULONG NTAPI AlpcMaxAllowedMessageLength(VOID);
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI NTSTATUS NTAPI AlpcRegisterCompletionList(
+        _In_ HANDLE PortHandle,
+        _Out_ PALPC_COMPLETION_LIST_HEADER Buffer,
+        _In_ ULONG Size,
+        _In_ ULONG ConcurrencyCount,
+        _In_ ULONG AttributeFlags);
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI BOOLEAN NTAPI AlpcRegisterCompletionListWorkerThread(
+        _Inout_ PVOID CompletionList);
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI NTSTATUS NTAPI AlpcRundownCompletionList(
+        _In_ HANDLE PortHandle);
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI NTSTATUS NTAPI AlpcUnregisterCompletionList(
+        _In_ HANDLE PortHandle);
+
+    // https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
+    NTSYSAPI BOOLEAN NTAPI AlpcUnregisterCompletionListWorkerThread(
+        _Inout_ PVOID CompletionList);
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtAcceptConnectPort(
@@ -482,6 +590,11 @@ extern "C" {
         _In_ ULONG BufferLength,
         _Out_opt_ PULONG ReturnLength);
     //ZwWriteRequestData
+
+    // https://github.com/xmoezzz/NativeLib-R/blob/master/ntsmss.h
+    NTSYSAPI NTSTATUS NTAPI RtlSendMsgToSm(
+        _In_ HANDLE ApiPortHandle,
+        _In_ PPORT_MESSAGE MessageData);
 
 }
 

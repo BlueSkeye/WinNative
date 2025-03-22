@@ -58,6 +58,7 @@ extern "C" {
 		DWORD NumberOfRvaAndSizes;
 		IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
 	} IMAGE_OPTIONAL_HEADER64, * PIMAGE_OPTIONAL_HEADER64;
+	typedef IMAGE_OPTIONAL_HEADER64 IMAGE_OPTIONAL_HEADER, * PIMAGE_OPTIONAL_HEADER;
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_nt_headers64
 	typedef struct _IMAGE_NT_HEADERS64 {

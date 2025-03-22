@@ -237,7 +237,6 @@ extern "C" {
         SystemSecureSpeculationControlInformation = 213, // Undocumented 2004 and higher
     } SYSTEM_INFORMATION_CLASS;
 
-
     // ========================= functions =========================
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtEnumerateSystemEnvironmentValuesEx(
@@ -344,6 +343,14 @@ extern "C" {
         _In_ PVOID SystemInformation,
         _In_ ULONG Length);
     //ZwSetSystemInformation
+
+    // https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L9249C1-L9258C1
+    NTSYSAPI NTSTATUS NTAPI RtlGetNativeSystemInformation(
+        _In_ SYSTEM_INFORMATION_CLASS SystemInformationClass,
+        _In_ PVOID NativeSystemInformation,
+        _In_ ULONG InformationLength,
+        _Out_opt_ PULONG ReturnLength);
+
 }
 
 #endif // _NTENVIRONMENT_

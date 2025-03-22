@@ -7,8 +7,6 @@
 
 extern "C" {
 
-    // typedef DWORD ACCESS_MASK;
-
     typedef enum _ACCESS_MASK {
         DELETE = 0x00010000L,
         READ_CONTROL = 0x00020000L,
@@ -37,7 +35,7 @@ extern "C" {
     } DIRECTORY_ACCESS_MASK;
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-ntcreateenlistment
-    typedef enum ENLISTMENT_ACCESS_MASK {
+    typedef enum _ENLISTMENT_ACCESS_MASK {
         // Query information about the enlistment(see ZwQueryInformationEnlistment).
         ENLISTMENT_QUERY_INFORMATION = 0x0001,
         // Set information for the enlistment(see ZwSetInformationEnlistment).
@@ -60,7 +58,7 @@ extern "C" {
             ENLISTMENT_SUBORDINATE_RIGHTS | ENLISTMENT_SUPERIOR_RIGHTS,
         ENLISTMENT_ALL_ACCESS = STANDARD_RIGHTS_REQUIRED | ENLISTMENT_GENERIC_READ |
             ENLISTMENT_GENERIC_WRITE | ENLISTMENT_GENERIC_EXECUTE
-    };
+    } ENLISTMENT_ACCESS_MASK;
 
     // File related
     typedef enum _FILE_ACCESS_MASK {

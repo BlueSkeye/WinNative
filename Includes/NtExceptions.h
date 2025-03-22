@@ -81,6 +81,12 @@ extern "C" {
 		_In_ ULONG LineNumber,
 		_In_opt_ PSTR MutableMessage);
 
+	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtllookupfunctionentry
+	NTSYSAPI PRUNTIME_FUNCTION RtlLookupFunctionEntry(
+		_In_ DWORD64 ControlPc,
+		_Out_ PDWORD64 ImageBase,
+		_Out_ PUNWIND_HISTORY_TABLE HistoryTable);
+
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/rtlsupportapi/nf-rtlsupportapi-rtlraiseexception
 	NTSYSAPI VOID NTAPI RtlRaiseException(
 		_In_ PEXCEPTION_RECORD ExceptionRecord);

@@ -195,11 +195,9 @@ extern "C" {
 		_In_ PDELAYLOAD_INFO DelayloadInfo);
 
 	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntldr.h#L1197C1-L1203C1
-	typedef _Function_class_(DELAYLOAD_FAILURE_SYSTEM_ROUTINE)
-		PVOID NTAPI DELAYLOAD_FAILURE_SYSTEM_ROUTINE(
-			_In_ PCSTR DllName,
-			_In_ PCSTR ProcedureName);
-	typedef DELAYLOAD_FAILURE_SYSTEM_ROUTINE* PDELAYLOAD_FAILURE_SYSTEM_ROUTINE;
+	typedef PVOID (NTAPI* PDELAYLOAD_FAILURE_SYSTEM_ROUTINE)(
+		_In_ PCSTR DllName,
+		_In_ PCSTR ProcedureName);
 
 	// https://doxygen.reactos.org/dd/d83/ntdllp_8h.html#a72d5a00c3bbe34bc1c1a7ccee187de4f
 	typedef NTSTATUS(NTAPI* PLDR_APP_COMPAT_DLL_REDIRECTION_CALLBACK_FUNCTION)(
@@ -211,12 +209,10 @@ extern "C" {
 		_Outptr_ PWSTR* EffectiveDllPath);
 
 	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntldr.h#L17C1-L24C1
-	typedef _Function_class_(LDR_INIT_ROUTINE)
-		BOOLEAN NTAPI LDR_INIT_ROUTINE(
-			_In_ PVOID DllHandle,
-			_In_ ULONG Reason,
-			_In_opt_ PVOID Context);
-	typedef LDR_INIT_ROUTINE* PLDR_INIT_ROUTINE;
+	typedef BOOLEAN (NTAPI* PLDR_INIT_ROUTINE)(
+		_In_ PVOID DllHandle,
+		_In_ ULONG Reason,
+		_In_opt_ PVOID Context);
 
 	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntldr.h#L25C1-L29C52
 	typedef struct _LDR_SERVICE_TAG_RECORD {

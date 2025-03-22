@@ -1075,7 +1075,17 @@ extern "C" {
         _In_ PUNICODE_STRING ServiceName,
         _Out_writes_bytes_opt_(*ServiceSidLength) PSID ServiceSid,
         _Inout_ PULONG ServiceSidLength);
-        
+
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L8731
+    NTSYSAPI NTSTATUS NTAPI RtlCreateUserSecurityObject(
+        _In_ PRTL_ACE_DATA AceData,
+        _In_ ULONG AceCount,
+        _In_ PSID OwnerSid,
+        _In_ PSID GroupSid,
+        _In_ BOOLEAN IsDirectoryObject,
+        _In_ PGENERIC_MAPPING GenericMapping,
+        _Out_ PSECURITY_DESCRIPTOR* NewSecurityDescriptor);
+
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
     NTSYSAPI NTSTATUS NTAPI RtlCreateVirtualAccountSid(
         _In_ PUNICODE_STRING Name,
@@ -1503,6 +1513,11 @@ extern "C" {
     NTSYSAPI PULONG RtlSubAuthoritySid(
         _In_ PSID  Sid,
         ULONG SubAuthority);
+
+    // https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L3342C1-L3348C7
+    NTSYSAPI BOOLEAN NTAPI RtlTestProtectedAccess(
+        _In_ PS_PROTECTION Source,
+        _In_ PS_PROTECTION Target);
 
     // https://processhacker.sourceforge.io/doc/ntrtl_8h.html
     NTSYSAPI BOOLEAN NTAPI RtlValidAcl(

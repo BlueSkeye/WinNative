@@ -1,7 +1,10 @@
 #pragma once
 
 #include "NtCommonDefs.h"
+#include "NtAccessRights.h"
 #include "NtExceptionRecord.h"
+#include "NtPeImage.h"
+#include "NtRuntimeFunctions.h"
 
 #ifndef _NTDLL_
 #define _NTDLL_
@@ -27,84 +30,1028 @@ extern "C"
 	//ShipAssertMsgW
 	// END OF UNRESOLVED FUNCTIONS
 
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI NTSTATUS NTAPI AlpcAdjustCompletionListConcurrencyCount(
-		_In_ HANDLE PortHandle,
-		_In_ ULONG ConcurrencyCount);
+	// From ntdef.h
+	typedef LARGE_INTEGER PHYSICAL_ADDRESS, * PPHYSICAL_ADDRESS;
+	typedef void* PUMS_CONTEXT;
 
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI VOID NTAPI AlpcFreeCompletionListMessage(
-		_Inout_ PVOID CompletionList,
-		_In_ PPORT_MESSAGE Message);
+	// https://learn.microsoft.com/fr-fr/windows-hardware/drivers/kernel/eprocess#rtl_bitmap
+	typedef struct _RTL_BITMAP {
+		// opaque
+	} RTL_BITMAP, * PRTL_BITMAP;
 
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI VOID NTAPI AlpcGetCompletionListLastMessageInformation(
-		_In_ PVOID CompletionList,
-		_Out_ PULONG LastMessageId,
-		_Out_ PULONG LastCallbackId);
+	// From winnt.h
+	typedef enum _OS_DEPLOYEMENT_STATE_VALUES {
+		OS_DEPLOYMENT_STANDARD = 1,
+		OS_DEPLOYMENT_COMPACT
+	} OS_DEPLOYEMENT_STATE_VALUES;
 
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI PALPC_MESSAGE_ATTRIBUTES NTAPI AlpcGetCompletionListMessageAttributes(
-		_In_ PVOID CompletionList,
-		_In_ PPORT_MESSAGE Message);
+	// https://processhacker.sourceforge.io/doc/ntioapi_8h_source.html
+	typedef enum _IO_SESSION_EVENT {
+		IoSessionEventIgnore,
+		IoSessionEventCreated,
+		IoSessionEventTerminated,
+		IoSessionEventConnected,
+		IoSessionEventDisconnected,
+		IoSessionEventLogon,
+		IoSessionEventLogoff,
+		IoSessionEventMax
+	} IO_SESSION_EVENT;
 
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI ULONG NTAPI AlpcGetHeaderSize(
-		_In_ ULONG Flags);
+	// https://processhacker.sourceforge.io/doc/ntioapi_8h_source.html
+	typedef enum _IO_SESSION_STATE {
+		IoSessionStateCreated,
+		IoSessionStateInitialized,
+		IoSessionStateConnected,
+		IoSessionStateDisconnected,
+		IoSessionStateDisconnectedLoggedOn,
+		IoSessionStateLoggedOn,
+		IoSessionStateLoggedOff,
+		IoSessionStateTerminated,
+		IoSessionStateMax
+	} IO_SESSION_STATE;
 
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI PVOID NTAPI AlpcGetMessageAttribute(
-		_In_ PALPC_MESSAGE_ATTRIBUTES 	Buffer,
-		_In_ ULONG 	AttributeFlag);
+	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FHardware%2FNtShutdownSystem.html
+	typedef enum _SHUTDOWN_ACTION {
+		ShutdownNoReboot,
+		ShutdownReboot,
+		ShutdownPowerOff
+	} SHUTDOWN_ACTION, * PSHUTDOWN_ACTION;
 
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI PPORT_MESSAGE NTAPI AlpcGetMessageFromCompletionList(
-		_In_ PVOID CompletionList,
-		_Out_opt_ PALPC_MESSAGE_ATTRIBUTES* MessageAttributes);
+	// privatehttps://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L7381C1-L7386C34
+	typedef struct _RTL_BITMAP_EX {
+		ULONG64 SizeOfBitMap;
+		PULONG64 Buffer;
+	} RTL_BITMAP_EX, * PRTL_BITMAP_EX;
 
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI ULONG NTAPI AlpcGetOutstandingCompletionListMessageCount(
-		_In_ PVOID CompletionList);
+	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_cm_partial_resource_descriptor
+	typedef struct _CM_PARTIAL_RESOURCE_DESCRIPTOR {
+		UCHAR  Type;
+		UCHAR  ShareDisposition;
+		USHORT Flags;
+		union {
+			struct {
+				PHYSICAL_ADDRESS Start;
+				ULONG            Length;
+			} Generic;
+			struct {
+				PHYSICAL_ADDRESS Start;
+				ULONG            Length;
+			} Port;
+			struct {
+				USHORT    Level;
+				USHORT    Group;
+				ULONG     Vector;
+				KAFFINITY Affinity;
+			} Interrupt;
+			struct {
+				union {
+					struct {
+						USHORT    Group;
+						USHORT    Reserved;
+						USHORT    MessageCount;
+						ULONG     Vector;
+						KAFFINITY Affinity;
+					} Raw;
+					struct {
+						USHORT    Level;
+						USHORT    Group;
+						KAFFINITY Affinity;
+					} Translated;
+				} DUMMYUNIONNAME;
+			} MessageInterrupt;
+			struct {
+				PHYSICAL_ADDRESS Start;
+				ULONG            Length;
+			} Memory;
+			struct {
+				ULONG Channel;
+				ULONG Port;
+				ULONG Reserved1;
+			} Dma;
+			struct {
+				ULONG Channel;
+				ULONG RequestLine;
+				UCHAR TransferWidth;
+				UCHAR Reserved1;
+				UCHAR Reserved2;
+				UCHAR Reserved3;
+			} DmaV3;
+			struct {
+				ULONG Data[3];
+			} DevicePrivate;
+			struct {
+				ULONG Start;
+				ULONG Length;
+				ULONG Reserved;
+			} BusNumber;
+			struct {
+				ULONG DataSize;
+				ULONG Reserved1;
+				ULONG Reserved2;
+			} DeviceSpecificData;
+			struct {
+				PHYSICAL_ADDRESS Start;
+				ULONG            Length40;
+			} Memory40;
+			struct {
+				PHYSICAL_ADDRESS Start;
+				ULONG            Length48;
+			} Memory48;
+			struct {
+				PHYSICAL_ADDRESS Start;
+				ULONG            Length64;
+			} Memory64;
+			struct {
+				UCHAR Class;
+				UCHAR Type;
+				UCHAR Reserved1;
+				UCHAR Reserved2;
+				ULONG IdLowPart;
+				ULONG IdHighPart;
+			} Connection;
+		} u;
+	} CM_PARTIAL_RESOURCE_DESCRIPTOR, * PCM_PARTIAL_RESOURCE_DESCRIPTOR;
 
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI NTSTATUS NTAPI AlpcInitializeMessageAttribute(
-		_In_ ULONG 	AttributeFlags,
-		_Out_opt_ PALPC_MESSAGE_ATTRIBUTES 	Buffer,
-		_In_ ULONG 	BufferSize,
-		_Out_ PULONG 	RequiredBufferSize);
-		
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI ULONG NTAPI AlpcMaxAllowedMessageLength(VOID);
+	// From winnt.h
+	typedef struct _RTL_CRITICAL_SECTION  RTL_CRITICAL_SECTION, * PRTL_CRITICAL_SECTION;
+	typedef struct _RTL_CRITICAL_SECTION_DEBUG {
+		WORD Type;
+		WORD CreatorBackTraceIndex;
+		PRTL_CRITICAL_SECTION CriticalSection;
+		LIST_ENTRY ProcessLocksList;
+		DWORD EntryCount;
+		DWORD ContentionCount;
+		DWORD Flags;
+		WORD CreatorBackTraceIndexHigh;
+		WORD Identifier;
+	} RTL_CRITICAL_SECTION_DEBUG, * PRTL_CRITICAL_SECTION_DEBUG, RTL_RESOURCE_DEBUG, * PRTL_RESOURCE_DEBUG;
 
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI NTSTATUS NTAPI AlpcRegisterCompletionList(
-		_In_ HANDLE 	PortHandle,
-		_Out_ PALPC_COMPLETION_LIST_HEADER 	Buffer,
-		_In_ ULONG 	Size,
-		_In_ ULONG 	ConcurrencyCount,
-		_In_ ULONG 	AttributeFlags);
+	// From winnt.h
+	struct _RTL_CRITICAL_SECTION {
+		PRTL_CRITICAL_SECTION_DEBUG DebugInfo;
+		//  The following three fields control entering and exiting the critical
+		//  section for the resource
+		LONG LockCount;
+		LONG RecursionCount;
+		HANDLE OwningThread;        // from the thread's ClientId->UniqueThread
+		HANDLE LockSemaphore;
+		ULONG_PTR SpinCount;        // force size on 64-bit systems when packed
+	};
 
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI BOOLEAN NTAPI AlpcRegisterCompletionListWorkerThread(
-		_Inout_ PVOID CompletionList);
+	// https://processhacker.sourceforge.io/doc/struct___r_t_l___r_e_s_o_u_r_c_e.html
+	typedef struct _RTL_RESOURCE {
+		RTL_CRITICAL_SECTION CriticalSection;
+		HANDLE SharedSemaphore;
+		ULONG NumberOfWaitingShared;
+		HANDLE ExclusiveSemaphore;
+		ULONG NumberOfWaitingExclusive;
+		LONG NumberOfActive;
+		HANDLE ExclusiveOwnerThread;
+		ULONG Flags;
+		PRTL_RESOURCE_DEBUG DebugInfo;
+	}RTL_RESOURCE, *PRTL_RESOURCE;
 
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI NTSTATUS NTAPI AlpcRundownCompletionList(
-		_In_ HANDLE PortHandle);
-		
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI NTSTATUS NTAPI AlpcUnregisterCompletionList(
-		_In_ HANDLE PortHandle);
+	// https://doxygen.reactos.org/dc/d65/rxact_8c_source.html
+	typedef struct _RXACT_DATA {
+		ULONG ActionCount;
+		ULONG BufferSize;
+		ULONG CurrentSize;
+	} RXACT_DATA, * PRXACT_DATA;
 
-	// https://processhacker.sourceforge.io/doc/ntlpcapi_8h.html
-	NTSYSAPI BOOLEAN NTAPI AlpcUnregisterCompletionListWorkerThread(
-		_Inout_ PVOID CompletionList);
+	// https://doxygen.reactos.org/dc/d65/rxact_8c_source.html
+	typedef struct _RXACT_CONTEXT {
+		HANDLE RootDirectory;
+		HANDLE KeyHandle;
+		BOOLEAN CanUseHandles;
+		PRXACT_DATA Data;
+	} RXACT_CONTEXT, * PRXACT_CONTEXT;
 
+	// https://www.geoffchappell.com/studies/windows/km/ntoskrnl/inc/shared/ntrtl_x/rtl_barrier.htm
+	typedef struct _RTL_BARRIER RTL_BARRIER, * PRTL_BARRIER;
+	// Warning. If dynamically aligned, make sure to algin the dynamically allocated space
+	// on an 8 byte boundary, such as using a function equivalent to _aligned_malloc
+	__declspec(align(8)) struct _RTL_BARRIER {
+		volatile DWORD NumberOfThreadsInBarrier;
+		volatile DWORD PhaseNumber;
+		RTL_SRWLOCK RtlDeleteSafety;
+		DWORD ParticipatingThreadsCount;
+		DWORD Unused1;
+		DWORD Unused2;
+		DWORD Unused3;
+	};
+
+	// https://processhacker.sourceforge.io/doc/struct___r_t_l___d_e_b_u_g___i_n_f_o_r_m_a_t_i_o_n.html
+	typedef struct _RTL_DEBUG_INFORMATION {
+		HANDLE SectionHandleClient;
+		PVOID ViewBaseClient;
+		PVOID ViewBaseTarget;
+		ULONG_PTR ViewBaseDelta;
+		HANDLE EventPairClient;
+		HANDLE EventPairTarget;
+		HANDLE TargetProcessId;
+		HANDLE TargetThreadHandle;
+		ULONG Flags;
+		SIZE_T OffsetFree;
+		SIZE_T CommitSize;
+		SIZE_T ViewSize;
+	} RTL_DEBUG_INFORMATION, *PRTL_DEBUG_INFORMATION;
+
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L8722C1-L8730C1
+	typedef struct _RTL_ACE_DATA {
+		UCHAR AceType;
+		UCHAR InheritFlags;
+		UCHAR AceFlags;
+		ACCESS_MASK AccessMask;
+		PSID* Sid;
+	} RTL_ACE_DATA, * PRTL_ACE_DATA;
+
+	// https://processhacker.sourceforge.io/doc/struct___i_n_i_t_i_a_l___t_e_b.html
+	typedef struct _INITIAL_TEB {
+		struct {
+			PVOID OldStackBase;
+			PVOID OldStackLimit;
+		} OldInitialTeb;
+		PVOID StackBase;
+		PVOID StackLimit;
+		PVOID StackAllocationBase;
+	} INITIAL_TEB, *PINITIAL_TEB;
+
+	typedef NTSTATUS(NTAPI* PUSER_THREAD_START_ROUTINE)(
+		_In_ PVOID ThreadParameter);
+
+	// https://github.com/zodiacon/WindowsInternals/blob/b895f4261e64861d45168001a17cc8cd72a79a50/MemLimit/ndk/rtltypes.h#L748C1-L758C66
+	typedef struct _RTL_CALLER_ALLOCATED_ACTIVATION_CONTEXT_STACK_FRAME_EXTENDED {
+		ULONG Size;
+		ULONG Format;
+		RTL_ACTIVATION_CONTEXT_STACK_FRAME Frame;
+		PVOID Extra1;
+		PVOID Extra2;
+		PVOID Extra3;
+		PVOID Extra4;
+	} RTL_CALLER_ALLOCATED_ACTIVATION_CONTEXT_STACK_FRAME_EXTENDED,
+		* PRTL_CALLER_ALLOCATED_ACTIVATION_CONTEXT_STACK_FRAME_EXTENDED;
+
+	// From winnt.h
+#define RTL_CORRELATION_VECTOR_STRING_LENGTH 129
+#define RTL_CORRELATION_VECTOR_VERSION_1 ((CHAR)1)
+#define RTL_CORRELATION_VECTOR_VERSION_2 ((CHAR)2)
+#define RTL_CORRELATION_VECTOR_VERSION_CURRENT RTL_CORRELATION_VECTOR_VERSION_2
+#define RTL_CORRELATION_VECTOR_V1_PREFIX_LENGTH (16)
+#define RTL_CORRELATION_VECTOR_V1_LENGTH (64)
+#define RTL_CORRELATION_VECTOR_V2_PREFIX_LENGTH (22)
+#define RTL_CORRELATION_VECTOR_V2_LENGTH (128)
+	typedef struct CORRELATION_VECTOR {
+		CHAR Version;
+		CHAR Vector[RTL_CORRELATION_VECTOR_STRING_LENGTH];
+	} CORRELATION_VECTOR, *PCORRELATION_VECTOR;
+	
+	// From wdm.h
+	typedef struct _RTL_BITMAP_RUN {
+		ULONG StartingIndex;
+	} RTL_BITMAP_RUN, * PRTL_BITMAP_RUN;
+
+	// https://doxygen.reactos.org/d5/df7/ndk_2rtltypes_8h_source.html
+	typedef struct _MESSAGE_RESOURCE_ENTRY {
+		USHORT Length;
+		USHORT Flags;
+		UCHAR Text[ANYSIZE_ARRAY];
+	} MESSAGE_RESOURCE_ENTRY, * PMESSAGE_RESOURCE_ENTRY;
+
+	// From winnt.h
+	typedef VOID (NTAPI* PFLS_CALLBACK_FUNCTION) (
+		_In_ PVOID lpFlsData);
+
+	// From ntifs.h
+	//  The context structure is used when generating 8.3 names.  The caller must
+	//  always zero out the structure before starting a new generation sequence
+	typedef struct _GENERATE_NAME_CONTEXT {
+		//  The structure is divided into two strings.  The Name, and extension.
+		//  Each part contains the value that was last inserted in the name.
+		//  The length values are in terms of wchars and not bytes.  We also
+		//  store the last index value used in the generation collision algorithm.
+		USHORT Checksum;
+		BOOLEAN ChecksumInserted;
+		_Field_range_(<= , 8) UCHAR NameLength;        // not including extension
+		WCHAR NameBuffer[8];                          // e.g., "ntoskrnl"
+		_Field_range_(<= , 4) ULONG ExtensionLength;   // including dot
+		WCHAR ExtensionBuffer[4];                     // e.g., ".exe"
+		ULONG LastIndexValue;
+	} GENERATE_NAME_CONTEXT, * PGENERATE_NAME_CONTEXT;
+
+	// From ntdef.h
+	// Structure to represent a system wide processor number. It contains a
+	// group number and relative processor number within the group.
+	typedef struct _PROCESSOR_NUMBER {
+		USHORT Group;
+		UCHAR Number;
+		UCHAR Reserved;
+	} PROCESSOR_NUMBER, * PPROCESSOR_NUMBER;
+
+	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L3436C1-L3440C34
+	typedef struct _CONTEXT_CHUNK {
+		LONG Offset; // Offset may be negative.
+		ULONG Length;
+	} CONTEXT_CHUNK, * PCONTEXT_CHUNK;
+
+	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L3442C1-L3448C28
+	typedef struct _CONTEXT_EX {
+		CONTEXT_CHUNK All;
+		CONTEXT_CHUNK Legacy;
+		CONTEXT_CHUNK XState;
+		CONTEXT_CHUNK KernelCet;
+	} CONTEXT_EX, * PCONTEXT_EX;
+
+	// https://github.com/winsiderss/systeminformer/blob/21b740464f0d1f738d49542e13d68e6dbb7f76d2/phnt/include/ntpebteb.h#L822C1-L829C56
+	/* The TEB_ACTIVE_FRAME_CONTEXT structure is used to store information about an active frame context. */
+	typedef struct _TEB_ACTIVE_FRAME_CONTEXT {
+		ULONG Flags;
+		PCSTR FrameName;
+	} TEB_ACTIVE_FRAME_CONTEXT, * PTEB_ACTIVE_FRAME_CONTEXT;
+
+	// https://github.com/winsiderss/systeminformer/blob/21b740464f0d1f738d49542e13d68e6dbb7f76d2/phnt/include/ntpebteb.h#L842C1-L851C1
+	/* The TEB_ACTIVE_FRAME structure is used to store information about an active frame. */
+	typedef struct _TEB_ACTIVE_FRAME {
+		ULONG Flags;
+		struct _TEB_ACTIVE_FRAME* Previous;
+		PTEB_ACTIVE_FRAME_CONTEXT Context;
+	} TEB_ACTIVE_FRAME, * PTEB_ACTIVE_FRAME;
+
+	typedef enum _NT_PRODUCT_TYPE {
+		NtProductWinNt = 1,
+		NtProductLanManNt,
+		NtProductServer
+	} NT_PRODUCT_TYPE, * PNT_PRODUCT_TYPE;
+
+	// From ntddk.h
+	typedef enum _STATE_LOCATION_TYPE {
+		LocationTypeRegistry = 0,
+		LocationTypeFileSystem = 1,
+		LocationTypeMaximum = 2
+	} STATE_LOCATION_TYPE;
+
+	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L10596C1-L10618C21
+	typedef enum _RTL_BSD_ITEM_TYPE {
+		RtlBsdItemVersionNumber, // q; s: ULONG
+		RtlBsdItemProductType, // q; s: NT_PRODUCT_TYPE (ULONG)
+		RtlBsdItemAabEnabled, // q: s: BOOLEAN // AutoAdvancedBoot
+		RtlBsdItemAabTimeout, // q: s: UCHAR // AdvancedBootMenuTimeout
+		RtlBsdItemBootGood, // q: s: BOOLEAN // LastBootSucceeded
+		RtlBsdItemBootShutdown, // q: s: BOOLEAN // LastBootShutdown
+		RtlBsdSleepInProgress, // q: s: BOOLEAN // SleepInProgress
+		RtlBsdPowerTransition, // q: s: RTL_BSD_DATA_POWER_TRANSITION
+		RtlBsdItemBootAttemptCount, // q: s: UCHAR // BootAttemptCount
+		RtlBsdItemBootCheckpoint, // q: s: UCHAR // LastBootCheckpoint
+		RtlBsdItemBootId, // q; s: ULONG (USER_SHARED_DATA->BootId)
+		RtlBsdItemShutdownBootId, // q; s: ULONG
+		RtlBsdItemReportedAbnormalShutdownBootId, // q; s: ULONG
+		RtlBsdItemErrorInfo, // RTL_BSD_DATA_ERROR_INFO
+		RtlBsdItemPowerButtonPressInfo, // RTL_BSD_POWER_BUTTON_PRESS_INFO
+		RtlBsdItemChecksum, // q: s: UCHAR
+		RtlBsdPowerTransitionExtension,
+		RtlBsdItemFeatureConfigurationState, // q; s: ULONG
+		RtlBsdItemRevocationListInfo, // 24H2
+		RtlBsdItemMax
+	} RTL_BSD_ITEM_TYPE;
+
+	// Reversed. Invoked by KERNEL32.DLL in 10.0.19045.0 version
+	typedef struct _COMPLETION_LIST {
+		PVOID Unknown;
+	} COMPLETION_LIST, * PCOMPLETION_LIST;
+
+	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L9570C1-L9579C52
+	typedef struct _RTL_UNLOAD_EVENT_TRACE {
+		PVOID BaseAddress;
+		SIZE_T SizeOfImage;
+		ULONG Sequence;
+		ULONG TimeDateStamp;
+		ULONG CheckSum;
+		WCHAR ImageName[32];
+		ULONG Version[2];
+	} RTL_UNLOAD_EVENT_TRACE, * PRTL_UNLOAD_EVENT_TRACE;
+
+	// From winnt.h
+	typedef struct _OSVERSIONINFOW {
+		DWORD dwOSVersionInfoSize;
+		DWORD dwMajorVersion;
+		DWORD dwMinorVersion;
+		DWORD dwBuildNumber;
+		DWORD dwPlatformId;
+		WCHAR  szCSDVersion[128];     // Maintenance string for PSS usage
+	} OSVERSIONINFOW, * POSVERSIONINFOW, * LPOSVERSIONINFOW, RTL_OSVERSIONINFOW, * PRTL_OSVERSIONINFOW;
+
+	// From miniport.h
+	typedef USHORT IRQ_DEVICE_POLICY, * PIRQ_DEVICE_POLICY;
+	enum _IRQ_DEVICE_POLICY_USHORT {
+		IrqPolicyMachineDefault = 0,
+		IrqPolicyAllCloseProcessors = 1,
+		IrqPolicyOneCloseProcessor = 2,
+		IrqPolicyAllProcessorsInMachine = 3,
+		IrqPolicyAllProcessorsInGroup = 3,
+		IrqPolicySpecifiedProcessors = 4,
+		IrqPolicySpreadMessagesAcrossAllProcessors = 5,
+		IrqPolicyAllProcessorsInMachineWhenSteered = 6,
+		IrqPolicyAllProcessorsInGroupWhenSteered = 6
+	};
+
+	// From miniport.h
+	// Define interrupt priority policy values
+	typedef enum _IRQ_PRIORITY {
+		IrqPriorityUndefined = 0,
+		IrqPriorityLow,
+		IrqPriorityNormal,
+		IrqPriorityHigh
+	} IRQ_PRIORITY, * PIRQ_PRIORITY;
+
+	// From miniport.h
+	// NT_PROCESSOR_GROUPS is defined for systems with more than 64 processors.
+	// See : https://community.osr.com/t/implementing-processor-groups/56330
+	// This structure defines one type of resource requested by the driver
+	typedef struct _IO_RESOURCE_DESCRIPTOR {
+		UCHAR Option;
+		UCHAR Type;                         // use CM_RESOURCE_TYPE
+		UCHAR ShareDisposition;             // use CM_SHARE_DISPOSITION
+		UCHAR Spare1;
+		USHORT Flags;                       // use CM resource flag defines
+		USHORT Spare2;                      // align
+		union {
+			struct {
+				ULONG Length;
+				ULONG Alignment;
+				PHYSICAL_ADDRESS MinimumAddress;
+				PHYSICAL_ADDRESS MaximumAddress;
+			} Port;
+			struct {
+				ULONG Length;
+				ULONG Alignment;
+				PHYSICAL_ADDRESS MinimumAddress;
+				PHYSICAL_ADDRESS MaximumAddress;
+			} Memory;
+			struct {
+				ULONG MinimumVector;
+				ULONG MaximumVector;
+#if defined(NT_PROCESSOR_GROUPS)
+				IRQ_DEVICE_POLICY AffinityPolicy;
+				USHORT Group;
+#else
+				IRQ_DEVICE_POLICY AffinityPolicy;
+#endif
+				IRQ_PRIORITY PriorityPolicy;
+				KAFFINITY TargetedProcessors;
+			} Interrupt;
+			struct {
+				ULONG MinimumChannel;
+				ULONG MaximumChannel;
+			} Dma;
+			struct {
+				ULONG RequestLine;
+				ULONG Reserved;
+				ULONG Channel;
+				ULONG TransferWidth;
+			} DmaV3;
+			struct {
+				ULONG Length;
+				ULONG Alignment;
+				PHYSICAL_ADDRESS MinimumAddress;
+				PHYSICAL_ADDRESS MaximumAddress;
+			} Generic;
+			struct {
+				ULONG Data[3];
+			} DevicePrivate;
+			// Bus Number information.
+			struct {
+				ULONG Length;
+				ULONG MinBusNumber;
+				ULONG MaxBusNumber;
+				ULONG Reserved;
+			} BusNumber;
+			struct {
+				ULONG Priority;   // use LCPRI_Xxx values in cfg.h
+				ULONG Reserved1;
+				ULONG Reserved2;
+			} ConfigData;
+			// The following structures provide descriptions
+			// for memory resource requirement greater than MAXULONG
+			struct {
+				ULONG Length40;
+				ULONG Alignment40;
+				PHYSICAL_ADDRESS MinimumAddress;
+				PHYSICAL_ADDRESS MaximumAddress;
+			} Memory40;
+			struct {
+				ULONG Length48;
+				ULONG Alignment48;
+				PHYSICAL_ADDRESS MinimumAddress;
+				PHYSICAL_ADDRESS MaximumAddress;
+			} Memory48;
+			struct {
+				ULONG Length64;
+				ULONG Alignment64;
+				PHYSICAL_ADDRESS MinimumAddress;
+				PHYSICAL_ADDRESS MaximumAddress;
+			} Memory64;
+			struct {
+				UCHAR Class;
+				UCHAR Type;
+				UCHAR Reserved1;
+				UCHAR Reserved2;
+				ULONG IdLowPart;
+				ULONG IdHighPart;
+			} Connection;
+		} u;
+	} IO_RESOURCE_DESCRIPTOR, * PIO_RESOURCE_DESCRIPTOR;
+
+	// https://github.com/wine-mirror/wine/blob/0927c5c3da7cda8cf476416260286bd299ad6319/include/winnt.h#L1478C1-L1482C36
+	typedef struct _XSTATE_FEATURE {
+		ULONG Offset;
+		ULONG Size;
+	} XSTATE_FEATURE, * PXSTATE_FEATURE;
+
+	// https://github.com/wine-mirror/wine/blob/0927c5c3da7cda8cf476416260286bd299ad6319/include/winnt.h#L1484C1-L1499C1
+#define MAXIMUM_XSTATE_FEATURES 64
+	typedef struct _XSTATE_CONFIGURATION {
+		ULONG64 EnabledFeatures;
+		ULONG64 EnabledVolatileFeatures;
+		ULONG Size;
+		ULONG OptimizedSave : 1;
+		ULONG CompactionEnabled : 1;
+		XSTATE_FEATURE Features[MAXIMUM_XSTATE_FEATURES];
+		ULONG64 EnabledSupervisorFeatures;
+		ULONG64 AlignedFeatures;
+		ULONG AllFeatureSize;
+		ULONG AllFeatures[MAXIMUM_XSTATE_FEATURES];
+		ULONG64 EnabledUserVisibleSupervisorFeatures;
+	} XSTATE_CONFIGURATION, * PXSTATE_CONFIGURATION;
+
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L10930C1-L10935C56
+	typedef struct _RTL_FEATURE_USAGE_REPORT {
+		ULONG FeatureId;
+		USHORT ReportingKind;
+		USHORT ReportingOptions;
+	} RTL_FEATURE_USAGE_REPORT, * PRTL_FEATURE_USAGE_REPORT;
+
+	typedef struct _RTL_UNKNOWN_FLS_DATA RTL_UNKNOWN_FLS_DATA, * PRTL_UNKNOWN_FLS_DATA;
+
+	typedef ULONG RTL_FEATURE_ID;
+
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L10938C1-L10943C34
+	typedef enum _RTL_FEATURE_CONFIGURATION_TYPE {
+		RtlFeatureConfigurationBoot,
+		RtlFeatureConfigurationRuntime,
+		RtlFeatureConfigurationCount
+	} RTL_FEATURE_CONFIGURATION_TYPE;
+
+	typedef ULONG RTL_FEATURE_VARIANT_PAYLOAD;
+
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L10946C1-L10964C58
+	typedef struct _RTL_FEATURE_CONFIGURATION {
+		RTL_FEATURE_ID FeatureId;
+		union {
+			ULONG Flags;
+			struct {
+				ULONG Priority : 4;
+				ULONG EnabledState : 2;
+				ULONG IsWexpConfiguration : 1;
+				ULONG HasSubscriptions : 1;
+				ULONG Variant : 6;
+				ULONG VariantPayloadKind : 2;
+				ULONG Reserved : 16;
+			} DUMMYSTRUCTNAME;
+		} DUMMYUNIONNAME;
+		RTL_FEATURE_VARIANT_PAYLOAD VariantPayload;
+	} RTL_FEATURE_CONFIGURATION, * PRTL_FEATURE_CONFIGURATION;
+
+	typedef ULONGLONG RTL_FEATURE_CHANGE_STAMP, * PRTL_FEATURE_CHANGE_STAMP;
+
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L9836C1-L9857C27
+	typedef enum _IMAGE_MITIGATION_POLICY {
+		ImageDepPolicy, // RTL_IMAGE_MITIGATION_DEP_POLICY
+		ImageAslrPolicy, // RTL_IMAGE_MITIGATION_ASLR_POLICY
+		ImageDynamicCodePolicy, // RTL_IMAGE_MITIGATION_DYNAMIC_CODE_POLICY
+		ImageStrictHandleCheckPolicy, // RTL_IMAGE_MITIGATION_STRICT_HANDLE_CHECK_POLICY
+		ImageSystemCallDisablePolicy, // RTL_IMAGE_MITIGATION_SYSTEM_CALL_DISABLE_POLICY
+		ImageMitigationOptionsMask,
+		ImageExtensionPointDisablePolicy, // RTL_IMAGE_MITIGATION_EXTENSION_POINT_DISABLE_POLICY
+		ImageControlFlowGuardPolicy, // RTL_IMAGE_MITIGATION_CONTROL_FLOW_GUARD_POLICY
+		ImageSignaturePolicy, // RTL_IMAGE_MITIGATION_BINARY_SIGNATURE_POLICY
+		ImageFontDisablePolicy, // RTL_IMAGE_MITIGATION_FONT_DISABLE_POLICY
+		ImageImageLoadPolicy, // RTL_IMAGE_MITIGATION_IMAGE_LOAD_POLICY
+		ImagePayloadRestrictionPolicy, // RTL_IMAGE_MITIGATION_PAYLOAD_RESTRICTION_POLICY
+		ImageChildProcessPolicy, // RTL_IMAGE_MITIGATION_CHILD_PROCESS_POLICY
+		ImageSehopPolicy, // RTL_IMAGE_MITIGATION_SEHOP_POLICY
+		ImageHeapPolicy, // RTL_IMAGE_MITIGATION_HEAP_POLICY
+		ImageUserShadowStackPolicy, // RTL_IMAGE_MITIGATION_USER_SHADOW_STACK_POLICY
+		ImageRedirectionTrustPolicy, // RTL_IMAGE_MITIGATION_REDIRECTION_TRUST_POLICY
+		ImageUserPointerAuthPolicy, // RTL_IMAGE_MITIGATION_USER_POINTER_AUTH_POLICY
+		MaxImageMitigationPolicy
+	} IMAGE_MITIGATION_POLICY;
+
+	// From winnt.h
+	typedef enum _ACTIVATION_CONTEXT_INFO_CLASS {
+		ActivationContextBasicInformation = 1,
+		ActivationContextDetailedInformation = 2,
+		AssemblyDetailedInformationInActivationContext = 3,
+		FileInformationInAssemblyOfAssemblyInActivationContext = 4,
+		RunlevelInformationInActivationContext = 5,
+		CompatibilityInformationInActivationContext = 6,
+		ActivationContextManifestResourceName = 7,
+		MaxActivationContextInfoClass,
+		// compatibility with old names
+		AssemblyDetailedInformationInActivationContxt = 3,
+		FileInformationInAssemblyOfAssemblyInActivationContxt = 4
+	} ACTIVATION_CONTEXT_INFO_CLASS;
+
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L9185C1-L9194C65
+	typedef NTSTATUS(NTAPI* PRTL_QUERY_REGISTRY_ROUTINE)(
+		_In_ PCWSTR ValueName,
+		_In_ ULONG ValueType,
+		_In_ PVOID ValueData,
+		_In_ ULONG ValueLength,
+		_In_opt_ PVOID Context,
+		_In_opt_ PVOID EntryContext);
+
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L9196C1-L9205C56
+	typedef struct _RTL_QUERY_REGISTRY_TABLE {
+		PRTL_QUERY_REGISTRY_ROUTINE QueryRoutine;
+		ULONG Flags;
+		PWSTR Name;
+		PVOID EntryContext;
+		ULONG DefaultType;
+		PVOID DefaultData;
+		ULONG DefaultLength;
+	} RTL_QUERY_REGISTRY_TABLE, * PRTL_QUERY_REGISTRY_TABLE;
+
+	// From winnt.h
+	typedef enum _RTL_UMS_THREAD_INFO_CLASS {
+		UmsThreadInvalidInfoClass = 0,
+		UmsThreadUserContext,
+		UmsThreadPriority,              // Reserved
+		UmsThreadAffinity,              // Reserved
+		UmsThreadTeb,
+		UmsThreadIsSuspended,
+		UmsThreadIsTerminated,
+		UmsThreadMaxInfoClass
+	} RTL_UMS_THREAD_INFO_CLASS, * PRTL_UMS_THREAD_INFO_CLASS;
+
+	// From winnt.h
+	typedef VOID(NTAPI* WORKERCALLBACKFUNC) (PVOID);
+
+	// From winnt.h
+	typedef struct _CUSTOM_SYSTEM_EVENT_TRIGGER_CONFIG {
+		// Size of the structure in bytes
+		DWORD Size;
+		// Guid used to identify background task to trigger
+		PCWSTR TriggerId;
+	} CUSTOM_SYSTEM_EVENT_TRIGGER_CONFIG, * PCUSTOM_SYSTEM_EVENT_TRIGGER_CONFIG;
+
+	// From winnt.h
+	typedef enum _HARDWARE_COUNTER_TYPE {
+		PMCCounter,
+		MaxHardwareCounterType
+	} HARDWARE_COUNTER_TYPE, * PHARDWARE_COUNTER_TYPE;
+
+	// From winnt.h
+	typedef struct _HARDWARE_COUNTER_DATA {
+		HARDWARE_COUNTER_TYPE Type;
+		DWORD Reserved;
+		DWORD64 Value;
+	} HARDWARE_COUNTER_DATA, * PHARDWARE_COUNTER_DATA;
+
+	// From winnt.h
+#define MAX_HW_COUNTERS 16
+	typedef struct _PERFORMANCE_DATA {
+		WORD   Size;
+		BYTE  Version;
+		BYTE  HwCountersCount;
+		DWORD ContextSwitchCount;
+		DWORD64 WaitReasonBitMap;
+		DWORD64 CycleTime;
+		DWORD RetryCount;
+		DWORD Reserved;
+		HARDWARE_COUNTER_DATA HwCounters[MAX_HW_COUNTERS];
+	} PERFORMANCE_DATA, * PPERFORMANCE_DATA;
+
+	typedef VOID(NTAPI* PRTL_FEATURE_CONFIGURATION_CHANGE_CALLBACK)(
+		_In_opt_ PVOID Context);
+
+	// https://github.com/winsiderss/systeminformer/blob/bc71c2c1962be178e13cd0f84f63348f468a0701/phnt/include/ntrtl.h#L10923
+	typedef PVOID RTL_FEATURE_CONFIGURATION_CHANGE_REGISTRATION, * PRTL_FEATURE_CONFIGURATION_CHANGE_REGISTRATION;
+
+	// From winnt.h
+	typedef union _RTL_RUN_ONCE {
+		PVOID Ptr;
+	} RTL_RUN_ONCE, * PRTL_RUN_ONCE;
+
+#define INIT_ONCE_STATIC_INIT RTL_RUN_ONCE_INIT
+	typedef /*_IRQL_requires_same_*/ ULONG /* LOGICAL */ (NTAPI* PRTL_RUN_ONCE_INIT_FN)(
+		_Inout_ PRTL_RUN_ONCE RunOnce,
+		_Inout_opt_ PVOID Parameter,
+		_Inout_opt_ PVOID* Context);
+
+	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L10894C1-L10914C76
+	typedef enum _RTL_FEATURE_CONFIGURATION_PRIORITY {
+		FeatureConfigurationPriorityImageDefault = 0,
+		FeatureConfigurationPriorityEKB = 1,
+		FeatureConfigurationPrioritySafeguard = 2,
+		FeatureConfigurationPriorityPersistent = FeatureConfigurationPrioritySafeguard,
+		FeatureConfigurationPriorityReserved3 = 3,
+		FeatureConfigurationPriorityService = 4,
+		FeatureConfigurationPriorityReserved5 = 5,
+		FeatureConfigurationPriorityDynamic = 6,
+		FeatureConfigurationPriorityReserved7 = 7,
+		FeatureConfigurationPriorityUser = 8,
+		FeatureConfigurationPrioritySecurity = 9,
+		FeatureConfigurationPriorityUserPolicy = 10,
+		FeatureConfigurationPriorityReserved11 = 11,
+		FeatureConfigurationPriorityTest = 12,
+		FeatureConfigurationPriorityReserved13 = 13,
+		FeatureConfigurationPriorityReserved14 = 14,
+		FeatureConfigurationPriorityImageOverride = 15,
+		FeatureConfigurationPriorityMax = FeatureConfigurationPriorityImageOverride
+	} RTL_FEATURE_CONFIGURATION_PRIORITY, * PRTL_FEATURE_CONFIGURATION_PRIORITY;
+
+	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L10917C1-L10922C29
+	typedef enum _RTL_FEATURE_ENABLED_STATE {
+		FeatureEnabledStateDefault,
+		FeatureEnabledStateDisabled,
+		FeatureEnabledStateEnabled
+	} RTL_FEATURE_ENABLED_STATE;
+
+	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L10925
+	typedef enum _RTL_FEATURE_ENABLED_STATE_OPTIONS {
+		FeatureEnabledStateOptionsNone,
+		FeatureEnabledStateOptionsWexpConfig
+	} RTL_FEATURE_ENABLED_STATE_OPTIONS, * PRTL_FEATURE_ENABLED_STATE_OPTIONS;
+
+	typedef UCHAR RTL_FEATURE_VARIANT;
+
+	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L10932C1-L10937C72
+	typedef enum _RTL_FEATURE_VARIANT_PAYLOAD_KIND {
+		FeatureVariantPayloadKindNone,
+		FeatureVariantPayloadKindResident,
+		FeatureVariantPayloadKindExternal
+	} RTL_FEATURE_VARIANT_PAYLOAD_KIND, * PRTL_FEATURE_VARIANT_PAYLOAD_KIND;
+
+	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L10940C1-L10946C78
+	typedef enum _RTL_FEATURE_CONFIGURATION_OPERATION {
+		FeatureConfigurationOperationNone = 0,
+		FeatureConfigurationOperationFeatureState = 1,
+		FeatureConfigurationOperationVariantState = 2,
+		FeatureConfigurationOperationResetState = 4
+	} RTL_FEATURE_CONFIGURATION_OPERATION, * PRTL_FEATURE_CONFIGURATION_OPERATION;
+
+	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L10949C1-L10960C72
+	typedef struct _RTL_FEATURE_CONFIGURATION_UPDATE {
+		RTL_FEATURE_ID FeatureId;
+		RTL_FEATURE_CONFIGURATION_PRIORITY Priority;
+		RTL_FEATURE_ENABLED_STATE EnabledState;
+		RTL_FEATURE_ENABLED_STATE_OPTIONS EnabledStateOptions;
+		RTL_FEATURE_VARIANT Variant;
+		UCHAR Reserved[3];
+		RTL_FEATURE_VARIANT_PAYLOAD_KIND VariantPayloadKind;
+		RTL_FEATURE_VARIANT_PAYLOAD VariantPayload;
+		RTL_FEATURE_CONFIGURATION_OPERATION Operation;
+	} RTL_FEATURE_CONFIGURATION_UPDATE, * PRTL_FEATURE_CONFIGURATION_UPDATE;
+
+	// From winnt.h
+	typedef VOID(NTAPI* APC_CALLBACK_FUNCTION)(
+		DWORD Arg1,
+		PVOID Arg2,
+		PVOID Arg3);
+
+	// From winnt.h
+	typedef DWORD(NTAPI* PTHREAD_START_ROUTINE)(
+		LPVOID lpThreadParameter);
+
+	// From winnt.h
+	typedef NTSTATUS(NTAPI* PRTL_START_POOL_THREAD)(
+		_In_ PTHREAD_START_ROUTINE Function,
+		_In_ PVOID Parameter,
+		_Out_ PHANDLE ThreadHandle);
+
+	// From winbase.h
+	typedef NTSTATUS(NTAPI *PRTL_EXIT_POOL_THREAD)(
+		_In_ NTSTATUS ExitStatus);
+
+	// Reversed
+	typedef struct _REGISTRY_TRANSACTION_STATE {
+		DWORD Unknown1;
+		DWORD StateSize;
+		DWORD Unknwon2;
+	} REGISTRY_TRANSACTION_STATE, * PREGISTRY_TRANSACTION_STATE;
+	typedef struct _REGISTRY_TRANSACTION {
+		PVOID Unknown1;
+		PVOID Unknown2;
+		PVOID Unknown3;
+		PREGISTRY_TRANSACTION_STATE State;
+	} REGISTRY_TRANSACTION, * PREGISTRY_TRANSACTION;
+
+	// https://github.com/winsiderss/systeminformer/blob/bc71c2c1962be178e13cd0f84f63348f468a0701/phnt/include/ntrtl.h#L11039C1-L11043C1
+	typedef struct _RTL_FEATURE_USAGE_SUBSCRIPTION_TARGET {
+		ULONG Data[2];
+	} RTL_FEATURE_USAGE_SUBSCRIPTION_TARGET, * PRTL_FEATURE_USAGE_SUBSCRIPTION_TARGET;
+
+	// https://github.com/winsiderss/systeminformer/blob/bc71c2c1962be178e13cd0f84f63348f468a0701/phnt/include/ntrtl.h#L11053C1-L11059C84
+	typedef struct _RTL_FEATURE_USAGE_SUBSCRIPTION_DETAILS {
+		RTL_FEATURE_ID FeatureId;
+		USHORT ReportingKind;
+		USHORT ReportingOptions;
+		RTL_FEATURE_USAGE_SUBSCRIPTION_TARGET ReportingTarget;
+	} RTL_FEATURE_USAGE_SUBSCRIPTION_DETAILS, * PRTL_FEATURE_USAGE_SUBSCRIPTION_DETAILS;
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseCreate.php
+	typedef ULONG(NTAPI* PRTL_TRACE_HASH_FUNCTION)(PVOID* ppFrames, ULONG numFrames);
+
+	typedef RTL_CRITICAL_SECTION CRITICAL_SECTION;
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseCreate.php
+	typedef struct _RTL_TRACE_DATABASE {
+		ULONG Magic; // 0xABCDCCCC
+		ULONG Flags; // value passed as flags parameter
+		ULONG Tag; // value passed as tag parameter
+		struct _RTL_TRACE_SEGMENT* SegmentList;
+		SIZE_T MaximumSize; // value passed as MaximumSize parameter
+		SIZE_T CurrentSize; // current size in bytes
+		PVOID Owner; // unused
+		CRITICAL_SECTION Lock; // the lock taken every time a RtlTraceDatabase* is called
+		ULONG NoOfBuckets; // value passed as buckets parameter and number of pointers in the Buckets array
+		struct _RTL_TRACE_BLOCK** Buckets;
+		PRTL_TRACE_HASH_FUNCTION HashFunction;
+		SIZE_T NoOfTraces; // number of traces in the database
+		SIZE_T NoOfHits; // number of times RtlTraceDatabaseAdd has been called with a trace already in the database
+		ULONG HashCounter[0x10];
+	} RTL_TRACE_DATABASE, * PRTL_TRACE_DATABASE;
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseCreate.php
+	typedef struct _RTL_TRACE_BLOCK {
+		ULONG Magic; // 0xABCDAAAA
+		ULONG Count; // number of times referenced
+		ULONG Size; // number of entries in the Trace array
+		SIZE_T UserCount; // 0
+		SIZE_T UserSize; // 0
+		PVOID UserContext; // 0
+		struct _RTL_TRACE_BLOCK* Next; // next block in this bucket
+		PVOID* Trace; // the stack trace
+	} RTL_TRACE_BLOCK, * PRTL_TRACE_BLOCK;
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseEnumerate.php
+	typedef struct _RTL_TRACE_ENUM {
+		PRTL_TRACE_DATABASE pDatabase; // will be set to pDatabase by the function
+		ULONG bucketIndex; // bucket index of the block returned in ppBlock
+		PRTL_TRACE_BLOCK pStartingBlock; // a block to start enumeration from
+	} RTL_TRACE_ENUM, * PRTL_TRACE_ENUM;
+
+	// From winnt.h
+	typedef struct _OSVERSIONINFOEXW {
+		DWORD dwOSVersionInfoSize;
+		DWORD dwMajorVersion;
+		DWORD dwMinorVersion;
+		DWORD dwBuildNumber;
+		DWORD dwPlatformId;
+		WCHAR  szCSDVersion[128];     // Maintenance string for PSS usage
+		WORD   wServicePackMajor;
+		WORD   wServicePackMinor;
+		WORD   wSuiteMask;
+		BYTE  wProductType;
+		BYTE  wReserved;
+	} OSVERSIONINFOEXW, * POSVERSIONINFOEXW, * LPOSVERSIONINFOEXW, RTL_OSVERSIONINFOEXW, * PRTL_OSVERSIONINFOEXW;
+
+	typedef /*_IRQL_requires_same_*/ EXCEPTION_DISPOSITION (NTAPI* EXCEPTION_ROUTINE)(
+		_Inout_ struct _EXCEPTION_RECORD* ExceptionRecord,
+		_In_ PVOID EstablisherFrame,
+		_Inout_ struct _CONTEXT* ContextRecord,
+		_In_ PVOID DispatcherContext);
+
+	// From winnt.h
+	// Nonvolatile context pointer record.
+	typedef struct _KNONVOLATILE_CONTEXT_POINTERS {
+		union {
+			PM128A FloatingContext[16];
+			struct {
+				PM128A Xmm0;
+				PM128A Xmm1;
+				PM128A Xmm2;
+				PM128A Xmm3;
+				PM128A Xmm4;
+				PM128A Xmm5;
+				PM128A Xmm6;
+				PM128A Xmm7;
+				PM128A Xmm8;
+				PM128A Xmm9;
+				PM128A Xmm10;
+				PM128A Xmm11;
+				PM128A Xmm12;
+				PM128A Xmm13;
+				PM128A Xmm14;
+				PM128A Xmm15;
+			} DUMMYSTRUCTNAME;
+		} DUMMYUNIONNAME;
+		union {
+			PDWORD64 IntegerContext[16];
+			struct {
+				PDWORD64 Rax;
+				PDWORD64 Rcx;
+				PDWORD64 Rdx;
+				PDWORD64 Rbx;
+				PDWORD64 Rsp;
+				PDWORD64 Rbp;
+				PDWORD64 Rsi;
+				PDWORD64 Rdi;
+				PDWORD64 R8;
+				PDWORD64 R9;
+				PDWORD64 R10;
+				PDWORD64 R11;
+				PDWORD64 R12;
+				PDWORD64 R13;
+				PDWORD64 R14;
+				PDWORD64 R15;
+			} DUMMYSTRUCTNAME;
+		} DUMMYUNIONNAME2;
+	} KNONVOLATILE_CONTEXT_POINTERS, * PKNONVOLATILE_CONTEXT_POINTERS;
+	
+	// https://undoc.airesoft.co.uk/ntdll.dll/SbSelectProcedure.php
+	typedef PVOID(NTAPI* pfnBranchFunc)(PVOID);
+	typedef struct _SWITCHBRANCH_BRANCH_DETAILS {
+		PCSTR pSpecificName; // the name of this branch
+		pfnBranchFunc pBranch;
+		ULONG unk; // always 1
+		// 4-byte paadding on x64
+		PCSTR pDescription;
+		ULONG unk2; // 
+		ULONG unk3; // always 0
+		ULONG unk4; // always 1
+		ULONG unk5; // always 0
+		// the windows compatability guid specified in the manifest
+		// that results in this branch being taken
+		GUID windowsCompatGuid;
+		// an id for this branch
+		GUID branchGuid;
+	} SWITCHBRANCH_BRANCH_DETAILS, * PSWITCHBRANCH_BRANCH_DETAILS;
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/SbSelectProcedure.php
+	typedef struct _SWITCHBRANCH_SCENARIO_TABLE_ENTRY {
+		PCSTR pBranchName;
+		PCSTR pBranchDescription;
+		PCSTR pBranchReason;
+		ULONG unk; // always 1
+		ULONG unk2; // always 0
+		ULONG unk3; // always 0
+		ULONG unk4; // always 1
+		ULONG unk5; // always 0
+		GUID scenarioGuid;
+		ULONG numScenarioBranches;
+		SWITCHBRANCH_BRANCH_DETAILS branches[ANYSIZE_ARRAY]; // numScenarioBranches long
+	} SWITCHBRANCH_SCENARIO_TABLE_ENTRY, * PSWITCHBRANCH_SCENARIO_TABLE_ENTRY;
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/SbSelectProcedure.php
+	typedef struct _SWITCHBRANCH_SCENARIO_TABLE_ENTRIES {
+		ULONG numScenarios;
+		SWITCHBRANCH_SCENARIO_TABLE_ENTRY* pEntries[ANYSIZE_ARRAY]; // numScenarios long
+	} SWITCHBRANCH_SCENARIO_TABLE_ENTRIES, * PSWITCHBRANCH_SCENARIO_TABLE_ENTRIES;
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/SbSelectProcedure.php
+	typedef struct _SWITCHBRANCH_CACHED_MODULE_TABLE {
+		ULONG64 changeCount;
+		ULONG unk;
+		ULONG numScenarios;
+		PVOID pScenarios[ANYSIZE_ARRAY]; // numScenarios in size
+	} SWITCHBRANCH_CACHED_MODULE_TABLE, * PSWITCHBRANCH_CACHED_MODULE_TABLE;
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/SbSelectProcedure.php
+	typedef PVOID(NTAPI* pfnFilterFunc)(PVOID);
+	typedef struct _SWITCHBRANCH_SCENARIO_TABLE {
+		ULONG tag; // always 'EsLk', not ever checked even on checked builds
+		ULONG unk; // Always 0x1000000
+		SWITCHBRANCH_CACHED_MODULE_TABLE* pModuleTable;
+		PVOID unk2; // always 0
+		SWITCHBRANCH_SCENARIO_TABLE_ENTRIES* pScenarios;
+		// this function probably has greater significance, but all occurances just return a string like
+		// SbFilterProcedure_DdrawNamespace,
+		// SbFilterProcedure_Scenario etc
+		pfnFilterFunc filterProcedure;
+	} SWITCHBRANCH_SCENARIO_TABLE, * PSWITCHBRANCH_SCENARIO_TABLE;
+
+	typedef struct _PS_PKG_CLAIM {
+		ULONG Flags;  // PSM_ACTIVATION_TOKEN_*
+		ULONG Origin; // PackageOrigin
+	} PS_PKG_CLAIM, * PPS_PKG_CLAIM;
+
+	typedef /*_IRQL_requires_same_*/ EXCEPTION_DISPOSITION (NTAPI* PEXCEPTION_ROUTINE)(
+		_Inout_ struct _EXCEPTION_RECORD* ExceptionRecord,
+		_In_ PVOID EstablisherFrame,
+		_Inout_ struct _CONTEXT* ContextRecord,
+		_In_ PVOID DispatcherContext);
+
+	typedef VOID(NTAPI* WAITORTIMERCALLBACKFUNC)(
+		PVOID Unknown1,
+		BOOLEAN Unknown2);
+
+	// ============================ functions 
+	
 	// https://www.sstic.org/media/SSTIC2019/SSTIC-actes/dll_shell_game_and_other_misdirections/SSTIC2019-Article-dll_shell_game_and_other_misdirections-georges.pdf
 	// https://learn.microsoft.com/en-us/windows/win32/sysinfo/apisetqueryapisetpresence
 	NTSYSAPI BOOL NTAPI ApiSetQueryApiSetPresence(
-		_In_  PCUNICODE_STRING Namespace,
-		_Out_ PBOOLEAN         Present);
+		_In_ PCUNICODE_STRING Namespace,
+		_Out_ PBOOLEAN Present);
 
 	//https://learn.microsoft.com/en-us/windows/win32/sysinfo/apisetqueryapisetpresenceex
 	NTSYSAPI BOOL NTAPI ApiSetQueryApiSetPresenceEx(
@@ -113,7 +1060,7 @@ extern "C"
 		_Out_ PBOOLEAN Present);
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtAllocateUuids(
+	NTSYSAPI NTSTATUS NTAPI NtAllocateUuids(
 		_Out_ PLARGE_INTEGER UuidLastTimeAllocated,
 		_Out_ PULONG UuidDeltaTime,
 		_Out_ PULONG UuidSequenceNumber,
@@ -121,7 +1068,7 @@ extern "C"
 	//ZwAllocateUuids
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtCallbackReturn(
+	NTSYSAPI NTSTATUS NTAPI NtCallbackReturn(
 		_In_opt_ PVOID Result,
 		_In_ ULONG ResultLength,
 		_In_ NTSTATUS Status);
@@ -134,20 +1081,20 @@ extern "C"
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSAPI NTSTATUS NTAPI NtDirectGraphicsCall(
-		ULONG Unknown,
-		ULONG Unknown,
-		ULONG Unknown,
-		ULONG Unknown,
-		ULONG Unknown);
+		ULONG Unknown1,
+		ULONG Unknown2,
+		ULONG Unknown3,
+		ULONG Unknown4,
+		ULONG Unknown5);
 	//ZwDirectGraphicsCall
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtDisplayString(
+	NTSYSAPI NTSTATUS NTAPI NtDisplayString(
 		_In_ PUNICODE_STRING Message);
 	//ZwDisplayString
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtDrawText(
+	NTSYSAPI NTSTATUS NTAPI NtDrawText(
 		_In_ PUNICODE_STRING Text);
 	//ZwDrawText
 
@@ -158,35 +1105,27 @@ extern "C"
 	//ZwFlushInstallUILanguage
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtGetMUIRegistryInfo(
+	NTSYSAPI NTSTATUS NTAPI NtGetMUIRegistryInfo(
 		_In_ ULONG Flags,
 		_Inout_ PULONG BufferLength,
 		_Out_ PVOID Buffer);
 	//ZwGetMUIRegistryInfo
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtGetTickCount();
+	NTSYSAPI NTSTATUS NTAPI NtGetTickCount();
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtIsUILanguageComitted();
+	NTSYSAPI NTSTATUS NTAPI NtIsUILanguageComitted();
 	//ZwIsUILanguageComitted
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtLockProductActivationKeys(
+	NTSYSAPI NTSTATUS NTAPI NtLockProductActivationKeys(
 		_In_ PULONG ProductBuild,
 		_In_ PULONG SafeMode);
 	//ZwLockProductActivationKeys
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtManageHotPatch(
-		_In_ HOT_PATCH_INFORMATION_CLASS HotPatchClass,
-		_In_ PVOID PatchData,
-		_In_ ULONG Length,
-		_Out_ PULONG ReturnedLength);
-	//ZwManageHotPatch
-
-	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtMapCMFModule(
+	NTSYSAPI NTSTATUS NTAPI NtMapCMFModule(
 		_In_ ULONG What,
 		_In_ ULONG Index,
 		_Out_opt_ PULONG CacheIndexOut,
@@ -195,27 +1134,27 @@ extern "C"
 		_Out_opt_ PPVOID BaseAddress);
 	//ZwMapCMFModule
 
-	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtNotifyChangeSession(
+	// https://processhacker.sourceforge.io/doc/ntioapi_8h.html#a23719c37bc09be8bb0b4e3d296ce3fd6
+	NTSYSAPI NTSTATUS NTAPI NtNotifyChangeSession(
 		_In_ HANDLE Session,
 		_In_ ULONG IoStateSequence,
-		_In_ PVOID Reserved,
-		_In_ ULONG Action,
+		_In_ PLARGE_INTEGER ChangeTimeStamp,
+		_In_ IO_SESSION_EVENT Action,
 		_In_ IO_SESSION_STATE IoState,
 		_In_ IO_SESSION_STATE IoState2,
-		_In_ PVOID Buffer,
-		_In_ ULONG BufferSize);
+		_In_reads_bytes_opt_(PayloadSize) PVOID Payload,
+		_In_ ULONG PayloadSize);
 	//ZwNotifyChangeSession
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtOpenSession(
+	NTSYSAPI NTSTATUS NTAPI NtOpenSession(
 		_Out_ PHANDLE SessionHandle,
 		_In_ ACCESS_MASK DesiredAccess,
 		_In_ POBJECT_ATTRIBUTES ObjectAttributes);
 	//ZwOpenSession
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtQueryLicenseValue(
+	NTSYSAPI NTSTATUS NTAPI NtQueryLicenseValue(
 		_In_ PUNICODE_STRING Name,
 		_Out_opt_ PULONG Type,
 		_Out_ PVOID Buffer,
@@ -224,11 +1163,11 @@ extern "C"
 	//ZwQueryLicenseValue
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtRevertContainerImpersonation();
+	NTSYSAPI NTSTATUS NTAPI NtRevertContainerImpersonation();
 	//ZwRevertContainerImpersonation
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
-	NTSYSCALLAPI NTSTATUS NTAPI NtSetLdtEntries(
+	NTSYSAPI NTSTATUS NTAPI NtSetLdtEntries(
 		_In_ ULONG Selector1,
 		_In_ ULONG LdtEntry1L,
 		_In_ ULONG LdtEntry1H,
@@ -242,41 +1181,41 @@ extern "C"
 		_In_ PUCHAR UuidSeed);
 	//ZwSetUuidSeed
 
-	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FHardware%2FNtShutdownSystem.html
 	NTSYSAPI NTSTATUS NTAPI NtShutdownSystem(
 		_In_ SHUTDOWN_ACTION Action);
 	//ZwShutdownSystem
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/winuser/nf-winuser-defwindowproca
 	// Forwarded from USER32:DefWindowProcA
-	NTSYSAPI LRESULT NTAPI NtdllDefWindowProc_A(
-		_In_ HWND   hWnd,
-		_In_ UINT   Msg,
-		_In_ WPARAM wParam,
-		_In_ LPARAM lParam);
+	NTSYSAPI LONG_PTR NTAPI NtdllDefWindowProc_A(
+		_In_ HANDLE hWnd,
+		_In_ UINT Msg,
+		_In_ WORD wParam,
+		_In_ DWORD lParam);
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/winuser/nf-winuser-defwindowprocw
-	NTSYSAPI LRESULT NTAPI NtdllDefWindowProc_W(
-		_In_ HWND   hWnd,
-		_In_ UINT   Msg,
-		_In_ WPARAM wParam,
-		_In_ LPARAM lParam);
+	NTSYSAPI LONG_PTR NTAPI NtdllDefWindowProc_W(
+		_In_ HANDLE hWnd,
+		_In_ UINT Msg,
+		_In_ WORD wParam,
+		_In_ DWORD lParam);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-defdlgproca
 	// Forwarded from USER32:DefDlgProcA
-	NTSYSAPI LRESULT NTAPI NtdllDialogWndProc_A(
-		_In_ HWND   hDlg,
+	NTSYSAPI LONG_PTR NTAPI NtdllDialogWndProc_A(
+		_In_ HANDLE   hDlg,
 		_In_ UINT   Msg,
-		_In_ WPARAM wParam,
-		_In_ LPARAM lParam);
+		_In_ WORD wParam,
+		_In_ DWORD lParam);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-defdlgprocw
 	// Forwarded from USER32:DefDlgProcW
-	NTSYSAPI LRESULT NTAPI NtdllDialogWndProc_W(
-		_In_ HWND   hDlg,
+	NTSYSAPI LONG_PTR NTAPI NtdllDialogWndProc_W(
+		_In_ HANDLE   hDlg,
 		_In_ UINT   Msg,
-		_In_ WPARAM wParam,
-		_In_ LPARAM lParam);
+		_In_ WORD wParam,
+		_In_ DWORD lParam);
 
 	// https://doxygen.reactos.org/dc/d65/rxact_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlAbortRXact(
@@ -326,17 +1265,6 @@ extern "C"
 		ULONG ValueType,
 		PVOID ValueData,
 		ULONG ValueDataSize);
-	
-	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
-	NTSYSAPI PRTL_HANDLE_TABLE_ENTRY NTAPI RtlAllocateHandle(
-		_In_ PRTL_HANDLE_TABLE HandleTable,
-		_Out_opt_ PULONG HandleIndex);
-
-	// https://undoc.airesoft.co.uk/ntdll.dll/RtlAppendPathElement.php
-	NTSYSAPI NTSTATUS NTAPI RtlAppendPathElement(
-		ULONG flags,
-		PRTL_UNICODE_STRING_BUFFER pStrBuffer,
-		PCUNICODE_STRING pAddend);
 
 	// https://doxygen.reactos.org/d2/d94/appverifier_8c.html
 	NTSYSAPI VOID NTAPI RtlApplicationVerifierStop(
@@ -402,10 +1330,10 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcapturestackbacktrace
 	NTSYSAPI USHORT RtlCaptureStackBackTrace(
-		_In_            ULONG  FramesToSkip,
-		_In_            ULONG  FramesToCapture,
-		_Out_           PVOID* BackTrace,
-		[out, optional] PULONG BackTraceHash);
+		_In_ ULONG FramesToSkip,
+		_In_ ULONG FramesToCapture,
+		_Out_ PVOID* BackTrace,
+		_Out_opt_ PULONG BackTraceHash);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L10720C1-L10727C1
 	NTSYSAPI NTSTATUS NTAPI RtlCheckBootStatusIntegrity(
@@ -456,14 +1384,14 @@ extern "C"
 	NTSYSAPI VOID RtlClearAllBits(
 		_In_ PRTL_BITMAP BitMapHeader);
 
-	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L7409
 	NTSYSAPI VOID NTAPI RtlClearAllBitsEx(
 		_In_ PRTL_BITMAP_EX BitMapHeader);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlclearbit
 	NTSYSAPI VOID RtlClearBit(
 		_In_ PRTL_BITMAP BitMapHeader,
-		_In_ ULONG       BitNumber);
+		_In_ ULONG BitNumber);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI VOID NTAPI RtlClearBitEx(
@@ -473,20 +1401,20 @@ extern "C"
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlclearbits
 	NTSYSAPI VOID RtlClearBits(
 		_In_ PRTL_BITMAP BitMapHeader,
-		_In_ ULONG       StartingIndex,
-		_In_ ULONG       NumberToClear);
+		_In_ ULONG StartingIndex,
+		_In_ ULONG NumberToClear);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcmdecodememioresource
 	NTSYSAPI ULONGLONG RtlCmDecodeMemIoResource(
-		_In_            PCM_PARTIAL_RESOURCE_DESCRIPTOR Descriptor,
-		[out, optional] PULONGLONG                      Start);
+		_In_ PCM_PARTIAL_RESOURCE_DESCRIPTOR Descriptor,
+		_Out_opt_ PULONGLONG Start);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcmencodememioresource
 	NTSYSAPI NTSTATUS RtlCmEncodeMemIoResource(
 		_In_ PCM_PARTIAL_RESOURCE_DESCRIPTOR Descriptor,
-		_In_ UCHAR                           Type,
-		_In_ ULONGLONG                       Length,
-		_In_ ULONGLONG                       Start);
+		_In_ UCHAR Type,
+		_In_ ULONGLONG Length,
+		_In_ ULONGLONG Start);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L6279C1-L6286C1
 	NTSYSAPI PVOID NTAPI RtlCommitDebugInfo(
@@ -499,7 +1427,7 @@ extern "C"
 		_In_ PUNICODE_STRING Altitude2);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcompressbuffer
-	NTSYSAPI NT_RTL_COMPRESS_API NTSTATUS RtlCompressBuffer(
+	NTSYSAPI NTSTATUS RtlCompressBuffer(
 		_In_  USHORT CompressionFormatAndEngine,
 		_In_  PUCHAR UncompressedBuffer,
 		_In_  ULONG  UncompressedBufferSize,
@@ -513,13 +1441,13 @@ extern "C"
 	NTSYSAPI DWORD NTAPI RtlComputeCrc32(
 		DWORD dwInitial,
 		const PBYTE pData,
-		INT iLen);
+		int iLen);
 
 	//https://doxygen.reactos.org/d8/dd5/ndk_2rtlfuncs_8h.html#affe1add420874a2869fbd93ddf8913fb
 	NTSYSAPI NTSTATUS NTAPI RtlComputePrivatizedDllName_U(
-		_In_ PUNICODE_STRING 	DllName,
-		_Inout_ PUNICODE_STRING 	RealName,
-		_Inout_ PUNICODE_STRING 	LocalName);
+		_In_ PUNICODE_STRING DllName,
+		_Inout_ PUNICODE_STRING RealName,
+		_Inout_ PUNICODE_STRING LocalName);
 
 	// https://github.com/xmoezzz/NativeLib-R/blob/master/ntsmss.h
 	NTSYSAPI NTSTATUS NTAPI RtlConnectToSm(
@@ -530,12 +1458,12 @@ extern "C"
 
 	// https://doxygen.reactos.org/d6/d28/sdk_2lib_2rtl_2nls_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlConsoleMultiByteToUnicodeN(
-		OUT PWCHAR UnicodeString,
-		IN ULONG UnicodeSize,
-		OUT PULONG ResultSize,
-		IN PCSTR MbString,
-		IN ULONG MbSize,
-		OUT PULONG Unknown);
+		_Out_ PWCHAR UnicodeString,
+		_In_ ULONG UnicodeSize,
+		_Out_ PULONG ResultSize,
+		_In_ PCSTR MbString,
+		_In_ ULONG MbSize,
+		_Out_ PULONG Unknown);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
 	NTSYSAPI DWORD NTAPI RtlConvertDeviceFamilyInfoToString(
@@ -631,16 +1559,6 @@ extern "C"
 		_In_ PCUNICODE_STRING VolumeRootPath);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
-	NTSYSAPI NTSTATUS NTAPI RtlCreateUserSecurityObject(
-		_In_ PRTL_ACE_DATA AceData,
-		_In_ ULONG AceCount,
-		_In_ PSID OwnerSid,
-		_In_ PSID GroupSid,
-		_In_ BOOLEAN IsDirectoryObject,
-		_In_ PGENERIC_MAPPING GenericMapping,
-		_Out_ PSECURITY_DESCRIPTOR* NewSecurityDescriptor);
-
-	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI NTSTATUS NTAPI RtlCreateUserStack(
 		_In_opt_ SIZE_T CommittedStackSize,
 		_In_opt_ SIZE_T MaximumStackSize,
@@ -649,7 +1567,7 @@ extern "C"
 		_In_ ULONG_PTR ReserveAlignment,
 		_Out_ PINITIAL_TEB InitialTeb);
 
-	//https://github.com/winsiderss/phnt/blob/master/ntrtl.h
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L3385
 	NTSYSAPI NTSTATUS NTAPI RtlCreateUserThread(
 		_In_ HANDLE ProcessHandle,
 		_In_opt_ PSECURITY_DESCRIPTOR ThreadSecurityDescriptor,
@@ -667,15 +1585,6 @@ extern "C"
 		_In_ PUNICODE_STRING String,
 		_Out_ PLCID Lcid);
 
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcustomcptounicoden
-	NTSYSAPI NTSTATUS RtlCustomCPToUnicodeN(
-		PCPTABLEINFO CustomCP,
-		PWCH         UnicodeString,
-		ULONG        MaxBytesInUnicodeString,
-		PULONG       BytesInUnicodeString,
-		PCH          CustomCPString,
-		ULONG        BytesInCustomCPString);
-
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI VOID NTAPI RtlDeCommitDebugInfo(
 		_Inout_ PRTL_DEBUG_INFORMATION Buffer,
@@ -683,9 +1592,9 @@ extern "C"
 		_In_ SIZE_T Size);
 
 	// https://github.com/reactos/reactos/blob/0089017d54a601ed317e885576471a73f96ad56c/sdk/include/ndk/rtlfuncs.h#L4104C1-L4109C3
-	NTSYSAPI PRTL_ACTIVATION_CONTEXT_STACK_FRAME FASTCALL RtlDeactivateActivationContextUnsafeFast(
+	NTSYSAPI PRTL_ACTIVATION_CONTEXT_STACK_FRAME NTAPI RtlDeactivateActivationContextUnsafeFast(
 		_In_ PRTL_CALLER_ALLOCATED_ACTIVATION_CONTEXT_STACK_FRAME_EXTENDED Frame);
-
+	         
 	// https://learn.microsoft.com/en-us/previous-versions/bb432242(v=vs.85)
 	NTSYSAPI PVOID NTAPI RtlDecodePointer(
 		_In_ PVOID Ptr);
@@ -703,7 +1612,7 @@ extern "C"
 		_In_ PVOID Ptr);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtldecompressbuffer
-	NTSYSAPI NT_RTL_COMPRESS_API NTSTATUS RtlDecompressBuffer(
+	NTSYSAPI NTSTATUS NTAPI RtlDecompressBuffer(
 		_In_  USHORT CompressionFormat,
 		_Out_ PUCHAR UncompressedBuffer,
 		_In_  ULONG  UncompressedBufferSize,
@@ -712,7 +1621,7 @@ extern "C"
 		_Out_ PULONG FinalUncompressedSize);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtldecompressbufferex
-	NTSYSAPI NT_RTL_COMPRESS_API NTSTATUS RtlDecompressBufferEx(
+	NTSYSAPI NTSTATUS NTAPI RtlDecompressBufferEx(
 		_In_  USHORT CompressionFormat,
 		_Out_ PUCHAR UncompressedBuffer,
 		_In_  ULONG  UncompressedBufferSize,
@@ -722,7 +1631,7 @@ extern "C"
 		_In_  PVOID  WorkSpace);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtldecompressfragment
-	NTSYSAPI NT_RTL_COMPRESS_API NTSTATUS RtlDecompressFragment(
+	NTSYSAPI NTSTATUS NTAPI RtlDecompressFragment(
 		_In_  USHORT CompressionFormat,
 		_Out_ PUCHAR UncompressedFragment,
 		_In_  ULONG  UncompressedFragmentSize,
@@ -771,21 +1680,6 @@ extern "C"
 	NTSYSAPI NTSTATUS NTAPI RtlDestroyQueryDebugBuffer(
 		_In_ PRTL_DEBUG_INFORMATION Buffer);
 
-	// https://googleprojectzero.blogspot.com/2016/02/the-definitive-guide-on-win32-to-nt.html
-	typedef enum _RTL_PATH_TYPE
-	{
-		RtlPathTypeUnknown,
-		RtlPathTypeUncAbsolute,
-		RtlPathTypeDriveAbsolute,
-		RtlPathTypeDriveRelative,
-		RtlPathTypeRooted,
-		RtlPathTypeRelative,
-		RtlPathTypeLocalDevice,
-		RtlPathTypeRootLocalDevice
-	} RTL_PATH_TYPE, *PRTL_PATH_TYPE;
-	NTSYSAPI RTL_PATH_TYPE NTAPI RtlDetermineDosPathNameType_U(
-		_In_ PCWSTR Path);
-
 	//RtlDisableThreadProfiling
 	NTSYSAPI NTSTATUS NTAPI RtlDisableThreadProfiling(
 		_In_ PVOID PerformanceDataHandle);
@@ -819,7 +1713,8 @@ extern "C"
 		_Out_ PVOID* PerformanceDataHandle);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	NTSYSAPI PVOID NTAPI RtlEncodePointer(PVOID ptr);
+	NTSYSAPI PVOID NTAPI RtlEncodePointer(
+		PVOID ptr);
 
 	// https://i.blackhat.com/USA-19/Thursday/us-19-Kotler-Process-Injection-Techniques-Gotta-Catch-Them-All-wp.pdf
 	NTSYSAPI NTSTATUS RtlEncodeRemotePointer(
@@ -828,7 +1723,8 @@ extern "C"
 		_Out_ PVOID* encoded_ptr);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
-	NTSYSAPI PVOID NTAPI RtlEncodeSystemPointer(_In_ PVOID Ptr);
+	NTSYSAPI PVOID NTAPI RtlEncodeSystemPointer(
+		_In_ PVOID Ptr);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L1014C1-L1019C7
 	NTSYSAPI NTSTATUS NTAPI RtlEnterCriticalSection(
@@ -880,7 +1776,7 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlextendcorrelationvector
 	NTSYSAPI NTSTATUS RtlExtendCorrelationVector(
-		[in, out] PCORRELATION_VECTOR CorrelationVector);
+		_Inout_ PCORRELATION_VECTOR CorrelationVector);
 
 	// https://microsoft.github.io/windows-docs-rs/doc/windows/Wdk/System/SystemServices/fn.RtlExtractBitMap.html
 	NTSYSAPI VOID NTAPI RtlExtractBitMap(
@@ -892,21 +1788,21 @@ extern "C"
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindclearbits
 	NTSYSAPI ULONG RtlFindClearBits(
 		_In_ PRTL_BITMAP BitMapHeader,
-		_In_ ULONG       NumberToFind,
-		_In_ ULONG       HintIndex);
+		_In_ ULONG NumberToFind,
+		_In_ ULONG HintIndex);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindclearbitsandset
 	NTSYSAPI ULONG RtlFindClearBitsAndSet(
 		_In_ PRTL_BITMAP BitMapHeader,
-		_In_ ULONG       NumberToFind,
-		_In_ ULONG       HintIndex);
+		_In_ ULONG NumberToFind,
+		_In_ ULONG HintIndex);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindclearruns
 	NTSYSAPI ULONG RtlFindClearRuns(
-		_In_  PRTL_BITMAP     BitMapHeader,
+		_In_ PRTL_BITMAP BitMapHeader,
 		_Out_ PRTL_BITMAP_RUN RunArray,
-		_In_  ULONG           SizeOfRunArray,
-		_In_  BOOLEAN         LocateLongestRuns);
+		_In_ ULONG SizeOfRunArray,
+		_In_ BOOLEAN LocateLongestRuns);
 
 	// https://doxygen.reactos.org/de/df5/xdk_2rtlfuncs_8h_source.html
 	NTSYSAPI NTSTATUS NTAPI RtlFindClosestEncodableLength(
@@ -920,9 +1816,9 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindlastbackwardrunclear
 	NTSYSAPI ULONG RtlFindLastBackwardRunClear(
-		_In_  PRTL_BITMAP BitMapHeader,
-		_In_  ULONG       FromIndex,
-		_Out_ PULONG      StartingRunIndex);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_In_ ULONG FromIndex,
+		_Out_ PULONG StartingRunIndex);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindleastsignificantbit
 	NTSYSAPI CCHAR RtlFindLeastSignificantBit(
@@ -930,16 +1826,16 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindlongestrunclear
 	NTSYSAPI ULONG RtlFindLongestRunClear(
-		_In_  PRTL_BITMAP BitMapHeader,
-		_Out_ PULONG      StartingIndex);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_Out_ PULONG StartingIndex);
 
 	// https://doxygen.reactos.org/de/d70/sdk_2lib_2rtl_2message_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlFindMessage(
-		IN PVOID BaseAddress,
-		IN ULONG Type,
-		IN ULONG Language,
-		IN ULONG MessageId,
-		OUT PMESSAGE_RESOURCE_ENTRY* MessageResourceEntry);
+		_In_ PVOID BaseAddress,
+		_In_ ULONG Type,
+		_In_ ULONG Language,
+		_In_ ULONG MessageId,
+		_Out_ PMESSAGE_RESOURCE_ENTRY* MessageResourceEntry);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindmostsignificantbit
 	NTSYSAPI CCHAR RtlFindMostSignificantBit(
@@ -947,21 +1843,21 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindnextforwardrunclear
 	NTSYSAPI ULONG RtlFindNextForwardRunClear(
-		_In_  PRTL_BITMAP BitMapHeader,
-		_In_  ULONG       FromIndex,
-		_Out_ PULONG      StartingRunIndex);
+		_In_ PRTL_BITMAP BitMapHeader,
+		_In_ ULONG FromIndex,
+		_Out_ PULONG StartingRunIndex);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindsetbits
 	NTSYSAPI ULONG RtlFindSetBits(
 		_In_ PRTL_BITMAP BitMapHeader,
-		_In_ ULONG       NumberToFind,
-		_In_ ULONG       HintIndex);
+		_In_ ULONG NumberToFind,
+		_In_ ULONG HintIndex);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindsetbitsandclear
 	NTSYSAPI ULONG RtlFindSetBitsAndClear(
 		_In_ PRTL_BITMAP BitMapHeader,
-		_In_ ULONG       NumberToFind,
-		_In_ ULONG       HintIndex);
+		_In_ ULONG NumberToFind,
+		_In_ ULONG HintIndex);
 
 	// https://jabber-tools.github.io/google_cognitive_apis/doc/0.1.5/ntapi/ntrtl/fn.RtlFindClearBitsAndSet.html
 	NTSYSAPI ULONG NTAPI RtlFindClearBitsAndSet(
@@ -972,8 +1868,8 @@ extern "C"
 	//https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfindsetbits
 	NTSYSAPI ULONG NTAPI RtlFindSetBits(
 		_In_ PRTL_BITMAP BitMapHeader,
-		_In_ ULONG       NumberToFind,
-		_In_ ULONG       HintIndex);
+		_In_ ULONG NumberToFind,
+		_In_ ULONG HintIndex);
 
 	//https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtlfirstentryslist
 	NTSYSAPI PSLIST_ENTRY NTAPI RtlFirstEntrySList(
@@ -1004,33 +1900,28 @@ extern "C"
 
 	// https://doxygen.reactos.org/de/d70/sdk_2lib_2rtl_2message_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlFormatMessage(
-		IN PWSTR Message,
-		IN ULONG MaxWidth OPTIONAL,
-		IN BOOLEAN IgnoreInserts,
-		IN BOOLEAN ArgumentsAreAnsi,
-		IN BOOLEAN ArgumentsAreAnArray,
-		IN va_list* Arguments,
-		OUT PWSTR Buffer,
-		IN ULONG BufferSize,
-		OUT PULONG ReturnLength OPTIONAL);
+		_In_ PWSTR Message,
+		_In_opt_ ULONG MaxWidth,
+		_In_ BOOLEAN IgnoreInserts,
+		_In_ BOOLEAN ArgumentsAreAnsi,
+		_In_ BOOLEAN ArgumentsAreAnArray,
+		_In_ va_list* Arguments,
+		_Out_ PWSTR Buffer,
+		_In_ ULONG BufferSize,
+		_Out_opt_ PULONG ReturnLength);
 
 	// https://doxygen.reactos.org/de/d70/sdk_2lib_2rtl_2message_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlFormatMessageEx(
-		IN PWSTR Message,
-		IN ULONG MaxWidth OPTIONAL,
-		IN BOOLEAN IgnoreInserts,
-		IN BOOLEAN ArgumentsAreAnsi,
-		IN BOOLEAN ArgumentsAreAnArray,
-		IN va_list* Arguments,
-		OUT PWSTR Buffer,
-		IN ULONG BufferSize,
-		OUT PULONG ReturnLength OPTIONAL,
-		IN ULONG Flags);
-	
-	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
-	NTSYSAPI BOOLEAN NTAPI RtlFreeHandle(
-		_In_ PRTL_HANDLE_TABLE HandleTable,
-		_In_ PRTL_HANDLE_TABLE_ENTRY Handle);
+		_In_ PWSTR Message,
+		_In_opt_ ULONG MaxWidth,
+		_In_ BOOLEAN IgnoreInserts,
+		_In_ BOOLEAN ArgumentsAreAnsi,
+		_In_ BOOLEAN ArgumentsAreAnArray,
+		_In_ va_list* Arguments,
+		_Out_ PWSTR Buffer,
+		_In_ ULONG BufferSize,
+		_Out_opt_ PULONG ReturnLength,
+		_In_ ULONG Flags);
 
 	// https://i.blackhat.com/asia-19/Thu-March-28/bh-asia-Sun-How-to-Survive-the-Hardware-Assisted-Control-Flow-Integrity-Enforcement.pdf
 	NTSYSAPI VOID NTAPI DeleteFiber(
@@ -1042,10 +1933,10 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlgenerate8dot3name
 	NTSYSAPI NTSTATUS NTAPI RtlGenerate8dot3Name(
-		_In_      PCUNICODE_STRING       Name,
-		_In_      BOOLEAN                AllowExtendedCharacters,
-		[in, out] PGENERATE_NAME_CONTEXT Context,
-		[in, out] PUNICODE_STRING        Name8dot3);
+		_In_ PCUNICODE_STRING Name,
+		_In_ BOOLEAN AllowExtendedCharacters,
+		_Inout_ PGENERATE_NAME_CONTEXT Context,
+		_Inout_ PUNICODE_STRING Name8dot3);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L10008C1-L10013C7
 	NTSYSAPI ULONG NTAPI RtlGetActiveConsoleId(VOID);
@@ -1069,7 +1960,7 @@ extern "C"
 		_Out_ PVOID* CallersCaller);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlgetcompressionworkspacesize
-	NT_RTL_COMPRESS_API NTSTATUS RtlGetCompressionWorkSpaceSize(
+	NTSYSAPI NTSTATUS NTAPI RtlGetCompressionWorkSpaceSize(
 		_In_  USHORT CompressionFormatAndEngine,
 		_Out_ PULONG CompressBufferWorkSpaceSize,
 		_Out_ PULONG CompressFragmentWorkSpaceSize);
@@ -1088,7 +1979,7 @@ extern "C"
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
 	NTSYSAPI void NTAPI RtlGetCurrentProcessorNumberEx(
-		_Out_ PROCESSOR_NUMBER* processor);
+		_Out_ PPROCESSOR_NUMBER processor);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L9984C1-L9989C7
 	NTSYSAPI ULONG NTAPI RtlGetCurrentServiceSessionId(VOID);
@@ -1101,7 +1992,7 @@ extern "C"
 		_Inout_ PHANDLE pHandle);
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	NSTSYAPI void NTAPI RtlGetDeviceFamilyInfoEnum(
+	NTSYSAPI void NTAPI RtlGetDeviceFamilyInfoEnum(
 		ULONGLONG* version,
 		DWORD* family,
 		DWORD* form);
@@ -1138,13 +2029,6 @@ extern "C"
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L6474C1-L6480C1
 	NTSYSAPI LONG NTAPI RtlGetLastWin32Error(VOID);
-
-	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L9249C1-L9258C1
-	NTSYSAPI NTSTATUS NTAPI RtlGetNativeSystemInformation(
-		_In_ SYSTEM_INFORMATION_CLASS SystemInformationClass,
-		_In_ PVOID NativeSystemInformation,
-		_In_ ULONG InformationLength,
-		_Out_opt_ PULONG ReturnLength);
 
 	// Reversed
 	NTSYSAPI NTSTATUS NTAPI RtlGetNextUmsListItem(
@@ -1187,10 +2071,10 @@ extern "C"
 	// https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getproductinfo
 	// From Kernel32 to Imports from api-ms-win-core-sysinfo-l1-2-0.dll:__imp_GetProductInfo
 	NTSYSAPI BOOL NTAPI RtlGetProductInfo(
-		_In_  DWORD  dwOSMajorVersion,
-		_In_  DWORD  dwOSMinorVersion,
-		_In_  DWORD  dwSpMajorVersion,
-		_In_  DWORD  dwSpMinorVersion,
+		_In_ DWORD dwOSMajorVersion,
+		_In_ DWORD dwOSMinorVersion,
+		_In_ DWORD dwSpMajorVersion,
+		_In_ DWORD dwSpMinorVersion,
 		_Out_ PDWORD pdwReturnedProductType);
 
 	// https://learn.microsoft.com/en-us/windows/win32/devnotes/rtlgetreturnaddresshijacktarget
@@ -1237,7 +2121,7 @@ extern "C"
 
 	// Reversed
 	// Invoked by USER32.DLL and UXTHEME.DLL in 10.0.19045.0 version
-	NTSYSAPI NTSTSTATUS NTAPI RtlGetThreadLangIdByIndex(
+	NTSYSAPI NTSTATUS NTAPI RtlGetThreadLangIdByIndex(
 		_In_ DWORD ArgECX,
 		_In_ DWORD ArgEDX,
 		_Out_ PVOID ArgR8,
@@ -1269,20 +2153,9 @@ extern "C"
 		_Inout_opt_ PULONG NumberOfFallbackLanguages,
 		_Out_ PULONG Attributes);
 
-	// Reversed. Invoked by KERNEL32.DLL in 10.0.19045.0 version
-	typedef struct _COMPLETION_LIST {
-		PVOID Unknown;
-
-	} COMPLETION_LIST, *PCOMPLETION_LIST;
 	NTSYSAPI NTSTATUS NTAPI RtlGetUmsCompletionListEvent(
 		_In_ PCOMPLETION_LIST ArgRCX,
 		_Out_ PHANDLE* pEvent);
-	
-	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
-	NTSYSAPI VOID NTAPI RtlGetUnloadEventTraceEx(
-		_Out_ PULONG* ElementSize,
-		_Out_ PULONG* ElementCount,
-		_Out_ PVOID* EventTrace);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L9600C1-L9607C7
 	NTSYSAPI PRTL_UNLOAD_EVENT_TRACE NTAPI RtlGetUnloadEventTraceEx(
@@ -1365,7 +2238,7 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlincrementcorrelationvector
 	NTSYSAPI NTSTATUS RtlIncrementCorrelationVector(
-		[in, out] PCORRELATION_VECTOR CorrelationVector);
+		_Inout_ PCORRELATION_VECTOR CorrelationVector);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI NTSTATUS NTAPI RtlInitBarrier(
@@ -1373,33 +2246,17 @@ extern "C"
 		_In_ ULONG TotalThreads,
 		_In_ ULONG SpinCount);
 
-	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlinitcodepagetable
-	NTSYSAPI VOID RtlInitCodePageTable(
-		PUSHORT      TableBase,
-		PCPTABLEINFO CodePageTable);
-
-	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
-	NTSYSAPI VOID NTAPI RtlInitNlsTables(
-		_In_ PUSHORT 	AnsiNlsBase,
-		_In_ PUSHORT 	OemNlsBase,
-		_In_ PUSHORT 	LanguageNlsBase,
-		_Out_ PNLSTABLEINFO 	TableInfo);
-
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlinitializebitmap
 	NTSYSAPI VOID RtlInitializeBitMap(
 		_Out_ PRTL_BITMAP BitMapHeader,
-		_In_  __drv_aliasesMem PULONG BitMapBuffer,
-		_In_  ULONG SizeOfBitMap);
+		_In_ __drv_aliasesMem PULONG BitMapBuffer,
+		_In_ ULONG SizeOfBitMap);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L7315C1-L7323C1
 	NTSYSAPI VOID NTAPI RtlInitializeBitMapEx(
 		_Out_ PRTL_BITMAP_EX BitMapHeader,
 		_In_ PULONG64 BitMapBuffer,
 		_In_ ULONG64 SizeOfBitMap);
-
-	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
-	NTSYSAPI VOID NTAPI RtlInitializeConditionVariable(
-		_Out_ PRTL_CONDITION_VARIABLE ConditionVariable);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI VOID NTAPI RtlInitializeContext(
@@ -1411,9 +2268,9 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlinitializecorrelationvector
 	NTSYSAPI NTSTATUS RtlInitializeCorrelationVector(
-		[in, out] PCORRELATION_VECTOR CorrelationVector,
-		_In_      int                 Version,
-		_In_      const GUID* Guid);
+		_Inout_ PCORRELATION_VECTOR CorrelationVector,
+		_In_ int Version,
+		_In_ const GUID* Guid);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI NTSTATUS NTAPI RtlInitializeCriticalSection(
@@ -1448,7 +2305,11 @@ extern "C"
 		const void* client_procsW, ULONG procsW_size,
 		const void* client_workers, ULONG workers_size);
 
-//RtlInitializeRXact
+	// https://doxygen.reactos.org/dc/d65/rxact_8c.html
+	NTSYSAPI NTSTATUS NTAPI RtlInitializeRXact(
+		HANDLE RootDirectory,
+		BOOLEAN Commit,
+		PRXACT_CONTEXT* OutContext);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI VOID NTAPI RtlInitializeResource(
@@ -1482,7 +2343,7 @@ extern "C"
 		_In_ __drv_aliasesMem PSLIST_ENTRY ListEntry);
 	
 	// https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/sync.c
-	NTSYSAPI PSLIST_ENTRY FASTCALL NTAPI RtlInterlockedPushListSList(
+	NTSYSAPI PSLIST_ENTRY NTAPI RtlInterlockedPushListSList(
 		_Inout_ PSLIST_HEADER SListHead,
 		_Inout_ __drv_aliasesMem PSLIST_ENTRY List,
 		_Inout_ PSLIST_ENTRY ListEnd,
@@ -1503,19 +2364,19 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtliodecodememioresource
 	NTSYSAPI ULONGLONG RtlIoDecodeMemIoResource(
-		_In_            PIO_RESOURCE_DESCRIPTOR Descriptor,
-		[out, optional] PULONGLONG              Alignment,
-		[out, optional] PULONGLONG              MinimumAddress,
-		[out, optional] PULONGLONG              MaximumAddress);
+		_In_ PIO_RESOURCE_DESCRIPTOR Descriptor,
+		_Out_opt_ PULONGLONG Alignment,
+		_Out_opt_ PULONGLONG MinimumAddress,
+		_Out_opt_ PULONGLONG MaximumAddress);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlioencodememioresource
 	NTSYSAPI NTSTATUS RtlIoEncodeMemIoResource(
 		_In_ PIO_RESOURCE_DESCRIPTOR Descriptor,
-		_In_ UCHAR                   Type,
-		_In_ ULONGLONG               Length,
-		_In_ ULONGLONG               Alignment,
-		_In_ ULONGLONG               MinimumAddress,
-		_In_ ULONGLONG               MaximumAddress);
+		_In_ UCHAR Type,
+		_In_ ULONGLONG Length,
+		_In_ ULONGLONG Alignment,
+		_In_ ULONGLONG MinimumAddress,
+		_In_ ULONGLONG MaximumAddress);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI LOGICAL NTAPI RtlIsCriticalSectionLocked(
@@ -1541,7 +2402,7 @@ extern "C"
 	NTSYSAPI BOOL NTAPI RtlIsMultiSessionSku(VOID);
 
 	// https://codemachine.com/downloads/win10.1607/ntddk.h
-	_IRQL_requires_max_(PASSIVE_LEVEL)
+	// _IRQL_requires_max_(PASSIVE_LEVEL)
 	_Must_inspect_result_ NTSYSAPI BOOLEAN NTAPI RtlIsMultiUsersInSessionSku(VOID);
 
 	// https://microsoft.github.io/windows-docs-rs/doc/windows/Wdk/System/SystemServices/fn.RtlIsMultiSessionSku.html
@@ -1565,17 +2426,6 @@ extern "C"
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html#ad6df589c370b58b02583177842bb98ea
 	NTSYSAPI BOOLEAN NTAPI RtlIsThreadWithinLoaderCallout(VOID);
-
-	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
-	NTSYSAPI BOOLEAN NTAPI RtlIsValidHandle(
-		_In_ PRTL_HANDLE_TABLE HandleTable,
-		_In_ PRTL_HANDLE_TABLE_ENTRY Handle);
-
-	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
-	NTSYSAPI BOOLEAN NTAPI RtlIsValidIndexHandle(
-		_In_ PRTL_HANDLE_TABLE HandleTable,
-		_In_ ULONG HandleIndex,
-		_Out_ PRTL_HANDLE_TABLE_ENTRY* Handle);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI BOOLEAN NTAPI RtlIsValidLocaleName(
@@ -1636,17 +2486,11 @@ extern "C"
 	// https://github.com/mic101/windows/blob/master/WRK-v1.2/base/ntos/rtl/stktrace.c
 	NTSYSAPI USHORT NTAPI RtlLogStackBackTrace(VOID);
 
-	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtllookupfunctionentry
-	NTSYSAPI PRUNTIME_FUNCTION RtlLookupFunctionEntry(
-		_In_  DWORD64               ControlPc,
-		_Out_ PDWORD64              ImageBase,
-		_Out_ PUNWIND_HISTORY_TABLE HistoryTable);
-
 	// https://doxygen.reactos.org/de/ddc/sdk_2lib_2rtl_2error_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlMapSecurityErrorToNtStatus(
-		IN ULONG SecurityError);
+		_In_ ULONG SecurityError);
 
-	// https://github.com/thebookisclosed/ViVe/blob/master/ViVe/NativeMethods.Ntdll.cs#L99
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L11179
 	NTSYSAPI NTSTATUS NTAPI RtlNotifyFeatureUsage(
 		_Inout_ RTL_FEATURE_USAGE_REPORT report);
 
@@ -1669,8 +2513,8 @@ extern "C"
 	// Reversed
 	NTSYSAPI PCWSTR RtlNtdllName;
 
-	// https://doxygen.reactos.org/db/d90/sdk_2lib_2rtl_2bitmap_8c.html
-	NTSYSAPI BITMAP_INDEX NTAPI RtlNumberOfClearBits(
+	// https://learn.microsoft.com/fr-fr/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlnumberofclearbits
+	NTSYSAPI ULONG RtlNumberOfClearBits(
 		_In_ PRTL_BITMAP BitMapHeader);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlnumberofclearbits
@@ -1701,8 +2545,8 @@ extern "C"
 
 	// https://doxygen.reactos.org/d5/dc9/sdk_2lib_2rtl_2registry_8c.html
 	NTSYSAPI NTSTATUS NTAPI RtlOpenCurrentUser(
-		IN ACCESS_MASK DesiredAccess,
-		OUT PHANDLE KeyHandle);
+		_In_ ACCESS_MASK DesiredAccess,
+		_Out_ PHANDLE KeyHandle);
 
 	//RtlOsDeploymentState
 	NTSYSAPI OS_DEPLOYEMENT_STATE_VALUES NTAPI RtlOsDeploymentState(
@@ -1713,27 +2557,12 @@ extern "C"
 		PTEB_ACTIVE_FRAME frame);
 
 	// https://ntquery.wordpress.com/2014/03/29/anti-debug-fiber-local-storage-fls/#more-18
-	NTSYSCALLAPI NTSTATUS NTAPI RtlProcessFlsData(
+	// https://debugactiveprocess.medium.com/rtlprocessflsdata-as-anti-debugging-technique-c531174c6dc8
+	NTSYSAPI NTSTATUS NTAPI RtlProcessFlsData(
 		PRTL_UNKNOWN_FLS_DATA Buffer);
-
-	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L11330C1-L11339C7
-	NTSYSAPI NTSTATUS NTAPI RtlPublishWnfStateData(
-		_In_ WNF_STATE_NAME StateName,
-		_In_opt_ PCWNF_TYPE_ID TypeId,
-		_In_reads_bytes_opt_(Length) const PVOID Buffer,
-		_In_opt_ ULONG Length,
-		_In_opt_ const VOID* ExplicitScope);
 
 	// https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/thread.c
 	NTSYSAPI VOID NTAPI RtlPushFrame(TEB_ACTIVE_FRAME* frame);
-
-	// https://docs.rs/phnt/latest/phnt/ffi/fn.RtlPublishWnfStateData.html
-	NTSYSAPI NTSTATUS NTAPI RtlPublishWnfStateData(
-		WNF_STATE_NAME StateName,
-		PCWNF_TYPE_ID TypeId,
-		_In_ PBYTE Buffer,
-		_In_ ULONG Length,
-		PBYTE ExplicitScope);
 
 	//RtlQueryCriticalSectionOwner
 	NTSYSAPI HANDLE NTAPI RtlQueryCriticalSectionOwner(
@@ -1755,12 +2584,12 @@ extern "C"
 		PWSTR Value);
 
 	// https://docs.rs/ntapi/latest/ntapi/ntrtl/fn.RtlQueryEnvironmentVariable_U.html
-	NTSYSAPI NTSTSATUS NTAPI RtlQueryEnvironmentVariable_U(
+	NTSYSAPI NTSTATUS NTAPI RtlQueryEnvironmentVariable_U(
 		PVOID Environment,
 		PUNICODE_STRING Name,
 		PUNICODE_STRING Value);
 
-	// https://github.com/winsiderss/systeminformer/blob/master/phnt/include/ntrtl.h
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L11187
 	NTSYSAPI NTSTATUS NTAPI RtlQueryFeatureConfiguration(
 		_In_ RTL_FEATURE_ID FeatureId,
 		_In_ RTL_FEATURE_CONFIGURATION_TYPE ConfigurationType,
@@ -1775,7 +2604,7 @@ extern "C"
 		_Out_writes_(*SubscriptionCount) PRTL_FEATURE_USAGE_SUBSCRIPTION_DETAILS Subscriptions,
 		_Inout_ PSIZE_T SubscriptionCount);
 
-	// https://github.com/winsiderss/systeminformer/blob/master/phnt/include/ntrtl.h
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L10017
 	NTSYSAPI NTSTATUS NTAPI RtlQueryImageMitigationPolicy(
 		_In_opt_ PCWSTR ImagePath, // NULL for system-wide defaults
 		_In_ IMAGE_MITIGATION_POLICY Policy,
@@ -1783,7 +2612,7 @@ extern "C"
 		_Inout_ PVOID Buffer,
 		_In_ ULONG BufferSize);
 
-	// https://github.com/winsiderss/systeminformer/blob/master/phnt/include/ntrtl.h
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L4072
 	NTSYSAPI NTSTATUS NTAPI RtlQueryInformationActiveActivationContext(
 		_In_ ACTIVATION_CONTEXT_INFO_CLASS ActivationContextInformationClass,
 		_Out_writes_bytes_(ActivationContextInformationLength) PVOID ActivationContextInformation,
@@ -1809,21 +2638,21 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlquerypackageidentity
 	NTSYSAPI NTSTATUS RtlQueryPackageIdentity(
-		PVOID    TokenObject,
-		PWSTR    PackageFullName,
-		PSIZE_T  PackageSize,
-		PWSTR    AppId,
-		PSIZE_T  AppIdSize,
+		PVOID TokenObject,
+		PWSTR PackageFullName,
+		PSIZE_T PackageSize,
+		PWSTR AppId,
+		PSIZE_T AppIdSize,
 		PBOOLEAN Packaged);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlquerypackageidentityex
 	NTSYSAPI NTSTATUS RtlQueryPackageIdentityEx(
-		PVOID    TokenObject,
-		PWSTR    PackageFullName,
-		PSIZE_T  PackageSize,
-		PWSTR    AppId,
-		PSIZE_T  AppIdSize,
-		LPGUID   DynamicId,
+		PVOID TokenObject,
+		PWSTR PackageFullName,
+		PSIZE_T PackageSize,
+		PWSTR AppId,
+		PSIZE_T AppIdSize,
+		LPGUID DynamicId,
 		PULONG64 Flags);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancecounter
@@ -1845,19 +2674,19 @@ extern "C"
 		_In_  HANDLE          FallbackHandle,
 		_In_  PUNICODE_STRING ValueName,
 		_In_  ULONG           ValueLength,
-		[Out] PULONG          ValueType,
+		_Out_ PULONG          ValueType,
 		_Out_ PVOID           ValueData,
 		_Out_ PULONG          ResultLength);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlqueryregistryvalues
 	NTSYSAPI NTSTATUS RtlQueryRegistryValues(
-		_In_           ULONG                     RelativeTo,
-		_In_           PCWSTR                    Path,
-		[in, out]      PRTL_QUERY_REGISTRY_TABLE QueryTable,
-		_In_opt_ PVOID                     Context,
-		_In_opt_ PVOID                     Environment);
+		_In_ ULONG RelativeTo,
+		_In_ PCWSTR Path,
+		_Inout_ PRTL_QUERY_REGISTRY_TABLE QueryTable,
+		_In_opt_ PVOID Context,
+		_In_opt_ PVOID Environment);
 
-	//RtlQueryRegistryValuesEx
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L9227
 	NTSYSAPI NTSTATUS NTAPI RtlQueryRegistryValuesEx(
 		_In_ ULONG RelativeTo,
 		_In_ PCWSTR Path,
@@ -1866,7 +2695,7 @@ extern "C"
 		_In_opt_ PVOID Environment);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlquerythreadplaceholdercompatibilitymode
-	NTSYSAPI CHAR RtlQueryThreadPlaceholderCompatibilityMode();
+	NTSYSAPI CHAR NTAPI RtlQueryThreadPlaceholderCompatibilityMode(VOID);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI NTSTATUS NTAPI RtlQueryThreadProfiling(
@@ -1883,13 +2712,13 @@ extern "C"
     // Based on reversing Kernel32::QueryUmsThreadInformation
 	NTSYSAPI BOOL NTAPI RtlQueryUmsThreadInformation(
 		PUMS_CONTEXT UmsThread,
-		UMS_THREAD_INFO_CLASS UmsThreadInfoClass,
+		RTL_UMS_THREAD_INFO_CLASS UmsThreadInfoClass,
 		PVOID UmsThreadInformation,
 		ULONG UmsThreadInformationLength,
 		PULONG ReturnLength);
 
 	// https://gist.github.com/msmania/472912cd6e9ab067be3211ba3f5f0f9e
-	typedef NTSTATUS* (NTAPI pWnfCallback)(
+	typedef NTSTATUS (NTAPI *pWnfCallback)(
 		uint64_t p1,
 		void* p2,
 		void* p3,
@@ -1903,33 +2732,25 @@ extern "C"
 		size_t,
 		size_t);
 
-	// https://doxygen.reactos.org/d3/dcd/sdk_2lib_2rtl_2amd64_2stubs_8c.html
-	NTSYSAPI NTSTATUS NTAPI RtlQueueApcWow64Thread(
-		_In_ HANDLE ThreadHandle,
-		_In_ PKNORMAL_ROUTINE ApcRoutine,
-		_In_opt_ PVOID NormalContext,
-		_In_opt_ PVOID SystemArgument1,
-		_In_opt_ PVOID SystemArgument2);
-
-	// https://source.winehq.org/WineAPI/RtlQueueWorkItem.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L8999
 	NTSYSAPI NTSTATUS NTAPI RtlQueueWorkItem (
-		PRTL_WORK_ITEM_ROUTINE function,
-		PVOID                  context,
-		ULONG                  flags);
+		_In_ WORKERCALLBACKFUNC function,
+		_In_opt_ PVOID context,
+		_In_ ULONG flags);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlraisecustomsystemeventtrigger
 	NTSYSAPI NTSTATUS RtlRaiseCustomSystemEventTrigger(
-		[_In_] PCUSTOM_SYSTEM_EVENT_TRIGGER_CONFIG TriggerConfig);
+		_In_ PCUSTOM_SYSTEM_EVENT_TRIGGER_CONFIG TriggerConfig);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlrandom
 	NTSYSAPI ULONG RtlRandom(
-		[in, out] PULONG Seed);
+		_Inout_ PULONG Seed);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlrandomex
 	NTSYSAPI ULONG RtlRandomEx(
-		[in, out] PULONG Seed);
+		_Inout_ PULONG Seed);
 
-	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L9310
 	NTSYSAPI NTSTATUS NTAPI RtlReadThreadProfilingData(
 		_In_ HANDLE PerformanceDataHandle,
 		_In_ ULONG Flags,
@@ -1947,12 +2768,12 @@ extern "C"
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html#a3971f6c4d689c54c8b8f8b9a7d3a51f9
 	NTSYSAPI NTSTATUS NTAPI RtlRegisterWait(
-		_Out_ PHANDLE 	WaitHandle,
-		_In_ HANDLE 	Handle,
-		_In_ WAITORTIMERCALLBACKFUNC 	Function,
-		_In_ PVOID 	Context,
-		_In_ ULONG 	Milliseconds,
-		_In_ ULONG 	Flags);
+		_Out_ PHANDLE WaitHandle,
+		_In_ HANDLE Handle,
+		_In_ WAITORTIMERCALLBACKFUNC Function,
+		_In_ PVOID Context,
+		_In_ ULONG Milliseconds,
+		_In_ ULONG Flags);
 
 	// https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/loader.c
 	NTSYSAPI VOID NTAPI RtlReleasePath(
@@ -1961,31 +2782,27 @@ extern "C"
 	// https://github.com/reactos/reactos/blob/master/sdk/include/ndk/rtlfuncs.h#L2819
 	NTSYSAPI VOID NTAPI RtlReleasePebLock(VOID);
 
-	// https://github.com/reactos/reactos/blob/master/sdk/include/ndk/rtlfuncs.h#L2819
-	NTSYSAPI VOID NTAPI RtlReleaseRelativeName(
-		_In_ PRTL_RELATIVE_NAME_U RelativeName);
-
 	// https://doxygen.reactos.org/de/df0/sdk_2lib_2rtl_2resource_8c.html
 	NTSYSAPI VOID NTAPI RtlReleaseResource(
 		PRTL_RESOURCE Resource);
 
 	// https://github.com/reactos/reactos/blob/master/sdk/include/ndk/rtlfuncs.h#L2819
 	NTSYSAPI VOID NTAPI RtlReleaseSRWLockExclusive(
-		IN OUT PRTL_SRWLOCK SRWLock);
+		_In_ _Out_ PRTL_SRWLOCK SRWLock);
 
 	// https://github.com/reactos/reactos/blob/master/sdk/include/ndk/rtlfuncs.h#L2819
 	NTSYSAPI VOID NTAPI RtlReleaseSRWLockShared(
-		IN OUT PRTL_SRWLOCK SRWLock);
+		_In_ _Out_ PRTL_SRWLOCK SRWLock);
 
 	// https://www.alex-ionescu.com/rtlremotecall/
 	NTSYSAPI NTSTATUS NTAPI RtlRemoteCall(
-		IN HANDLE Process,
-		IN HANDLE Thread,
-		IN PVOID CallSite,
-		IN ULONG ArgumentCount,
-		IN PULONG Arguments,
-		IN BOOLEAN PassContext,
-		IN BOOLEAN AlreadySuspended);
+		_In_ HANDLE Process,
+		_In_ HANDLE Thread,
+		_In_ PVOID CallSite,
+		_In_ ULONG ArgumentCount,
+		_In_ PULONG Arguments,
+		_In_ BOOLEAN PassContext,
+		_In_ BOOLEAN AlreadySuspended);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI ULONG NTAPI RtlReplaceSystemDirectoryInPath(
@@ -1996,10 +2813,6 @@ extern "C"
 
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
 	NTSYSAPI NTSTATUS NTAPI RtlResetNtUserPfn(void);
-
-	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
-	NTSYSAPI VOID NTAPI RtlResetRtlTranslations(
-		_In_ PNLSTABLEINFO TableInfo);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI NTSTATUS NTAPI RtlRestoreBootStatusDefaults(
@@ -2024,31 +2837,26 @@ extern "C"
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlrunoncebegininitialize
 	NTSYSAPI NTSTATUS RtlRunOnceBeginInitialize(
-		[in, out] PRTL_RUN_ONCE RunOnce,
-		_In_      ULONG         Flags,
-		_Out_     PVOID* Context);
+		_Inout_ PRTL_RUN_ONCE RunOnce,
+		_In_ ULONG Flags,
+		_Out_ PVOID* Context);
 
 	// http://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlrunoncecomplete
 	NTSYSAPI NTSTATUS RtlRunOnceComplete(
-		[in, out]      PRTL_RUN_ONCE RunOnce,
-		_In_           ULONG         Flags,
-		_In_opt_ PVOID         Context);
+		_Inout_ PRTL_RUN_ONCE RunOnce,
+		_In_ ULONG Flags,
+		_In_opt_ PVOID Context);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlrunonceexecuteonce
 	NTSYSAPI NTSTATUS RtlRunOnceExecuteOnce(
-		PRTL_RUN_ONCE         RunOnce,
+		PRTL_RUN_ONCE RunOnce,
 		PRTL_RUN_ONCE_INIT_FN InitFn,
-		PVOID                 Parameter,
+		PVOID Parameter,
 		PVOID* Context);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlrunonceinitialize
 	NTSYSAPI VOID RtlRunOnceInitialize(
 		_Out_ PRTL_RUN_ONCE RunOnce);
-
-	// https://github.com/xmoezzz/NativeLib-R/blob/master/ntsmss.h
-	NTSYSAPI NTSTATUS NTAPI RtlSendMsgToSm(
-		_In_ HANDLE ApiPortHandle,
-		_In_ PPORT_MESSAGE MessageData);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlsetallbits
 	NTSYSAPI VOID RtlSetAllBits(
@@ -2057,7 +2865,7 @@ extern "C"
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlsetbit
 	NTSYSAPI VOID RtlSetBit(
 		_In_ PRTL_BITMAP BitMapHeader,
-		_In_ ULONG       BitNumber);
+		_In_ ULONG BitNumber);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI VOID NTAPI RtlSetBitEx(
@@ -2067,8 +2875,8 @@ extern "C"
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlsetbits
 	NTSYSAPI VOID RtlSetBits(
 		_In_ PRTL_BITMAP BitMapHeader,
-		_In_ ULONG       StartingIndex,
-		_In_ ULONG       NumberToSet);
+		_In_ ULONG StartingIndex,
+		_In_ ULONG NumberToSet);
 
 	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
 	NTSYSAPI ULONG NTAPI RtlSetCriticalSectionSpinCount(
@@ -2103,9 +2911,9 @@ extern "C"
 
 	// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FExecutable%20Images%2FEnvironment%2FRtlSetEnvironmentVariable.html
 	NTSYSAPI NTSTATUS NTAPI RtlSetEnvironmentVariable(
-		_Inout_ PVOID* Environment OPTIONAL,
-		IN PUNICODE_STRING      VariableName,
-		IN PUNICODE_STRING      VariableValue);
+		_Inout_opt_ PVOID* Environment,
+		_In_ PUNICODE_STRING VariableName,
+		_In_ PUNICODE_STRING VariableValue);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L3590C1-L3596C7
 	NTSYSAPI VOID NTAPI RtlSetExtendedFeaturesMask(
@@ -2168,7 +2976,7 @@ extern "C"
 		_Out_opt_ PULONG OldMode);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L3316C1-L3323C7
-	NTSYSAPI NTSTATUS STDAPIVCALLTYPE RtlSetThreadIsCritical(
+	NTSYSAPI NTSTATUS NTAPI RtlSetThreadIsCritical(
 		_In_ BOOLEAN NewValue,
 		_Out_opt_ PBOOLEAN OldValue,
 		_In_ BOOLEAN CheckFlag);
@@ -2204,25 +3012,6 @@ extern "C"
 		_Inout_ PRTL_CRITICAL_SECTION CriticalSection,
 		_In_opt_ PLARGE_INTEGER Timeout);
 
-	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L1326C1-L1333C7
-	NTSYSAPI NTSTATUS NTAPI RtlSleepConditionVariableSRW(
-		_Inout_ PRTL_CONDITION_VARIABLE ConditionVariable,
-		_Inout_ PRTL_SRWLOCK SRWLock,
-		_In_opt_ PLARGE_INTEGER Timeout,
-		_In_ ULONG Flags);
-
-	// Reversed
-	typedef struct _REGISTRY_TRANSACTION_STATE {
-		DWORD Unknown1;
-		DWORD StateSize;
-		DWORD Unknwon2;
-	} REGISTRY_TRANSACTION_STATE, *PREGISTRY_TRANSACTION_STATE;
-	typedef struct _REGISTRY_TRANSACTION {
-		PVOID Unknown1;
-		PVOID Unknown2;
-		PVOID Unknown3;
-		PREGISTRY_TRANSACTION_STATE State;
-	} REGISTRY_TRANSACTION, *PREGISTRY_TRANSACTION;
 	NTSYSAPI NTSTATUS NTAPI RtlStartRXact(
 		_In_ PREGISTRY_TRANSACTION Transaction);
 
@@ -2258,11 +3047,6 @@ extern "C"
 		_In_ PRTL_BITMAP_EX BitMapHeader,
 		_In_range_(< , BitMapHeader->SizeOfBitMap) ULONG64 BitNumber);
 
-	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L3342C1-L3348C7
-	NTSYSAPI BOOLEAN NTAPI RtlTestProtectedAccess(
-		_In_ PS_PROTECTION Source,
-		_In_ PS_PROTECTION Target);
-
 	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseAdd.php
 	NTSYSAPI BOOLEAN NTAPI RtlTraceDatabaseAdd(
 		PRTL_TRACE_DATABASE pDatabase,
@@ -2279,28 +3063,28 @@ extern "C"
 		PRTL_TRACE_HASH_FUNCTION pfnHash);
 
 	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseDestroy.php
-	NTSYSAPI BOOLEAN WINAPI RtlTraceDatabaseDestroy(
+	NTSYSAPI BOOLEAN NTAPI RtlTraceDatabaseDestroy(
 		PRTL_TRACE_DATABASE pDatabase);
 
 	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseEnumerate.php
-	NTSYSAPI BOOLEAN WINAPI RtlTraceDatabaseEnumerate(
+	NTSYSAPI BOOLEAN NTAPI RtlTraceDatabaseEnumerate(
 		PRTL_TRACE_DATABASE pDatabase,
 		PRTL_TRACE_ENUM pEnumData,
 		PRTL_TRACE_BLOCK* ppBlock);
 
 	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseFind.php
-	NTSYSAPI BOOLEAN WINAPI RtlTraceDatabaseFind(
+	NTSYSAPI BOOLEAN NTAPI RtlTraceDatabaseFind(
 		PRTL_TRACE_DATABASE pDatabase,
 		ULONG numFrames,
 		PVOID* ppFrames,
 		PRTL_TRACE_BLOCK* ppBlock);
 
 	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseLock.php
-	NTSYSAPI BOOLEAN WINAPI RtlTraceDatabaseLock(
+	NTSYSAPI BOOLEAN NTAPI RtlTraceDatabaseLock(
 		PRTL_TRACE_DATABASE pDatabase);
 
 	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseUnlock.php
-	NTSYSAPI BOOLEAN WINAPI RtlTraceDatabaseUnlock(
+	NTSYSAPI BOOLEAN NTAPI RtlTraceDatabaseUnlock(
 		PRTL_TRACE_DATABASE pDatabase);
 
 	// https://undoc.airesoft.co.uk/ntdll.dll/RtlTraceDatabaseValidate.php
@@ -2333,7 +3117,7 @@ extern "C"
 		unsigned __int64* remainder);
 
 	// Reversed
-	NTSYSCALLAPI NTSTATUS NTAPI RtlUmsThreadYield(
+	NTSYSAPI NTSTATUS NTAPI RtlUmsThreadYield(
 		_In_ PVOID SchedulerParam);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-rtluniform
@@ -2360,10 +3144,6 @@ extern "C"
 	NTSYSAPI NTSTATUS NTAPI RtlUnsubscribeFromFeatureUsageNotifications(
 		_In_reads_(SubscriptionCount) PRTL_FEATURE_USAGE_SUBSCRIPTION_DETAILS SubscriptionDetails,
 		_In_ SIZE_T SubscriptionCount);
-
-	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L11355C1-L11360C7
-	NTSYSAPI NTSTATUS NTAPI RtlUnsubscribeWnfStateChangeNotification(
-		_In_ PWNF_USER_CALLBACK Callback);
 
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L3258C1-L3264C1
 	NTSYSAPI VOID NTAPI RtlUpdateClonedCriticalSection(
@@ -2394,14 +3174,14 @@ extern "C"
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/winnt/nf-winnt-rtlvirtualunwind
 	NTSYSAPI PEXCEPTION_ROUTINE RtlVirtualUnwind(
-		_In_                DWORD                          HandlerType,
-		_In_                DWORD64                        ImageBase,
-		_In_                DWORD64                        ControlPc,
-		_In_                PRUNTIME_FUNCTION              FunctionEntry,
-		[in, out]           PCONTEXT                       ContextRecord,
-		_Out_               PVOID * HandlerData,
-		_Out_               PDWORD64                       EstablisherFrame,
-		[in, out, optional] PKNONVOLATILE_CONTEXT_POINTERS ContextPointers);
+		_In_ DWORD HandlerType,
+		_In_ DWORD64 ImageBase,
+		_In_ DWORD64 ControlPc,
+		_In_ PRUNTIME_FUNCTION FunctionEntry,
+		_Inout_ PCONTEXT ContextRecord,
+		_Out_ PVOID * HandlerData,
+		_Out_ PDWORD64 EstablisherFrame,
+		_Inout_opt_ PKNONVOLATILE_CONTEXT_POINTERS ContextPointers);
 	
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L1416C1-L1425C1
 	NTSYSAPI NTSTATUS NTAPI RtlWaitOnAddress(
@@ -2450,64 +3230,21 @@ extern "C"
 	NTSYSAPI NTSTATUS NTAPI RtlWnfDllUnloadCallback(
 		_In_ PVOID DllBase);
 
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS NTAPI RtlWow64EnableFsRedirection(BOOLEAN enable);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS NTAPI RtlWow64EnableFsRedirectionEx(ULONG disable, ULONG* old_value);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS NTAPI RtlWow64GetCpuAreaInfo(WOW64_CPURESERVED* cpu, ULONG reserved, WOW64_CPU_AREA_INFO* info);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS NTAPI RtlWow64GetCurrentCpuArea(USHORT* machine, void** context, void** context_ex);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI USHORT NTAPI RtlWow64GetCurrentMachine(void);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS NTAPI RtlWow64GetThreadContext(HANDLE handle, WOW64_CONTEXT* context);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS NTAPI RtlWow64GetThreadSelectorEntry(HANDLE handle, THREAD_DESCRIPTOR_INFORMATION* info,
-		ULONG size, ULONG* retlen);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS NTAPI RtlWow64IsWowGuestMachineSupported(USHORT machine, BOOLEAN* supported);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI CROSS_PROCESS_WORK_ENTRY* NTAPI RtlWow64PopAllCrossProcessWorkFromWorkList(CROSS_PROCESS_WORK_HDR* list, BOOLEAN* flush);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI CROSS_PROCESS_WORK_ENTRY* NTAPI RtlWow64PopCrossProcessWorkFromFreeList(CROSS_PROCESS_WORK_HDR* list);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI BOOLEAN NTAPI RtlWow64PushCrossProcessWorkOntoFreeList(CROSS_PROCESS_WORK_HDR* list, CROSS_PROCESS_WORK_ENTRY* entry);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI BOOLEAN NTAPI RtlWow64PushCrossProcessWorkOntoWorkList(CROSS_PROCESS_WORK_HDR* list, CROSS_PROCESS_WORK_ENTRY* entry, void** unknown);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI BOOLEAN NTAPI RtlWow64RequestCrossProcessHeavyFlush(CROSS_PROCESS_WORK_HDR* list);
-
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-	NTSYSAPI NTSTATUS NTAPI RtlWow64SetThreadContext(HANDLE handle, const WOW64_CONTEXT* context);
-
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlwriteregistryvalue
 	NTSYSAPI NTSTATUS RtlWriteRegistryValue(
-		_In_           ULONG  RelativeTo,
-		_In_           PCWSTR Path,
-		_In_           PCWSTR ValueName,
-		_In_           ULONG  ValueType,
-		_In_opt_ PVOID  ValueData,
-		_In_           ULONG  ValueLength);
+		_In_ ULONG RelativeTo,
+		_In_ PCWSTR Path,
+		_In_ PCWSTR ValueName,
+		_In_ ULONG  ValueType,
+		_In_opt_ PVOID ValueData,
+		_In_ ULONG  ValueLength);
 
 	// https://doxygen.reactos.org/d5/de2/RtlpApplyLengthFunction_8c_source.html
 	NTSYSAPI NTSTATUS NTAPI RtlpApplyLengthFunction(
-		IN ULONG Flags,
-		IN ULONG Type,
-		IN PVOID UnicodeStringOrUnicodeStringBuffer,
-		IN NTSTATUS(NTAPI* LengthFunction)(ULONG, PUNICODE_STRING, PULONG));
+		_In_ ULONG Flags,
+		_In_ ULONG Type,
+		_In_ PVOID UnicodeStringOrUnicodeStringBuffer,
+		_In_ NTSTATUS(NTAPI* LengthFunction)(ULONG, PUNICODE_STRING, PULONG));
 
 	// Reversed
 	NTSYSAPI NTSTATUS NTAPI RtlpConvertCultureNamesToLCIDs(
@@ -2516,12 +3253,6 @@ extern "C"
 	// Reversed
 	NTSYSAPI NTSTATUS NTAPI RtlpConvertLCIDsToCultureNames(
 		PCWSTR SourceString);
-
-	// https://undoc.airesoft.co.uk/ntdll.dll/RtlpEnsureBufferSize.php
-	NTSYSAPI NTSTATUS WINAPI RtlpEnsureBufferSize(
-		ULONG flags,
-		PRTL_BUFFER pBuffer,
-		SIZE_T requiredSize);
 		
 	// Reversed from RtlGetDeviceFamilyInfoEnum call.
 	NTSYSAPI VOID NTAPI RtlpGetDeviceFamilyInfoEnum(
@@ -2544,13 +3275,13 @@ extern "C"
 
 	// https://source.winehq.org/WineAPI/RtlpNtCreateKey.html
 	NTSYSAPI NTSTATUS NTAPI RtlpNtCreateKey (
-		PHANDLE                  retkey,
-		ACCESS_MASK              access,
+		PHANDLE retkey,
+		ACCESS_MASK access,
 		const POBJECT_ATTRIBUTES attr,
-		ULONG                    TitleIndex,
+		ULONG TitleIndex,
 		const PUNICODE_STRING Class,
-		ULONG                    options,
-		PULONG                   dispos);
+		ULONG options,
+		PULONG dispos);
 
 	// https://github.com/arizvisa/ndk/blob/master/ndk/rtlfuncs.h
 	NTSYSAPI NTSTATUS NTAPI RtlpNtEnumerateSubKey(

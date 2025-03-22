@@ -22,31 +22,23 @@ extern "C" {
 		USHORT TransDefaultChar;            // translation of default char (Unicode)
 		USHORT TransUniDefaultChar;         // translation of Unic default char (MB)
 		USHORT DBCSCodePage;                // Non 0 for DBCS code pages
-		UCHAR  LeadByte[MAXIMUM_LEADBYTES]; // lead byte ranges
+		UCHAR LeadByte[MAXIMUM_LEADBYTES]; // lead byte ranges
 		PUSHORT MultiByteTable;             // pointer to MB->Unicode translation table
-		PVOID   WideCharTable;              // pointer to WC (Unicode->CodePage) translation table
+		PVOID WideCharTable;              // pointer to WC (Unicode->CodePage) translation table
 		PUSHORT DBCSRanges;                 // pointer to DBCS ranges (UNUSED, DO NOT SET)
 		PUSHORT DBCSOffsets;                // pointer to DBCS offsets
 	} CPTABLEINFO, * PCPTABLEINFO;
-	
-	// https://github.com/x-tinkerer/WRK/blob/e2e25706c766e1f93b3e55ab95601e72860f74d9/public/sdk/inc/ntrtlstringandbuffer.h#L114
-	typedef struct _RTL_BUFFER {
-		PUCHAR Buffer;
-		PUCHAR StaticBuffer;
-		SIZE_T Size;
-		SIZE_T StaticSize;
-		SIZE_T ReservedForAllocatedSize; // for future doubling
-		PVOID ReservedForIMalloc; // for future pluggable growth
-	} RTL_BUFFER, * PRTL_BUFFER;
 
-	// https://github.com/x-tinkerer/WRK/blob/e2e25706c766e1f93b3e55ab95601e72860f74d9/public/sdk/inc/ntrtlstringandbuffer.h#L249
-	typedef struct _RTL_UNICODE_STRING_BUFFER {
-		UNICODE_STRING String;
-		RTL_BUFFER ByteBuffer;
-		UCHAR MinimumStaticBufferForTerminalNul[sizeof(WCHAR)];
-	} RTL_UNICODE_STRING_BUFFER, * PRTL_UNICODE_STRING_BUFFER;
+	// https://processhacker.sourceforge.io/doc/ntnls_8h_source.html
+	typedef struct _NLSTABLEINFO {
+		CPTABLEINFO OemTableInfo;
+		CPTABLEINFO AnsiTableInfo;
+		PUSHORT UpperCaseTable;
+		PUSHORT LowerCaseTable;
+	} NLSTABLEINFO, * PNLSTABLEINFO;
 
 	// ======================== functions ========================
+
 	// https://learn.microsoft.com/en-us/previous-versions/windows/hardware/kernel/ff561132(v=vs.85)
 	NTSYSAPI WCHAR NTAPI RtlAnsiCharToUnicodeChar(
 		_Inout_ PUCHAR* SourceCharacter);
@@ -66,6 +58,12 @@ extern "C" {
 	NTSYSAPI NTSTATUS NTAPI RtlAppendAsciizToString(
 		_In_ PSTRING Destination,
 		_In_opt_ PSTR Source);
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlAppendPathElement.php
+	NTSYSAPI NTSTATUS NTAPI RtlAppendPathElement(
+		ULONG flags,
+		PRTL_UNICODE_STRING_BUFFER pStrBuffer,
+		PCUNICODE_STRING pAddend);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlappendstringtostring
 	NTSYSAPI NTSTATUS RtlAppendStringToString(
@@ -119,6 +117,15 @@ extern "C" {
 	NTSYSAPI VOID RtlCopyUnicodeString(
 		_Inout_ PUNICODE_STRING  DestinationString,
 		_In_opt_ PCUNICODE_STRING SourceString);
+
+	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcustomcptounicoden
+	NTSYSAPI NTSTATUS RtlCustomCPToUnicodeN(
+		PCPTABLEINFO CustomCP,
+		PWCH UnicodeString,
+		ULONG MaxBytesInUnicodeString,
+		PULONG BytesInUnicodeString,
+		PCH CustomCPString,
+		ULONG BytesInCustomCPString);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlcreateunicodestring
 	NTSYSAPI BOOLEAN RtlCreateUnicodeString(
@@ -217,6 +224,18 @@ extern "C" {
 	NTSYSAPI NTSTATUS NTAPI RtlInitAnsiStringEx(
 		_Out_ PANSI_STRING Destinationstring,
 		_In_ PCSZ SourceString);
+
+	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlinitcodepagetable
+	NTSYSAPI VOID RtlInitCodePageTable(
+		PUSHORT TableBase,
+		PCPTABLEINFO CodePageTable);
+
+	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+	NTSYSAPI VOID NTAPI RtlInitNlsTables(
+		_In_ PUSHORT AnsiNlsBase,
+		_In_ PUSHORT OemNlsBase,
+		_In_ PUSHORT LanguageNlsBase,
+		_Out_ PNLSTABLEINFO TableInfo);
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlinitstring
 	// See winterl.h
@@ -355,6 +374,10 @@ extern "C" {
 		_In_ PCUNICODE_STRING String1,
 		_In_ PCUNICODE_STRING String2,
 		_In_ BOOLEAN          CaseInSensitive);
+
+	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+	NTSYSAPI VOID NTAPI RtlResetRtlTranslations(
+		_In_ PNLSTABLEINFO TableInfo);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI VOID NTAPI RtlRunDecodeUnicodeString(
@@ -536,6 +559,12 @@ extern "C" {
 	NTSYSAPI NTSTATUS NTAPI RtlValidateUnicodeString(
 		_In_ ULONG Flags,
 		_In_ PUNICODE_STRING String);
+
+	// https://undoc.airesoft.co.uk/ntdll.dll/RtlpEnsureBufferSize.php
+	NTSYSAPI NTSTATUS NTAPI RtlpEnsureBufferSize(
+		ULONG flags,
+		PRTL_BUFFER pBuffer,
+		SIZE_T requiredSize);
 
 	//https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L1942
 	NTSYSAPI ULONG NTAPI RtlxAnsiStringToUnicodeSize(

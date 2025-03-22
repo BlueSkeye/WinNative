@@ -262,10 +262,6 @@ extern "C" {
 		RTL_SRWLOCK Lock;
 	} TPP_QUEUE, * PTPP_QUEUE;
 
-	typedef struct _RTL_CONDITION_VARIABLE {
-		PVOID Ptr;
-	} RTL_CONDITION_VARIABLE, * PRTL_CONDITION_VARIABLE;
-
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L116C1-L151C1
 	typedef struct _FULL_TP_POOL {
 		TPP_REFCOUNT Refcount;
@@ -368,6 +364,17 @@ extern "C" {
 	}TP_POOL_STACK_INFORMATION, * PTP_POOL_STACK_INFORMATION;
 
 	// ========================== functions ==========================
+
+	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+	NTSYSAPI VOID NTAPI RtlInitializeConditionVariable(
+		_Out_ PRTL_CONDITION_VARIABLE ConditionVariable);
+
+	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L1326C1-L1333C7
+	NTSYSAPI NTSTATUS NTAPI RtlSleepConditionVariableSRW(
+		_Inout_ PRTL_CONDITION_VARIABLE ConditionVariable,
+		_Inout_ PRTL_SRWLOCK SRWLock,
+		_In_opt_ PLARGE_INTEGER Timeout,
+		_In_ ULONG Flags);
 
 	// https://processhacker.sourceforge.io/doc/nttp_8h.html
 	NTSYSAPI NTSTATUS NTAPI TpAllocAlpcCompletion(

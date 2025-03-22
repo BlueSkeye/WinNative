@@ -765,6 +765,14 @@ extern "C" {
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlqueryprocessplaceholdercompatibilitymode
     NTSYSAPI CHAR RtlQueryProcessPlaceholderCompatibilityMode();
 
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L9346
+    NTSYSAPI NTSTATUS NTAPI RtlQueueApcWow64Thread(
+        _In_ HANDLE ThreadHandle,
+        _In_ PPS_APC_ROUTINE ApcRoutine,
+        _In_opt_ PVOID NormalContext,
+        _In_opt_ PVOID SystemArgument1,
+        _In_opt_ PVOID SystemArgument2);
+
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlsetprocessplaceholdercompatibilitymode
     NTSYSAPI CHAR RtlSetProcessPlaceholderCompatibilityMode(
         CHAR Mode);

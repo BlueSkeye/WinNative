@@ -16,10 +16,11 @@ extern "C" {
 
     typedef ULONG WNF_CHANGE_STAMP, * PWNF_CHANGE_STAMP;
 
-    // https://github.com/sbousseaden/injection-1/blob/ed54f267471df1261b08731fca5f0c2010c2c848/wnf/wnf.h#L87C1-L90C1
+    // https://github.com/winsiderss/systeminformer/blob/21b740464f0d1f738d49542e13d68e6dbb7f76d2/phnt/include/ntexapi.h#L1365C1-L1370C42
     typedef struct _WNF_TYPE_ID {
         GUID TypeId;
     } WNF_TYPE_ID, * PWNF_TYPE_ID;
+    typedef const WNF_TYPE_ID* PCWNF_TYPE_ID;
 
     // https://github.com/sbousseaden/injection-1/blob/ed54f267471df1261b08731fca5f0c2010c2c848/wnf/wnf.h#L95
     typedef struct _WNF_DELIVERY_DESCRIPTOR {
@@ -31,6 +32,15 @@ extern "C" {
         WNF_TYPE_ID TypeId;
         ULONG StateDataOffset;
     } WNF_DELIVERY_DESCRIPTOR, * PWNF_DELIVERY_DESCRIPTOR;
+
+    _Always_(_Post_satisfies_(return == STATUS_NO_MEMORY || return == STATUS_RETRY || return == STATUS_SUCCESS))
+        typedef NTSTATUS (NTAPI* PWNF_USER_CALLBACK)(
+            _In_ WNF_STATE_NAME StateName,
+            _In_ WNF_CHANGE_STAMP ChangeStamp,
+            _In_opt_ PWNF_TYPE_ID TypeId,
+            _In_opt_ PVOID CallbackContext,
+            _In_reads_bytes_opt_(Length) const VOID* Buffer,
+            _In_ ULONG Length);
 
     // =========================== functions ===========================
 
@@ -113,6 +123,18 @@ extern "C" {
         _In_ ULONG MatchingChangeStamp,
         _In_ ULONG CheckStamp);
     //ZwUpdateWnfStateData
+
+    // https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L11330C1-L11339C7
+    NTSYSAPI NTSTATUS NTAPI RtlPublishWnfStateData(
+        _In_ WNF_STATE_NAME StateName,
+        _In_opt_ PCWNF_TYPE_ID TypeId,
+        _In_reads_bytes_opt_(Length) const PVOID Buffer,
+        _In_opt_ ULONG Length,
+        _In_opt_ const VOID* ExplicitScope);
+
+    // https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L11355C1-L11360C7
+    NTSYSAPI NTSTATUS NTAPI RtlUnsubscribeWnfStateChangeNotification(
+        _In_ PWNF_USER_CALLBACK Callback);
 
     // Reversed
     NTSYSAPI NTSTATUS NTAPI RtlWaitForWnfMetaNotification(

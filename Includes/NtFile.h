@@ -758,6 +758,9 @@ extern "C" {
 	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
 	NTSYSAPI NTSTATUS NTAPI RtlCreateBootStatusDataFile(VOID);
 
+	NTSYSAPI RTL_PATH_TYPE NTAPI RtlDetermineDosPathNameType_U(
+		_In_ PCWSTR Path);
+
 	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
 	NTSYSAPI BOOLEAN NTAPI RtlDoesFileExists_U(
 		_In_ PCWSTR FileName);
@@ -943,6 +946,10 @@ extern "C" {
 	NTSYSAPI PVOID NTAPI RtlPcToFileHeader(
 		_In_ PVOID PcValue,
 		_Out_ PVOID* BaseOfImage);
+
+	// https://github.com/reactos/reactos/blob/master/sdk/include/ndk/rtlfuncs.h#L2819
+	NTSYSAPI VOID NTAPI RtlReleaseRelativeName(
+		_In_ PRTL_RELATIVE_NAME_U RelativeName);
 
 }
 

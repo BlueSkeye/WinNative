@@ -35,6 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Includes", "Includes", "{02
 		Includes\NtExceptionRecord.h = Includes\NtExceptionRecord.h
 		Includes\NtExceptions.h = Includes\NtExceptions.h
 		Includes\NtFile.h = Includes\NtFile.h
+		Includes\NtHotPatching.h = Includes\NtHotPatching.h
 		Includes\NtIo.h = Includes\NtIo.h
 		Includes\NtLanguageSupport.h = Includes\NtLanguageSupport.h
 		Includes\NtLoader.h = Includes\NtLoader.h
@@ -59,6 +60,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Includes", "Includes", "{02
 		Includes\NtThreadPool.h = Includes\NtThreadPool.h
 		Includes\NtTime.h = Includes\NtTime.h
 		Includes\NtTransaction.h = Includes\NtTransaction.h
+		Includes\NtWOW64.h = Includes\NtWOW64.h
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NtDllCrossReferencer", "NtDllCrossReferencer\NtDllCrossReferencer.csproj", "{731EBC21-402F-4CB6-9381-FF87BB35AA44}"

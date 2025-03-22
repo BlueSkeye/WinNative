@@ -5,6 +5,7 @@
 
 #include "NtCommonDefs.h"
 #include "NtPeImage.h"
+#include "NtRuntimeFunctions.h"
 
 extern "C" {
 
@@ -28,11 +29,6 @@ extern "C" {
 		GenericEqual
 	} RTL_GENERIC_COMPARE_RESULTS, *PRTL_GENERIC_COMPARE_RESULTS;
 
-	typedef _Function_class_(GET_RUNTIME_FUNCTION_CALLBACK) PRUNTIME_FUNCTION
-		GET_RUNTIME_FUNCTION_CALLBACK(
-			_In_ DWORD64 ControlPc,
-			_In_opt_ PVOID Context);
-	typedef GET_RUNTIME_FUNCTION_CALLBACK* PGET_RUNTIME_FUNCTION_CALLBACK;
 	typedef PVOID(NTAPI* PRTL_AVL_ALLOCATE_ROUTINE) (
 		__in PRTL_AVL_TABLE Table,
 		__in CLONG  ByteSize);
@@ -151,6 +147,7 @@ extern "C" {
 	};
 
 	// ======================== functions ========================
+
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/winnt/nf-winnt-rtladdfunctiontable
 	NTSYSAPI BOOLEAN NTAPI RtlAddFunctionTable(
 		_In_ PRUNTIME_FUNCTION FunctionTable,
@@ -171,6 +168,11 @@ extern "C" {
 		_In_ PIMAGE_NT_HEADERS64 NtHeaders,
 		_In_ PVOID Base,
 		_In_ ULONG Address);
+
+	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+	NTSYSAPI PRTL_HANDLE_TABLE_ENTRY NTAPI RtlAllocateHandle(
+		_In_ PRTL_HANDLE_TABLE HandleTable,
+		_Out_opt_ PULONG HandleIndex);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI NTSTATUS NTAPI RtlComputeImportTableHash(
@@ -299,6 +301,11 @@ extern "C" {
 	NTSYSAPI BOOLEAN NTAPI RtlExpandHashTable(
 		_In_ PRTL_DYNAMIC_HASH_TABLE HashTable);
 
+	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+	NTSYSAPI BOOLEAN NTAPI RtlFreeHandle(
+		_In_ PRTL_HANDLE_TABLE HandleTable,
+		_In_ PRTL_HANDLE_TABLE_ENTRY Handle);
+
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html#a45d5646d40fe2acf29e8137ca6b93795
 	_Check_return_ NTSYSAPI PVOID NTAPI RtlGetElementGenericTable(
 		_In_ PRTL_GENERIC_TABLE Table,
@@ -403,12 +410,12 @@ extern "C" {
 
 	// https://learn.microsoft.com/fr-fr/windows/win32/api/winnt/nf-winnt-rtlinstallfunctiontablecallback
 	NTSYSAPI BOOLEAN NTAPI RtlInstallFunctionTableCallback(
-		_In_ DWORD64                        TableIdentifier,
-		_In_ DWORD64                        BaseAddress,
-		_In_ DWORD                          Length,
+		_In_ DWORD64 TableIdentifier,
+		_In_ DWORD64 BaseAddress,
+		_In_ DWORD Length,
 		_In_ PGET_RUNTIME_FUNCTION_CALLBACK Callback,
-		_In_ PVOID                          Context,
-		_In_ PCWSTR                         OutOfProcessCallbackDll);
+		_In_ PVOID Context,
+		_In_ PCWSTR OutOfProcessCallbackDll);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html#a45d5646d40fe2acf29e8137ca6b93795
 	//https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
@@ -418,6 +425,17 @@ extern "C" {
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html#a45d5646d40fe2acf29e8137ca6b93795
 	_Check_return_ NTSYSAPI BOOLEAN NTAPI RtlIsGenericTableEmptyAvl(
 		_In_ PRTL_AVL_TABLE Table);
+
+	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+	NTSYSAPI BOOLEAN NTAPI RtlIsValidHandle(
+		_In_ PRTL_HANDLE_TABLE HandleTable,
+		_In_ PRTL_HANDLE_TABLE_ENTRY Handle);
+
+	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+	NTSYSAPI BOOLEAN NTAPI RtlIsValidIndexHandle(
+		_In_ PRTL_HANDLE_TABLE HandleTable,
+		_In_ ULONG HandleIndex,
+		_Out_ PRTL_HANDLE_TABLE_ENTRY* Handle);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html#a45d5646d40fe2acf29e8137ca6b93795
 	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c

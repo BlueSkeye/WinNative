@@ -26,7 +26,7 @@ typedef void* LPVOID;
 typedef const void *LPCVOID;
 typedef int BOOL, * PBOOL;
 typedef unsigned char BYTE;
-typedef char CHAR;
+typedef char CHAR, CCHAR;
 typedef short CSHORT; 
 typedef int DWORD, *PDWORD;
 typedef unsigned __int64 ULONG64, UINT64, * PULONG64;
@@ -39,8 +39,8 @@ typedef __int64 LONG_PTR, * PLONG_PTR;
 typedef signed __int64 int64_t;
 typedef short SHORT, * PSHORT;
 typedef unsigned char UCHAR, * PUCHAR;
-typedef unsigned int UINT32;
-typedef unsigned __int64 DWORD64, UINT_PTR, * PUINT_PTR;
+typedef unsigned int uint32_t, UINT, UINT32;
+typedef unsigned __int64 uint64_t, DWORD64, UINT_PTR, * PUINT_PTR;
 typedef unsigned long ULONG, * PULONG;
 typedef unsigned __int64 ULONGLONG, *PULONGLONG;
 typedef unsigned __int64 ULONG_PTR, * PULONG_PTR;
@@ -105,6 +105,8 @@ typedef CONST WCHAR UNALIGNED* LPCUWCHAR, * PCUWCHAR;
 #define NTSYSCALLAPI __declspec(dllimport)
 #define NTAPI __stdcall
 
+typedef INT_PTR(__stdcall* FARPROC)();
+
 typedef enum _EVENT_TYPE {
     NotificationEvent,
     SynchronizationEvent
@@ -135,6 +137,25 @@ typedef struct _LIST_ENTRY {
     struct _LIST_ENTRY* Flink;
     struct _LIST_ENTRY* Blink;
 } LIST_ENTRY, * PLIST_ENTRY, PRLIST_ENTRY;
+
+// From winnt.h
+typedef struct __declspec(align(16)) _SLIST_ENTRY {
+    struct _SLIST_ENTRY* Next;
+} SLIST_ENTRY, * PSLIST_ENTRY;
+
+// From winnt.h
+typedef union _declspec(align(16)) _SLIST_HEADER {
+    struct {  // original struct
+        ULONGLONG Alignment;
+        ULONGLONG Region;
+    } DUMMYSTRUCTNAME;
+    struct {  // x64 16-byte header
+        ULONGLONG Depth : 16;
+        ULONGLONG Sequence : 48;
+        ULONGLONG Reserved : 4;
+        ULONGLONG NextEntry : 60; // last 4 bits are always 0's
+    } HeaderX64;
+} SLIST_HEADER, * PSLIST_HEADER;
 
 typedef struct _SINGLE_LIST_ENTRY {
     struct _SINGLE_LIST_ENTRY* Next;
@@ -250,6 +271,31 @@ typedef struct _GROUP_AFFINITY {
     USHORT Group;
     USHORT Reserved[3];
 } GROUP_AFFINITY, * PGROUP_AFFINITY;
+
+typedef struct _RTL_CONDITION_VARIABLE {
+    PVOID Ptr;
+} RTL_CONDITION_VARIABLE, * PRTL_CONDITION_VARIABLE;
+
+typedef struct _RTL_SRWLOCK {
+    PVOID Ptr;
+} RTL_SRWLOCK, * PRTL_SRWLOCK;
+
+// https://github.com/x-tinkerer/WRK/blob/e2e25706c766e1f93b3e55ab95601e72860f74d9/public/sdk/inc/ntrtlstringandbuffer.h#L114
+typedef struct _RTL_BUFFER {
+    PUCHAR Buffer;
+    PUCHAR StaticBuffer;
+    SIZE_T Size;
+    SIZE_T StaticSize;
+    SIZE_T ReservedForAllocatedSize; // for future doubling
+    PVOID ReservedForIMalloc; // for future pluggable growth
+} RTL_BUFFER, * PRTL_BUFFER;
+
+// https://github.com/x-tinkerer/WRK/blob/e2e25706c766e1f93b3e55ab95601e72860f74d9/public/sdk/inc/ntrtlstringandbuffer.h#L249
+typedef struct _RTL_UNICODE_STRING_BUFFER {
+    UNICODE_STRING String;
+    RTL_BUFFER ByteBuffer;
+    UCHAR MinimumStaticBufferForTerminalNul[sizeof(WCHAR)];
+} RTL_UNICODE_STRING_BUFFER, * PRTL_UNICODE_STRING_BUFFER;
 
 #ifndef _VA_LIST
 #define _VA_LIST char*

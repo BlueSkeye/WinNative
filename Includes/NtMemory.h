@@ -10,9 +10,6 @@ extern "C" {
 	// NO UNRESOLVED FUNCTIONS
 	// END OF UNRESOLVED FUNCTIONS
 
-	// Forward declarations
-	typedef struct _RTL_SRWLOCK RTL_SRWLOCK, * PRTL_SRWLOCK;
-
 	// https://github.com/winsiderss/systeminformer/blob/5d11186e6a48a7329cb30666131977365e78f591/phnt/include/ntrtl.h#L5582
 	typedef enum _HEAP_INFORMATION_CLASS {
 		HeapCompatibilityInformation = 0x0,
@@ -92,10 +89,6 @@ extern "C" {
 			} Segment;
 		};
 	} RTL_HEAP_WALK_ENTRY, * PRTL_HEAP_WALK_ENTRY;
-
-	struct _RTL_SRWLOCK {
-		PVOID Ptr;
-	};
 
 	typedef struct _RTL_MEMORY_ZONE {
 		RTL_SRWLOCK Lock; // @ offset 0x20
