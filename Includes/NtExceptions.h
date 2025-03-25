@@ -8,11 +8,7 @@
 
 extern "C" {
 
-	// UNRESOLVED FUNCTIONS
-	//RtlKnownExceptionFilter
-	//RtlReportExceptionEx
-	//WerReportExceptionWorker
-	// END OF UNRESOLVED FUNCTIONS
+	// NO UNRESOLVED FUNCTIONS
 
 	typedef struct _EXCEPTION_POINTERS {
 		PEXCEPTION_RECORD ExceptionRecord;
@@ -81,6 +77,10 @@ extern "C" {
 		_In_ ULONG LineNumber,
 		_In_opt_ PSTR MutableMessage);
 
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L3778C1-L3783C7
+	NTSYSAPI LONG NTAPI RtlKnownExceptionFilter(
+		_In_ PEXCEPTION_POINTERS ExceptionPointers);
+
 	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtllookupfunctionentry
 	NTSYSAPI PRUNTIME_FUNCTION RtlLookupFunctionEntry(
 		_In_ DWORD64 ControlPc,
@@ -116,6 +116,13 @@ extern "C" {
 		_In_ PEXCEPTION_RECORD ExceptionRecord,
 		_In_ PCONTEXT ContextRecord,
 		_In_ ULONG Flags);
+
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L6568C1-L6576C7
+	NTSYSAPI NTSTATUS NTAPI RtlReportExceptionEx(
+		_In_ PEXCEPTION_RECORD ExceptionRecord,
+		_In_ PCONTEXT ContextRecord,
+		_In_ ULONG Flags,
+		_In_ PLARGE_INTEGER Timeout);
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-setunhandledexceptionfilter
 	// From Kernel32, invoke api-ms-win-core-errorhandling-l1-1-0.dll::__imp_SetUnhandledExceptionFilter

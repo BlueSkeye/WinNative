@@ -3,7 +3,13 @@
 #ifndef _NTCOMMONDEFS_
 #define _NTCOMMONDEFS_
 
+#ifdef SAL_AWARE
 #include <sal.h>
+#else
+#define _Field_size_bytes_part_opt_(X, Y)
+#define _Null_terminated_
+#define _NullNull_terminated_
+#endif
 
 #define WIN32
 // This will prevent minwindef.h to include winnt.h
@@ -69,6 +75,8 @@ typedef USHORT LANGID;
 #define TRUE                1
 #endif
 
+#define MAX_PATH 260
+
 // Including some basic types
 #define DECLARE_HANDLE(name) struct name##__; typedef struct name##__ *name
 typedef size_t SIZE_T, * PSIZE_T;
@@ -133,6 +141,18 @@ typedef union _LARGE_INTEGER {
     LONGLONG QuadPart;
 } LARGE_INTEGER, *PLARGE_INTEGER;
 
+typedef union _ULARGE_INTEGER {
+    struct {
+        ULONG LowPart;
+        ULONG HighPart;
+    } DUMMYSTRUCTNAME;
+    struct {
+        ULONG LowPart;
+        ULONG HighPart;
+    } u;
+    ULONGLONG QuadPart;
+} ULARGE_INTEGER;
+
 typedef struct _LIST_ENTRY {
     struct _LIST_ENTRY* Flink;
     struct _LIST_ENTRY* Blink;
@@ -144,12 +164,14 @@ typedef struct __declspec(align(16)) _SLIST_ENTRY {
 } SLIST_ENTRY, * PSLIST_ENTRY;
 
 // From winnt.h
-typedef union _declspec(align(16)) _SLIST_HEADER {
-    struct {  // original struct
+typedef union __declspec(align(16)) _SLIST_HEADER {
+    struct {
+        // original struct
         ULONGLONG Alignment;
         ULONGLONG Region;
     } DUMMYSTRUCTNAME;
-    struct {  // x64 16-byte header
+    struct {
+        // x64 16-byte header
         ULONGLONG Depth : 16;
         ULONGLONG Sequence : 48;
         ULONGLONG Reserved : 4;
@@ -296,6 +318,64 @@ typedef struct _RTL_UNICODE_STRING_BUFFER {
     RTL_BUFFER ByteBuffer;
     UCHAR MinimumStaticBufferForTerminalNul[sizeof(WCHAR)];
 } RTL_UNICODE_STRING_BUFFER, * PRTL_UNICODE_STRING_BUFFER;
+
+// From ntdef.h
+// Structure to represent a system wide processor number. It contains a
+// group number and relative processor number within the group.
+typedef struct _PROCESSOR_NUMBER {
+    USHORT Group;
+    UCHAR Number;
+    UCHAR Reserved;
+} PROCESSOR_NUMBER, * PPROCESSOR_NUMBER;
+
+// https://learn.microsoft.com/fr-fr/windows-hardware/drivers/kernel/eprocess#rtl_bitmap
+typedef struct _RTL_BITMAP {
+    // opaque
+} RTL_BITMAP, * PRTL_BITMAP;
+
+
+// https://github.com/winsiderss/systeminformer/blob/21b740464f0d1f738d49542e13d68e6dbb7f76d2/phnt/include/ntpebteb.h#L822C1-L829C56
+/* The TEB_ACTIVE_FRAME_CONTEXT structure is used to store information about an active frame context. */
+typedef struct _TEB_ACTIVE_FRAME_CONTEXT {
+    ULONG Flags;
+    PCSTR FrameName;
+} TEB_ACTIVE_FRAME_CONTEXT, * PTEB_ACTIVE_FRAME_CONTEXT;
+
+// https://github.com/winsiderss/systeminformer/blob/21b740464f0d1f738d49542e13d68e6dbb7f76d2/phnt/include/ntpebteb.h#L842C1-L851C1
+/* The TEB_ACTIVE_FRAME structure is used to store information about an active frame. */
+typedef struct _TEB_ACTIVE_FRAME {
+    ULONG Flags;
+    struct _TEB_ACTIVE_FRAME* Previous;
+    PTEB_ACTIVE_FRAME_CONTEXT Context;
+} TEB_ACTIVE_FRAME, * PTEB_ACTIVE_FRAME;
+
+// https://github.com/winsiderss/systeminformer/blob/fb60c2a4494de6f27ffdfefc85364d5b357a2ffa/phnt/include/phnt_ntdef.h#L369C1-L375C1
+typedef enum _NT_PRODUCT_TYPE {
+    NtProductWinNt = 1,
+    NtProductLanManNt,
+    NtProductServer
+} NT_PRODUCT_TYPE, * PNT_PRODUCT_TYPE;
+
+// https://github.com/winsiderss/systeminformer/blob/fb60c2a4494de6f27ffdfefc85364d5b357a2ffa/phnt/include/phnt_ntdef.h#L422C1-L427C32
+typedef struct _KSYSTEM_TIME {
+    ULONG LowPart;
+    LONG High1Time;
+    LONG High2Time;
+} KSYSTEM_TIME, * PKSYSTEM_TIME;
+
+// From winnt.h
+typedef struct _RTL_CRITICAL_SECTION  RTL_CRITICAL_SECTION, * PRTL_CRITICAL_SECTION;
+typedef struct _RTL_CRITICAL_SECTION_DEBUG {
+    WORD Type;
+    WORD CreatorBackTraceIndex;
+    PRTL_CRITICAL_SECTION CriticalSection;
+    LIST_ENTRY ProcessLocksList;
+    DWORD EntryCount;
+    DWORD ContentionCount;
+    DWORD Flags;
+    WORD CreatorBackTraceIndexHigh;
+    WORD Identifier;
+} RTL_CRITICAL_SECTION_DEBUG, * PRTL_CRITICAL_SECTION_DEBUG, RTL_RESOURCE_DEBUG, * PRTL_RESOURCE_DEBUG;
 
 #ifndef _VA_LIST
 #define _VA_LIST char*

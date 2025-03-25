@@ -23,21 +23,11 @@ extern "C"
 	//ExpInterlockedPopEntrySListResume
 
 	//RtlActivateActivationContextUnsafeFast
-
-	//ShipAssert
-	//ShipAssertGetBufferInfo
-	//ShipAssertMsgA
-	//ShipAssertMsgW
 	// END OF UNRESOLVED FUNCTIONS
 
 	// From ntdef.h
 	typedef LARGE_INTEGER PHYSICAL_ADDRESS, * PPHYSICAL_ADDRESS;
 	typedef void* PUMS_CONTEXT;
-
-	// https://learn.microsoft.com/fr-fr/windows-hardware/drivers/kernel/eprocess#rtl_bitmap
-	typedef struct _RTL_BITMAP {
-		// opaque
-	} RTL_BITMAP, * PRTL_BITMAP;
 
 	// From winnt.h
 	typedef enum _OS_DEPLOYEMENT_STATE_VALUES {
@@ -171,20 +161,6 @@ extern "C"
 			} Connection;
 		} u;
 	} CM_PARTIAL_RESOURCE_DESCRIPTOR, * PCM_PARTIAL_RESOURCE_DESCRIPTOR;
-
-	// From winnt.h
-	typedef struct _RTL_CRITICAL_SECTION  RTL_CRITICAL_SECTION, * PRTL_CRITICAL_SECTION;
-	typedef struct _RTL_CRITICAL_SECTION_DEBUG {
-		WORD Type;
-		WORD CreatorBackTraceIndex;
-		PRTL_CRITICAL_SECTION CriticalSection;
-		LIST_ENTRY ProcessLocksList;
-		DWORD EntryCount;
-		DWORD ContentionCount;
-		DWORD Flags;
-		WORD CreatorBackTraceIndexHigh;
-		WORD Identifier;
-	} RTL_CRITICAL_SECTION_DEBUG, * PRTL_CRITICAL_SECTION_DEBUG, RTL_RESOURCE_DEBUG, * PRTL_RESOURCE_DEBUG;
 
 	// From winnt.h
 	struct _RTL_CRITICAL_SECTION {
@@ -338,15 +314,6 @@ extern "C"
 		ULONG LastIndexValue;
 	} GENERATE_NAME_CONTEXT, * PGENERATE_NAME_CONTEXT;
 
-	// From ntdef.h
-	// Structure to represent a system wide processor number. It contains a
-	// group number and relative processor number within the group.
-	typedef struct _PROCESSOR_NUMBER {
-		USHORT Group;
-		UCHAR Number;
-		UCHAR Reserved;
-	} PROCESSOR_NUMBER, * PPROCESSOR_NUMBER;
-
 	// https://github.com/winsiderss/systeminformer/blob/8ebcd34e13f623eff4d0edaf8550c5d7a0601180/phnt/include/ntrtl.h#L3436C1-L3440C34
 	typedef struct _CONTEXT_CHUNK {
 		LONG Offset; // Offset may be negative.
@@ -360,27 +327,6 @@ extern "C"
 		CONTEXT_CHUNK XState;
 		CONTEXT_CHUNK KernelCet;
 	} CONTEXT_EX, * PCONTEXT_EX;
-
-	// https://github.com/winsiderss/systeminformer/blob/21b740464f0d1f738d49542e13d68e6dbb7f76d2/phnt/include/ntpebteb.h#L822C1-L829C56
-	/* The TEB_ACTIVE_FRAME_CONTEXT structure is used to store information about an active frame context. */
-	typedef struct _TEB_ACTIVE_FRAME_CONTEXT {
-		ULONG Flags;
-		PCSTR FrameName;
-	} TEB_ACTIVE_FRAME_CONTEXT, * PTEB_ACTIVE_FRAME_CONTEXT;
-
-	// https://github.com/winsiderss/systeminformer/blob/21b740464f0d1f738d49542e13d68e6dbb7f76d2/phnt/include/ntpebteb.h#L842C1-L851C1
-	/* The TEB_ACTIVE_FRAME structure is used to store information about an active frame. */
-	typedef struct _TEB_ACTIVE_FRAME {
-		ULONG Flags;
-		struct _TEB_ACTIVE_FRAME* Previous;
-		PTEB_ACTIVE_FRAME_CONTEXT Context;
-	} TEB_ACTIVE_FRAME, * PTEB_ACTIVE_FRAME;
-
-	typedef enum _NT_PRODUCT_TYPE {
-		NtProductWinNt = 1,
-		NtProductLanManNt,
-		NtProductServer
-	} NT_PRODUCT_TYPE, * PNT_PRODUCT_TYPE;
 
 	// From ntddk.h
 	typedef enum _STATE_LOCATION_TYPE {

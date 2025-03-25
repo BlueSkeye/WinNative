@@ -8,6 +8,9 @@
 extern "C" {
 
     typedef struct __declspec(align(16)) /* DECLSPEC_NOINITALL */ _CONTEXT CONTEXT, * PCONTEXT;
+    typedef struct _ACTIVATION_CONTEXT_STACK ACTIVATION_CONTEXT_STACK, * PACTIVATION_CONTEXT_STACK;
+    typedef struct _RTL_ACTIVATION_CONTEXT_STACK_FRAME RTL_ACTIVATION_CONTEXT_STACK_FRAME,
+        * PRTL_ACTIVATION_CONTEXT_STACK_FRAME;
 
     typedef struct __declspec(align(16)) _M128A {
         ULONGLONG Low;
@@ -122,6 +125,24 @@ extern "C" {
         DWORD64 LastExceptionToRip;
         DWORD64 LastExceptionFromRip;
     };
+
+    // https://github.com/wine-mirror/wine/blob/6298b0cab2086ae61f46b284d22c420dfbb2b44e/include/winternl.h#L227C1-L232C76
+    typedef struct _ACTIVATION_CONTEXT ACTIVATION_CONTEXT, * PACTIVATION_CONTEXT;
+    struct _RTL_ACTIVATION_CONTEXT_STACK_FRAME {
+        PRTL_ACTIVATION_CONTEXT_STACK_FRAME Previous;
+        PACTIVATION_CONTEXT ActivationContext;
+        ULONG Flags;
+    };
+
+    // https://github.com/wine-mirror/wine/blob/6298b0cab2086ae61f46b284d22c420dfbb2b44e/include/winternl.h#L234C1-L241C56
+    struct _ACTIVATION_CONTEXT_STACK {
+        RTL_ACTIVATION_CONTEXT_STACK_FRAME* ActiveFrame;
+        LIST_ENTRY FrameListCache;
+        ULONG Flags;
+        ULONG NextCookieSequenceNumber;
+        ULONG_PTR StackId;
+    };
+
 }
 
 #endif // _NTCONTEXT_

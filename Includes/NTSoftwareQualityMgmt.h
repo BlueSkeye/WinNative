@@ -28,7 +28,6 @@ extern "C" {
 	//WinSqmStartSession
 	//WinSqmStartSessionForPartner
 	//WinSqmStartSqmOptinListener
-	//WerReportSQMEvent
 	// END OF UNRESOLVED FUNCTIONS
 
 	// Reversed. Empty function always returning 0. Arguments unknown may not be VOID.

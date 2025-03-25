@@ -4,16 +4,13 @@
 #define _NTCONTEXTS_
 
 #include "NtCommonDefs.h"
+#include "NtContext.h"
 #include "NtPebTeb.h"
 
 extern "C" {
 
 	// NO UNRESOLVED FUNCTIONS
 
-	typedef struct _ACTIVATION_CONTEXT ACTIVATION_CONTEXT, *PACTIVATION_CONTEXT;
-	typedef struct _ACTIVATION_CONTEXT_STACK ACTIVATION_CONTEXT_STACK, * PACTIVATION_CONTEXT_STACK;
-	typedef struct _RTL_ACTIVATION_CONTEXT_STACK_FRAME RTL_ACTIVATION_CONTEXT_STACK_FRAME,
-		* PRTL_ACTIVATION_CONTEXT_STACK_FRAME;
 	typedef struct _COMPATIBILITY_CONTEXT_ELEMENT COMPATIBILITY_CONTEXT_ELEMENT,
 		* PCOMPATIBILITY_CONTEXT_ELEMENT;
 
@@ -213,22 +210,6 @@ extern "C" {
 		struct guidsection_header* comserver_section;
 		struct guidsection_header* ifaceps_section;
 		struct guidsection_header* clrsurrogate_section;
-	};
-
-	// https://github.com/wine-mirror/wine/blob/6298b0cab2086ae61f46b284d22c420dfbb2b44e/include/winternl.h#L227C1-L232C76
-	struct _RTL_ACTIVATION_CONTEXT_STACK_FRAME {
-		PRTL_ACTIVATION_CONTEXT_STACK_FRAME Previous;
-		ACTIVATION_CONTEXT* ActivationContext;
-		ULONG Flags;
-	};
-
-	// https://github.com/wine-mirror/wine/blob/6298b0cab2086ae61f46b284d22c420dfbb2b44e/include/winternl.h#L234C1-L241C56
-	struct _ACTIVATION_CONTEXT_STACK {
-		RTL_ACTIVATION_CONTEXT_STACK_FRAME* ActiveFrame;
-		LIST_ENTRY FrameListCache;
-		ULONG Flags;
-		ULONG NextCookieSequenceNumber;
-		ULONG_PTR StackId;
 	};
 
 	// =========================== functions ===========================

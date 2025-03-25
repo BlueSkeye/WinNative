@@ -10,8 +10,8 @@ extern "C" {
 
 	// UNRESOLVED FUNCTIONS
 
-	// Not invoked from any other function in NTDLL.DLL
-	//LdrInitShimEngineDynamic
+	// https://www.alex-ionescu.com/secrets-of-the-application-compatilibity-database-sdb-part-1/
+	//LdrInitShimEngineDynamic -> invoked by apphelp.dll
 
 	// LdrRscIsTypeExist
 	// |- LdrIsResItemExist
@@ -409,6 +409,35 @@ extern "C" {
 		USHORT ImageCharacteristics;
 	} LDR_VERIFY_IMAGE_INFO, * PLDR_VERIFY_IMAGE_INFO;
 
+	// Reversed
+	typedef struct _STR1_BUFFER {
+		DWORD BufferDataOffset;
+		DWORD BufferDataLength;
+	} STR1_BUFFER, * PSTR1_BUFFER;
+
+	typedef struct _STR1 {
+		__int64 field_0;
+		__int64 field_8;
+		__int64 field_10;
+		__int64 field_18;
+		__int64 field_20;
+		__int64 field_28;
+		__int64 field_30;
+		__int64 field_38;
+		__int64 field_40;
+		__int64 field_48;
+		DWORD field_50;
+		STR1_BUFFER Buffer;
+		STR1_BUFFER ResourceBuffer;
+		STR1_BUFFER field_64;
+		DWORD field_6C;
+		DWORD field_70;
+		DWORD field_74;
+		__int64 field_78;
+	} STR1, * PSTR1;
+
+#define MAX_RESOURCE_ID 0x10000
+
 	// ============================ functions ============================
 	//https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntldr.h
 	NTSYSAPI NTSTATUS NTAPI LdrAccessResource(
@@ -768,6 +797,14 @@ extern "C" {
 		_In_ PVOID ParentModuleBase,
 		_In_ PCSTR TargetDllName,
 		_Reserved_ ULONG Flags);
+
+	// Reversed
+	NTSYSAPI NTSTATUS NTAPI LdrRscIsTypeExist(
+		PSTR1 pStr1,
+		// Either a pointer to a string or a resource identifier (<= 0x100000)
+		wchar_t* nameOrResourceId,
+		__int64 UNUSED,
+		PDWORD pFlags); // Flags
 
 	// https://doxygen.reactos.org/d7/d55/ldrapi_8c.html
 	NTSYSAPI NTSTATUS NTAPI LdrSetAppCompatDllRedirectionCallback(

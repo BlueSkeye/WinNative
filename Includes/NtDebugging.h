@@ -6,24 +6,16 @@
 #include "NtCommonDefs.h"
 #include "NtExceptionRecord.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     // UNRESOLVED FUNCTIONS
-    //RtlGetInterruptTimePrecise
     //RtlGetMultiTimePrecise
-    //RtlGetSystemTimeAndBias
-    //RtlGetSystemTimePrecise
-    // RtlLocalTimeToSystemTime
-    //RtlQueryDynamicTimeZoneInformation
-    //RtlQueryTimeZoneInformation
-    //RtlQueryUnbiasedInterruptTime
     //RtlSetDynamicTimeZoneInformation
-    //RtlSetTimeZoneInformation
-    //RtlSystemTimeToLocalTime
-    //RtlTimeToElapsedTimeFields
     //RtlpCheckDynamicTimeZoneInformation
     //RtlpFreezeTimeBias
-    //RtlpTimeFieldsToTime
+
     //RtlpTimeToTimeFields
     // END OF UNRESOLVED FUNCTIONS
 
@@ -160,6 +152,47 @@ extern "C" {
         CSHORT Milliseconds;
         CSHORT Weekday;
     } TIME_FIELDS, *PTIME_FIELDS;
+
+    typedef struct _RTL_TIME_ZONE_INFORMATION {
+        LONG Bias;
+        WCHAR StandardName[32];
+        TIME_FIELDS StandardStart;
+        LONG StandardBias;
+        WCHAR DaylightName[32];
+        TIME_FIELDS DaylightStart;
+        LONG DaylightBias;
+    } RTL_TIME_ZONE_INFORMATION, * PRTL_TIME_ZONE_INFORMATION;
+
+    // https://github.com/wine-mirror/wine/blob/0927c5c3da7cda8cf476416260286bd299ad6319/include/winternl.h#L84C1-L101C38
+    /* RTL_SYSTEM_TIME and RTL_TIME_ZONE_INFORMATION are the same as
+     * the SYSTEMTIME and TIME_ZONE_INFORMATION structures defined
+     * in winbase.h, however we need to define them separately so
+     * winternl.h doesn't depend on winbase.h.  They are used by
+     * RtlQueryTimeZoneInformation and RtlSetTimeZoneInformation.
+     * The names are guessed; if anybody knows the real names, let me know.*/
+    typedef struct _RTL_SYSTEM_TIME {
+        WORD wYear;
+        WORD wMonth;
+        WORD wDayOfWeek;
+        WORD wDay;
+        WORD wHour;
+        WORD wMinute;
+        WORD wSecond;
+        WORD wMilliseconds;
+    } RTL_SYSTEM_TIME, * PRTL_SYSTEM_TIME;
+
+    // https://github.com/wine-mirror/wine/blob/0927c5c3da7cda8cf476416260286bd299ad6319/include/winternl.h#L113
+    typedef struct _RTL_TIME_DYNAMIC_ZONE_INFORMATION {
+        LONG Bias;
+        WCHAR StandardName[32];
+        RTL_SYSTEM_TIME StandardDate;
+        LONG StandardBias;
+        WCHAR DaylightName[32];
+        RTL_SYSTEM_TIME DaylightDate;
+        LONG DaylightBias;
+        WCHAR TimeZoneKeyName[128];
+        BOOLEAN DynamicDaylightTimeDisabled;
+    } RTL_DYNAMIC_TIME_ZONE_INFORMATION, * PRTL_DYNAMIC_TIME_ZONE_INFORMATION;
 
     // ============================== functions ==============================
 
@@ -374,6 +407,10 @@ extern "C" {
     // Reversed. Empty function always returning 0. Arguments unknown may not be VOID.
     NTSYSAPI NTSTATUS NTAPI RtlDebugPrintTimes(VOID);
 
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L6977C1-L6982C7
+    NTSYSAPI ULONGLONG NTAPI RtlGetInterruptTimePrecise(
+        _Out_ PLARGE_INTEGER PerformanceCounter);
+
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlsecondssince1970totime
     NTSYSAPI VOID RtlSecondsSince1970ToTime(
         _In_  ULONG          ElapsedSeconds,
@@ -383,26 +420,72 @@ extern "C" {
     NTSYSAPI VOID RtlSecondsSince1980ToTime(
         _In_  ULONG          ElapsedSeconds,
         _Out_ PLARGE_INTEGER Time);
+    
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L6966C1-L6973C7
+    NTSYSAPI KSYSTEM_TIME NTAPI RtlGetSystemTimeAndBias(
+        _Out_ KSYSTEM_TIME TimeZoneBias,
+        _Out_opt_ PLARGE_INTEGER TimeZoneBiasEffectiveStart,
+        _Out_opt_ PLARGE_INTEGER TimeZoneBiasEffectiveEnd);
+
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L6957C1-L6962C7
+    NTSYSAPI ULONGLONG NTAPI RtlGetSystemTimePrecise(VOID);
+
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L6889C1-L6896C1
+    NTSYSAPI NTSTATUS NTAPI RtlLocalTimeToSystemTime(
+        _In_ PLARGE_INTEGER LocalTime,
+        _Out_ PLARGE_INTEGER SystemTime);
+
+    NTSYSAPI NTSTATUS NTAPI RtlQueryDynamicTimeZoneInformation(
+        PRTL_DYNAMIC_TIME_ZONE_INFORMATION ret);
+
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L7026C1-L7031C7
+    NTSYSAPI NTSTATUS NTAPI RtlQueryTimeZoneInformation(
+        _Out_ PRTL_TIME_ZONE_INFORMATION TimeZoneInformation);
+
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L6986C1-L6991C7
+    NTSYSAPI BOOLEAN NTAPI RtlQueryUnbiasedInterruptTime(
+        _Out_ PLARGE_INTEGER InterruptTime);
+    
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L7033C1-L7038C7
+    NTSYSAPI NTSTATUS NTAPI RtlSetTimeZoneInformation(
+        _In_ PRTL_TIME_ZONE_INFORMATION TimeZoneInformation);
+
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L6881C1-L6887C7
+    NTSYSAPI NTSTATUS NTAPI RtlSystemTimeToLocalTime(
+        _In_ PLARGE_INTEGER SystemTime,
+        _Out_ PLARGE_INTEGER LocalTime);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtltimefieldstotime
     NTSYSAPI BOOLEAN RtlTimeFieldsToTime(
         _In_  PTIME_FIELDS   TimeFields,
         _Out_ PLARGE_INTEGER Time);
 
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L6897C1-L6903C7
+    NTSYSAPI VOID NTAPI RtlTimeToElapsedTimeFields(
+        _In_ PLARGE_INTEGER Time,
+        _Out_ PTIME_FIELDS TimeFields);
+
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtltimetosecondssince1970
-    // See winternl.h
-    // RtlTimeToSecondsSince1970
+    NTSYSAPI BOOLEAN RtlTimeToSecondsSince1970(
+        _In_  PLARGE_INTEGER Time,
+        _Out_ PULONG ElapsedSeconds);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtltimetosecondssince1980
     NTSYSAPI BOOLEAN RtlTimeToSecondsSince1980(
-        _In_  PLARGE_INTEGER Time,
-        _Out_ PULONG         ElapsedSeconds);
+        _In_ PLARGE_INTEGER Time,
+        _Out_ PULONG ElapsedSeconds);
 
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtltimetotimefields
     NTSYSAPI VOID RtlTimeToTimeFields(
-        _In_  PLARGE_INTEGER Time,
-        _Out_ PTIME_FIELDS   TimeFields);
+        _In_ PLARGE_INTEGER Time,
+        _Out_ PTIME_FIELDS TimeFields);
 
+    // https://www.geoffchappell.com/studies/windows/km/ntoskrnl/inc/api/pebteb/peb/index.htm
+    // Reversed
+    NTSYSAPI BOOLEAN NTAPI RtlpTimeFieldsToTime(VOID);
+
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTDEBUGGING_

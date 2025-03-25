@@ -9,8 +9,7 @@
 extern "C" {
 
 	// UNRESOLVED FUNCTIONS
-	// EvtIntReportAuthzEventAndSourceAsync
-	// EvtIntReportEventAndSourceAsync
+	// EvtIntReportEventAndSourceAsync // invoked by several DLLs
 	// END OF UNRESOLVED FUNCTIONS
 
 	typedef struct _EVENT_DESCRIPTOR {
@@ -203,6 +202,20 @@ extern "C" {
 		_In_opt_ LPCGUID                RelatedActivityId,
 		_In_           ULONG                  UserDataCount,
 		_In_opt_ PEVENT_DATA_DESCRIPTOR UserData);
+
+	// Reversed
+	// invoked by lsasrv.dll
+	NTSYSAPI NTSTATUS NTAPI EvtIntReportAuthzEventAndSourceAsync(
+		__int64 argRCX,
+		__int64 argRDX,
+		__int64 argR8,
+		__int64 argR9,
+		DWORD arg4,
+		__int64 arg5,
+		WORD arg6,
+		DWORD arg7,
+		__int64 arg8,
+		__int64 arg9);
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSAPI  NTSTATUS NTAPI NtAcquireCrossVmMutant(

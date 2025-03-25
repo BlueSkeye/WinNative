@@ -30,6 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Includes", "Includes", "{02
 		Includes\NtDll.h = Includes\NtDll.h
 		Includes\NtEnclave.h = Includes\NtEnclave.h
 		Includes\NtEnvironment.h = Includes\NtEnvironment.h
+		Includes\NtErrorReporting.h = Includes\NtErrorReporting.h
 		Includes\NtEvents.h = Includes\NtEvents.h
 		Includes\NtEventTracing.h = Includes\NtEventTracing.h
 		Includes\NtExceptionRecord.h = Includes\NtExceptionRecord.h
@@ -54,6 +55,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Includes", "Includes", "{02
 		Includes\NtRuntimeFunctions.h = Includes\NtRuntimeFunctions.h
 		Includes\NtSection.h = Includes\NtSection.h
 		Includes\NtSecurity.h = Includes\NtSecurity.h
+		Includes\NtSiloing.h = Includes\NtSiloing.h
 		Includes\NTSoftwareQualityMgmt.h = Includes\NTSoftwareQualityMgmt.h
 		Includes\NtStrings.h = Includes\NtStrings.h
 		Includes\NtTables.h = Includes\NtTables.h
@@ -66,6 +68,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NtDllCrossReferencer", "NtDllCrossReferencer\NtDllCrossReferencer.csproj", "{731EBC21-402F-4CB6-9381-FF87BB35AA44}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestIncludesSyntax", "TestIncludesSyntax\TestIncludesSyntax.vcxproj", "{2A25E7FB-18BC-4F03-A3BE-62006EAD30A4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reversed", "Reversed", "{0D05965A-D0BB-4428-993A-AAAB1CEECDA3}"
+	ProjectSection(SolutionItems) = preProject
+		Reversed\LdrRscIsTypeExist.cpp = Reversed\LdrRscIsTypeExist.cpp
+		Reversed\RtlGetCurrentServiceSessionId.cpp = Reversed\RtlGetCurrentServiceSessionId.cpp
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
