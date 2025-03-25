@@ -6,7 +6,9 @@
 #include "NtCommonDefs.h"
 #include "NtPeImage.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// UNRESOLVED FUNCTIONS
 
@@ -900,6 +902,8 @@ extern "C" {
 		_Out_opt_ PIMAGE_RESOURCE_DIRECTORY* ResourceDirectory,
 		_Out_ PIMAGE_NT_HEADERS* OutHeaders);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTLOADER_

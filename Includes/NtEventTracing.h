@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// UNRESOLVED FUNCTIONS
 
@@ -346,6 +348,8 @@ extern "C" {
 	NTSYSAPI NTSTATUS NTAPI EtwpGetCpuSpeed(
 		_Out_ PDWORD pResult);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTEVTTRACING_

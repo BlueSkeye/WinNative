@@ -6,7 +6,9 @@
 #include "NtCommonDefs.h"
 #include "NtAccessRights.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// UNRESOLVED FUNCTIONS
 	// EvtIntReportEventAndSourceAsync // invoked by several DLLs
@@ -506,6 +508,8 @@ extern "C" {
 		_In_ HANDLE EventPairHandle);
 	//ZwWaitLowEventPair
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTEVENTS_

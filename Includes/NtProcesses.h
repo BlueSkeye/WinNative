@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     // https://urien.gitbook.io/diago-lima/a-deep-dive-into-exploiting-windows-thread-pools/attacking-worker-factories
 
@@ -789,6 +791,8 @@ extern "C" {
         BOOLEAN* is_wow64,
         WOW64INFO* info);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTPROCESSES_

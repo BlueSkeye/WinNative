@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     // NO UNRESOLVED FUNCTIONS
 
@@ -285,6 +287,9 @@ extern "C" {
         _In_ ULONG ControlCode,
         _In_ PVOID ControlData);
     //ZwVdmControl
+
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTDEVICES_

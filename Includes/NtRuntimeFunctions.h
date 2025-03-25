@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	typedef struct _IMAGE_RUNTIME_FUNCTION_ENTRY {
 		DWORD BeginAddress;
@@ -38,6 +40,8 @@ extern "C" {
 		_In_ DWORD64 ControlPc,
 		_In_opt_ PVOID Context);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTRUNTIMEFUNCTIONS_

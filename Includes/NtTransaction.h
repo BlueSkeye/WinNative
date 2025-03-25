@@ -6,7 +6,9 @@
 #include "NtCommonDefs.h"
 #include "NtAccessRights.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     // NO UNRESOLVED FUNCTIONS
 
@@ -400,6 +402,8 @@ extern "C" {
     NTSYSAPI NTSTATUS NTAPI NtThawTransactions();
     //ZwThawTransactions
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTTRANSACTION_

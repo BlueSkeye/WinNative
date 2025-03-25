@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// NO UNRESOLVED FUNCTIONS
 	// END OF UNRESOLVED FUNCTIONS
@@ -703,6 +705,8 @@ extern "C" {
 		void* Destination,
 		size_t Length);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTMEMORY_

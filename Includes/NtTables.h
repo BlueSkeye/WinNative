@@ -7,7 +7,9 @@
 #include "NtPeImage.h"
 #include "NtRuntimeFunctions.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	typedef struct _RTL_AVL_TABLE RTL_AVL_TABLE, * PRTL_AVL_TABLE;
 	typedef struct _RTL_BALANCED_LINKS RTL_BALANCED_LINKS, *PRTL_BALANCED_LINKS;
@@ -548,6 +550,8 @@ extern "C" {
 	_Must_inspect_result_ NTSYSAPI PRTL_DYNAMIC_HASH_TABLE_ENTRY NTAPI RtlWeaklyEnumerateEntryHashTable(
 		_In_ PRTL_DYNAMIC_HASH_TABLE HashTable,
 		_Inout_ PRTL_DYNAMIC_HASH_TABLE_ENUMERATOR Enumerator);
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTTABLES_

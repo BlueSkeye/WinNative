@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// UNRESOLVED FUNCTIONS
 	//WinSqmCheckEscalationAddToStreamEx
@@ -60,6 +62,8 @@ extern "C" {
 	// Reversed. Empty function always returning 0. Arguments unknown may not be VOID.
 	NTSYSAPI NTSTATUS NTAPI WinSqmSetString(VOID);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTSQM_

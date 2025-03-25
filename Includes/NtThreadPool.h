@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// UNRESOLVED FUNCTIONS
 
@@ -650,6 +652,8 @@ extern "C" {
 	NTSYSAPI VOID NTAPI TpWaitForJobNotification(
 		_In_ PFULL_TP_JOB Job);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTTHREADPOOL_

@@ -7,7 +7,9 @@
 #include "NtContext.h"
 #include "NtExceptionRecord.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// NO UNRESOLVED FUNCTIONS
 	// https://repnz.github.io/posts/apc/user-apc/
@@ -45,6 +47,8 @@ extern "C" {
         _In_ HANDLE ThreadHandle);
     //ZwAlertThread
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTASYNCPROCCALLS_

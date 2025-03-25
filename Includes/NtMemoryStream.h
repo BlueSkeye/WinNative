@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// NO UNRESOLVED FUNCTIONS
 	// On Windows 10 each of these functions either return ERROR_NOT_IMPLEMENTED or are empty placeholders.
@@ -132,6 +134,8 @@ extern "C" {
 	//	_In_ ULONG Length,
 	//	_Out_opt_ PULONG BytesWritten);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTMEMORYSTREAM_

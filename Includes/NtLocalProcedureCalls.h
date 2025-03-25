@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     // NO UNRESOLVED FUNCTION
 
@@ -596,6 +598,8 @@ extern "C" {
         _In_ HANDLE ApiPortHandle,
         _In_ PPORT_MESSAGE MessageData);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTLOCALPROCEDURECALLS_

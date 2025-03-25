@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     typedef struct __declspec(align(16)) /* DECLSPEC_NOINITALL */ _CONTEXT CONTEXT, * PCONTEXT;
     typedef struct _ACTIVATION_CONTEXT_STACK ACTIVATION_CONTEXT_STACK, * PACTIVATION_CONTEXT_STACK;
@@ -143,6 +145,8 @@ extern "C" {
         ULONG_PTR StackId;
     };
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTCONTEXT_

@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     // NO UNRESOLVED FUNCTIONS
 
@@ -399,6 +401,8 @@ extern "C" {
         _In_ HANDLE Event);
     //ZwUnloadKeyEx
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTREGISTRY_

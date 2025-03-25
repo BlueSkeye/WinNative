@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     typedef enum _ACCESS_MASK {
         DELETE = 0x00010000L,
@@ -173,6 +175,8 @@ extern "C" {
         TIMER_MODIFY_STATE = 0x0002,
         TIMER_ALL_ACCESS = (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | TIMER_QUERY_STATE | TIMER_MODIFY_STATE)
     } TIMER_ACCESS_MASK;
-}
 
+#ifdef __cplusplus
+}
+#endif
 #endif

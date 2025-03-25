@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// NO UNRESOLVED FUNCTIONS
 
@@ -48,6 +50,8 @@ extern "C" {
 		_In_ PPREFIX_TABLE PrefixTable,
 		_In_ PPREFIX_TABLE_ENTRY PrefixTableEntry);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTPREFIXES_

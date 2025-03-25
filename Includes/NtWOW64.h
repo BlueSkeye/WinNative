@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// https://github.com/wine-mirror/wine/blob/0927c5c3da7cda8cf476416260286bd299ad6319/include/winternl.h#L4291C1-L4297C42
 	typedef struct _WOW64_CPURESERVED {
@@ -194,6 +196,8 @@ extern "C" {
 		HANDLE handle,
 		const WOW64_CONTEXT* context);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTWOW64_

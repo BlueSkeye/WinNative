@@ -6,7 +6,9 @@
 #include "NtCommonDefs.h"
 #include "NtAccessRights.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	const ULONG SECURITY_MAX_SID_SIZE = (ULONG)68;
 
@@ -129,6 +131,8 @@ extern "C" {
 		_Out_ PULONG ReturnedLength);
 	//ZwManageHotPatch
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTHOTPATCHING_

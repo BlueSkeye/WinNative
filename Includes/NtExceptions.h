@@ -6,7 +6,9 @@
 #include "NtCommonDefs.h"
 #include "NtRuntimeFunctions.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// NO UNRESOLVED FUNCTIONS
 
@@ -162,6 +164,8 @@ extern "C" {
 		_In_ ULONG Flags,
 		_Out_ PHANDLE CrashVerticalProcessHandle);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTEXCEPTIONS_

@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// UNRESOLVED FUNCTIONS
 	//ShipAssert
@@ -16,6 +18,8 @@ extern "C" {
 	//WerReportSQMEvent
 	// END OF UNRESOLVED FUNCTIONS
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTERRORREPORTING_

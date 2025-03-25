@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// NO UNRESOLVED FUNCTIONS
 
@@ -574,6 +576,8 @@ extern "C" {
 	NTSYSAPI ULONG RtlxOemStringToUnicodeSize(
 		PCOEM_STRING OemString);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif

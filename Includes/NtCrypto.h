@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// NO UNRESOLVED FUNCTIONS
 
@@ -75,6 +77,8 @@ extern "C" {
 		LPCVOID Buffer,
 		DWORD   BufferSize);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTCRYPTOGRAPHY_

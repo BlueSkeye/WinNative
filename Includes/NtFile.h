@@ -6,7 +6,9 @@
 #include "NtCommonDefs.h"
 #include "NtAccessRights.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// NO UNRESOLVED FUNCTIONS
 
@@ -951,6 +953,8 @@ extern "C" {
 	NTSYSAPI VOID NTAPI RtlReleaseRelativeName(
 		_In_ PRTL_RELATIVE_NAME_U RelativeName);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTFILE_

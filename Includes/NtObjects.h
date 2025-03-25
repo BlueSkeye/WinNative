@@ -6,7 +6,9 @@
 #include "NtCommonDefs.h"
 #include "NtAccessRights.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     // NO UNRESOLVED FUNCTIONS
 
@@ -199,6 +201,8 @@ extern "C" {
         _In_ ULONG BufferLength);
     //ZwSetInformationSymbolicLink
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTOBJECTS_

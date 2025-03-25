@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     // NO UNRESOLVED FUNCTIONS
 
@@ -144,6 +146,8 @@ extern "C" {
         _In_ __int64 Unused,
         _Out_ PVOID Unknown4);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTNOTIFICATION_

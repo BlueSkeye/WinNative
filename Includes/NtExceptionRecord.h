@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 #define EXCEPTION_MAXIMUM_PARAMETERS 15
 
@@ -21,6 +23,8 @@ extern "C" {
 		ULONG_PTR ExceptionInformation[EXCEPTION_MAXIMUM_PARAMETERS];
 	};
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTEXCEPTIONRECORD_

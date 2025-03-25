@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     // NO UNRESOLVED FUNCTIONS
 
@@ -351,6 +353,8 @@ extern "C" {
         _In_ ULONG InformationLength,
         _Out_opt_ PULONG ReturnLength);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTENVIRONMENT_

@@ -7,7 +7,9 @@
 #include "NtContext.h"
 #include "NtPebTeb.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// NO UNRESOLVED FUNCTIONS
 
@@ -299,6 +301,8 @@ extern "C" {
 	NTSYSAPI NTSTATUS NTAPI RtlZombifyActivationContext(
 		_In_ HANDLE handle);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTCONTEXTS_

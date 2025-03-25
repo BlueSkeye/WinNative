@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     // UNRESOLVED FUNCTIONS
     //RtlCreateTimer
@@ -181,6 +183,8 @@ extern "C" {
         DWORD Period,
         ULONG Flags);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTTIME_

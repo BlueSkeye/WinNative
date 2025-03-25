@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
     // NO UNRESOLVED FUNCTIONS
 
@@ -1553,6 +1555,8 @@ extern "C" {
     NTSYSAPI BOOLEAN RtlValidSid(
         _In_ PSID Sid);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTSECURITY_

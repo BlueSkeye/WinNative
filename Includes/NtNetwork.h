@@ -4,7 +4,9 @@
 #define _NTNETWORK_
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// UNRESOLVED FUNCTIONS
 
@@ -70,6 +72,8 @@ extern "C" {
 		_Out_ LPCWSTR* Terminator,
 		_Out_ DL_EUI48* Addr);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTNETWORK_

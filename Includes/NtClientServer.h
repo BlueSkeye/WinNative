@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// See : https://www.ivanlef0u.tuxfamily.org/?p=188
 	// See : https://www.geoffchappell.com/studies/windows/win32/csrsrv/api/apireqst/api_msg.htm
@@ -151,6 +153,8 @@ extern "C" {
 		_In_ HANDLE RegionBase,
 		_In_ DWORD RegionSize);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTCLIENTSERVER_

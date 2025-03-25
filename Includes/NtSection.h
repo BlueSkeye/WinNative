@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// NO UNRESOLVED FUNCTIONS
 
@@ -136,6 +138,8 @@ extern "C" {
 		_In_ ULONG Flags);
 	//ZwUnmapViewOfSectionEx
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif //_NTSECTION_

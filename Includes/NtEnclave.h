@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 	// UNREOLVED FUNCTIONS
 	// RtlEnclaveCallDispatch
@@ -32,6 +34,8 @@ extern "C" {
 		_In_ BOOLEAN WaitForThread);
 	//ZwTerminateEnclave
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTENCLAVE_

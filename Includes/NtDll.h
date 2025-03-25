@@ -9,8 +9,10 @@
 #ifndef _NTDLL_
 #define _NTDLL_
 
-extern "C"
-{
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 	// UNRESOLVED FUNCTIONS
 
 	// Theese three functions are quite intricated. Actually the exported addresses are just in the
@@ -3282,6 +3284,8 @@ extern "C"
 		_In_ DWORD     TypeMask,
 		_In_ BYTE      Condition);
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif

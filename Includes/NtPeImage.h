@@ -5,7 +5,9 @@
 
 #include "NtCommonDefs.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 #define IMAGE_NUMBEROF_DIRECTORY_ENTRIES    16
 
@@ -111,6 +113,8 @@ extern "C" {
 		} DUMMYUNIONNAME;
 	};
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _NTPEIMAGE_
