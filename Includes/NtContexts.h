@@ -40,6 +40,26 @@ extern "C" {
 		ACTCTX_RUN_LEVEL_NUMBERS
 	} ACTCTX_REQUESTED_RUN_LEVEL;
 
+	// From winnt.h
+	typedef enum _ACTIVATION_CONTEXT_INFO_CLASS {
+		ActivationContextBasicInformation = 1,
+		ActivationContextDetailedInformation = 2,
+		AssemblyDetailedInformationInActivationContext = 3,
+		FileInformationInAssemblyOfAssemblyInActivationContext = 4,
+		RunlevelInformationInActivationContext = 5,
+		CompatibilityInformationInActivationContext = 6,
+		ActivationContextManifestResourceName = 7,
+		MaxActivationContextInfoClass,
+		// compatibility with old names
+		AssemblyDetailedInformationInActivationContxt = 3,
+		FileInformationInAssemblyOfAssemblyInActivationContxt = 4
+	} ACTIVATION_CONTEXT_INFO_CLASS;
+
+	typedef struct _ACTIVATION_CONTEXT_QUERY_INDEX {
+		DWORD ulAssemblyIndex;
+		DWORD ulFileIndexInAssembly;
+	} ACTIVATION_CONTEXT_QUERY_INDEX, * PACTIVATION_CONTEXT_QUERY_INDEX;
+
 	// https://github.com/wine-mirror/wine/blob/6298b0cab2086ae61f46b284d22c420dfbb2b44e/dlls/ntdll/actctx.c#L129
 	struct assembly_version {
 		USHORT major;
@@ -283,14 +303,14 @@ extern "C" {
 		SIZE_T size,
 		_Out_ PSIZE_T written);
 
-	//https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/actctx.c
+	//https://github.com/winsiderss/systeminformer/blob/06f8fd943b3e05baa42e2fd1f45246caf8d7ff95/phnt/include/ntrtl.h#L4066
 	NTSYSAPI NTSTATUS NTAPI RtlQueryInformationActivationContext(
 		_In_ ULONG Flags,
-		_In_ HANDLE Handle,
-		PVOID Subinst,
-		_In_ ULONG Class,
-		_In_ PVOID Buffer,
-		_In_ SIZE_T Bufsize,
+		_In_ PACTIVATION_CONTEXT Handle,
+		_In_opt_ PACTIVATION_CONTEXT_QUERY_INDEX SubinstanceIndex,
+		_In_ ACTIVATION_CONTEXT_INFO_CLASS Class,
+		_Out_writes_bytes_(ActivationContextInformationLength) PVOID ActivationContextInformation,
+		_In_ SIZE_T ActivationContextInformationLength,
 		_Out_ PSIZE_T retlen);
 
 	//https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/actctx.c

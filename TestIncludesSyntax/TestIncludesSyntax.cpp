@@ -42,6 +42,7 @@
 #include "NtSecurity.h"
 #include "NTSoftwareQualityMgmt.h"
 #include "NtStrings.h"
+#include "NtSysInfo.h"
 #include "NtTables.h"
 #include "NtThreadPool.h"
 #include "NtTime.h"

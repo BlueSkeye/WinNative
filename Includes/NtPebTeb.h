@@ -31,18 +31,23 @@ extern "C" {
 #define WIN32_CLIENT_INFO_LENGTH 62
 
     typedef struct _PEB PEB, * PPEB;
-    typedef struct _PEB_LDR_DATA PEB_LDR_DATA, * PPEB_LDR_DATA;
     typedef struct _RTL_USER_PROCESS_PARAMETERS RTL_USER_PROCESS_PARAMETERS,
         * PRTL_USER_PROCESS_PARAMETERS;
     typedef struct _TEB TEB, * PTEB;
     typedef VOID (NTAPI* PPS_POST_PROCESS_INIT_ROUTINE) (VOID);
 
-    // https://learn.microsoft.com/fr-fr/windows/win32/api/winternl/ns-winternl-peb_ldr_data
-    struct _PEB_LDR_DATA {
-        BYTE Reserved1[8];
-        PVOID Reserved2[3];
-        LIST_ENTRY InMemoryOrderModuleList; // MS official
-    };
+    // https://github.com/winsiderss/systeminformer/blob/fb60c2a4494de6f27ffdfefc85364d5b357a2ffa/phnt/include/ntpsapi.h#L151
+    typedef struct _PEB_LDR_DATA {
+        ULONG Length;
+        BOOLEAN Initialized;
+        HANDLE SsHandle;
+        LIST_ENTRY InLoadOrderModuleList;
+        LIST_ENTRY InMemoryOrderModuleList;
+        LIST_ENTRY InInitializationOrderModuleList;
+        PVOID EntryInProgress;
+        BOOLEAN ShutdownInProgress;
+        HANDLE ShutdownThreadId;
+    } PEB_LDR_DATA, * PPEB_LDR_DATA;
 
     // https://learn.microsoft.com/fr-fr/windows/win32/api/winternl/ns-winternl-rtl_user_process_parameters
     struct _RTL_USER_PROCESS_PARAMETERS {
@@ -128,7 +133,7 @@ extern "C" {
         struct {
             USHORT TracingEnabled : 1;
             USHORT Reserved1 : 15;
-        };
+        } DUMMYSTRUCTNAME;
         ULONG HashTableEntries;
         ULONG HashIndexMask;
         ULONG TableUpdateVersion;
@@ -278,7 +283,7 @@ extern "C" {
         PASSEMBLY_STORAGE_MAP_ENTRY* AssemblyArray;
     } ASSEMBLY_STORAGE_MAP, * PASSEMBLY_STORAGE_MAP;
 
-    // https://github.com/winsiderss/systeminformer/blob/master/phnt/include/ntpebteb.h
+    // https://github.com/winsiderss/systeminformer/blob/fb60c2a4494de6f27ffdfefc85364d5b357a2ffa/phnt/include/ntpebteb.h#L230
     /* Process Environment Block (PEB) structure.
      * @remarks https://learn.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-peb*/
     // Retrieved using either gs:60h or NtCurrentTeb()->ProcessEnvironmentBlock
@@ -300,7 +305,7 @@ extern "C" {
                 BOOLEAN IsAppContainer : 1;                 // The process has an AppContainer token.
                 BOOLEAN IsProtectedProcessLight : 1;        // The process is a protected process (light).
                 BOOLEAN IsLongPathAwareProcess : 1;         // The process is long path aware.
-            };
+            } DUMMYSTRUCTNAME;
         };
         // Handle to a mutex for synchronization.
         HANDLE Mutant;
@@ -333,13 +338,13 @@ extern "C" {
                 ULONG ProcessCurrentlyThrottled : 1;    // The process is currently throttled.
                 ULONG ProcessImagesHotPatched : 1;      // The process images are hot patched. // RS5
                 ULONG ReservedBits0 : 24;
-            };
-        };
+            } DUMMYSTRUCTNAME;
+        } DUMMYUNIONNAME_1;
         // User32 KERNEL_CALLBACK_TABLE (ntuser.h)
         union {
             PVOID KernelCallbackTable;
             PVOID UserSharedInfoPtr;
-        };
+        } DUMMYUNIONNAME_2;
         // Reserved.
         ULONG SystemReserved;
         // Pointer to the Active Template Library (ATL) singly linked list (32-bit)
@@ -403,7 +408,7 @@ extern "C" {
                 ULONG EnableHandleExceptions : 1;   // FLG_ENABLE_HANDLE_EXCEPTIONS
                 ULONG DisableProtDlls : 1;          // FLG_DISABLE_PROTDLLS
             } NtGlobalFlags;
-        };
+        } DUMMYUNIONNAME_3;
         // Timeout for critical sections.
         LARGE_INTEGER CriticalSectionTimeout;
         // Reserved size for heap segments.
@@ -491,8 +496,8 @@ extern "C" {
             struct {
                 ULONG ForegroundBoostProcesses : 1;
                 ULONG AppModelFeatureStateReserved : 31;
-            };
-        };
+            } DUMMYSTRUCTNAME;
+        } DUMMYUNIONNAME_4;
         // SpareUlongs
         ULONG SpareUlongs[2];
         // Active code page.
@@ -511,7 +516,7 @@ extern "C" {
         union {
             PVOID pContextData; // Pointer to the switchback compatibility engine (Windows 7 and below)
             PVOID EcCodeBitMap; // Pointer to the EC bitmap on ARM64 (Windows 11 and above) // since WIN11
-        };
+        } DUMMYUNIONNAME_5;
         // Reserved.
         PVOID pImageHeaderHash;
         // ETW tracing flags.
@@ -522,8 +527,8 @@ extern "C" {
                 ULONG CritSecTracingEnabled : 1;    // ETW lock tracing enabled.
                 ULONG LibLoaderTracingEnabled : 1;  // ETW loader tracing enabled.
                 ULONG SpareTracingBits : 29;
-            };
-        };
+            } DUMMYSTRUCTNAME;
+        } DUMMYUNIONNAME_6;
         // Reserved for CSRSS.
         ULONGLONG CsrServerReadOnlySharedMemoryBase;
         // Pointer to the thread pool worker list lock.
@@ -550,8 +555,8 @@ extern "C" {
             struct {
                 ULONG SixtySecondEnabled : 1; // Leap seconds enabled.
                 ULONG Reserved : 31;
-            };
-        };
+            } DUMMYSTRUCTNAME;
+        } DUMMYUNIONNAME_7;
         // Global flags for the process.
         ULONG NtGlobalFlag2;
         // Extended feature disable mask (AVX). // since WIN11
@@ -665,7 +670,7 @@ extern "C" {
         // Pointer to the activation context stack for the current thread.
         ACTIVATION_CONTEXT_STACK ActivationStack;
         // Opaque operation on behalf of another user or process.
-        UCHAR WorkingOnBehalfTicket[8];
+        __int64 WorkingOnBehalfTicket;
         // The last exception status for the current thread.
         NTSTATUS ExceptionCode;
         // Pointer to the activation context stack for the current thread.
@@ -743,8 +748,8 @@ extern "C" {
                 UCHAR ReservedPad1;
                 UCHAR ReservedPad2;
                 UCHAR IdealProcessor;
-            };
-        };
+            } DUMMYSTRUCTNAME;
+        } DUMMYUNIONNAME_1;
         // The minimum size of the stack available during any stack overflow exceptions. (SetThreadStackGuarantee)
         ULONG GuaranteedStackBytes;
         // Reserved.
@@ -754,7 +759,7 @@ extern "C" {
         ULONG WaitingOnLoaderLock;
         PVOID SavedPriorityState;
         ULONG_PTR ReservedForCodeCoverage;
-        PVOID ThreadPoolData;
+        PVOID /* PTEB_THREAD_POOL_DATA */ ThreadPoolData;
         PVOID* TlsExpansionSlots;
         PVOID ChpeV2CpuAreaInfo; // CHPEV2_CPUAREA_INFO // previously DeallocationBStore
         PVOID Unused; // previously BStoreLimit
@@ -774,7 +779,7 @@ extern "C" {
         union {
             USHORT CrossTebFlags;
             USHORT SpareCrossTebBits : 16;
-        };
+        } DUMMYUNIONNAME_2;
         union {
             USHORT SameTebFlags;
             struct {
@@ -794,8 +799,8 @@ extern "C" {
                 USHORT LoaderWorker : 1;
                 USHORT SkipLoaderInit : 1;
                 USHORT SkipFileAPIBrokering : 1;
-            };
-        };
+            } DUMMYSTRUCTNAME;
+        } DUMMYUNIONNAME_3;
         PVOID TxnScopeEnterCallback;
         PVOID TxnScopeExitCallback;
         PVOID TxnScopeContext;

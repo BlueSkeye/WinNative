@@ -95,26 +95,70 @@ extern "C" {
         SECTION_IMAGE_INFORMATION ImageInformation;
     } RTL_USER_PROCESS_INFORMATION, * PRTL_USER_PROCESS_INFORMATION;
 
+    typedef struct _THREAD_BASIC_INFORMATION {
+        NTSTATUS ExitStatus;
+        PVOID TebBaseAddress;
+        CLIENT_ID  ClientId;
+        KAFFINITY  AffinityMask;
+        KPRIORITY  Priority;
+        KPRIORITY  BasePriority;
+    } THREAD_BASIC_INFORMATION, * PTHREAD_BASIC_INFORMATION;
+
+    // https://github.com/winsiderss/systeminformer/blob/c0f39855eec2553f0019566849df678356fb3273/phnt/include/ntpsapi.h#L1536C1-L1541C52
+    typedef struct _THREAD_TEB_INFORMATION {
+        _Inout_bytecount_(BytesToRead) PVOID TebInformation; // Buffer to write data into.
+        _In_ ULONG TebOffset;                                // Offset in TEB to begin reading from.
+        _In_ ULONG BytesToRead;                              // Number of bytes to read.
+    } THREAD_TEB_INFORMATION, * PTHREAD_TEB_INFORMATION;
+
     // https://github.com/winsiderss/systeminformer/blob/cc931ddaf76f62e313cf7b9f5a81ef0c54590088/phnt/include/ntexapi.h#L1523C1-L1542C52
     typedef enum _WORKERFACTORYINFOCLASS {
-        WorkerFactoryTimeout, // LARGE_INTEGER
-        WorkerFactoryRetryTimeout, // LARGE_INTEGER
-        WorkerFactoryIdleTimeout, // s: LARGE_INTEGER
-        WorkerFactoryBindingCount, // s: ULONG
-        WorkerFactoryThreadMinimum, // s: ULONG
-        WorkerFactoryThreadMaximum, // s: ULONG
-        WorkerFactoryPaused, // ULONG or BOOLEAN
-        WorkerFactoryBasicInformation, // q: WORKER_FACTORY_BASIC_INFORMATION
-        WorkerFactoryAdjustThreadGoal,
-        WorkerFactoryCallbackType,
-        WorkerFactoryStackInformation, // 10
-        WorkerFactoryThreadBasePriority, // s: ULONG
-        WorkerFactoryTimeoutWaiters, // s: ULONG, since THRESHOLD
-        WorkerFactoryFlags, // s: ULONG
-        WorkerFactoryThreadSoftMaximum, // s: ULONG
-        WorkerFactoryThreadCpuSets, // since REDSTONE5
+        WorkerFactoryTimeout = 0, // LARGE_INTEGER
+        WorkerFactoryRetryTimeout = 1, // LARGE_INTEGER
+        WorkerFactoryIdleTimeout = 2, // s: LARGE_INTEGER
+        WorkerFactoryBindingCount = 3, // s: ULONG
+        WorkerFactoryThreadMinimum = 4, // s: ULONG
+        WorkerFactoryThreadMaximum = 5, // s: ULONG
+        WorkerFactoryPaused = 6, // ULONG or BOOLEAN
+        WorkerFactoryBasicInformation = 7, // q: WORKER_FACTORY_BASIC_INFORMATION
+        WorkerFactoryAdjustThreadGoal = 8, // q: POWRD
+        WorkerFactoryCallbackType = 9,
+        WorkerFactoryStackInformation = 10, // 10
+        WorkerFactoryThreadBasePriority = 11, // s: ULONG
+        WorkerFactoryTimeoutWaiters = 12, // s: ULONG, since THRESHOLD
+        WorkerFactoryFlags = 13, // s: ULONG
+        WorkerFactoryThreadSoftMaximum = 14, // s: ULONG
+        WorkerFactoryThreadCpuSets = 15, // since REDSTONE5
         MaxWorkerFactoryInfoClass
     } WORKERFACTORYINFOCLASS, * PWORKERFACTORYINFOCLASS;
+
+    // https://github.com/winsiderss/systeminformer/blob/c0f39855eec2553f0019566849df678356fb3273/phnt/include/ntexapi.h#L1544C1-L1570C72
+    typedef struct _WORKER_FACTORY_BASIC_INFORMATION {
+        LARGE_INTEGER Timeout;
+        LARGE_INTEGER RetryTimeout;
+        LARGE_INTEGER IdleTimeout;
+        BOOLEAN Paused;
+        BOOLEAN TimerSet;
+        BOOLEAN QueuedToExWorker;
+        BOOLEAN MayCreate;
+        BOOLEAN CreateInProgress;
+        BOOLEAN InsertedIntoQueue;
+        BOOLEAN Shutdown;
+        ULONG BindingCount;
+        ULONG ThreadMinimum;
+        ULONG ThreadMaximum;
+        ULONG PendingWorkerCount;
+        ULONG WaitingWorkerCount;
+        ULONG TotalWorkerCount;
+        ULONG ReleaseCount;
+        LONGLONG InfiniteWaitGoal;
+        PVOID StartRoutine;
+        PVOID StartParameter;
+        HANDLE ProcessId;
+        SIZE_T StackReserve;
+        SIZE_T StackCommit;
+        NTSTATUS LastThreadCreationStatus;
+    } WORKER_FACTORY_BASIC_INFORMATION, * PWORKER_FACTORY_BASIC_INFORMATION;
 
     /* A pointer to a function that serves as an APC routine.
      * @param ApcArgument1 Optional. A pointer to the first argument to be passed to the APC routine.
@@ -279,66 +323,66 @@ extern "C" {
 
     // https://github.com/winsiderss/systeminformer/blob/cc931ddaf76f62e313cf7b9f5a81ef0c54590088/phnt/include/ntpsapi.h#L302
     typedef enum _THREADINFOCLASS {
-        ThreadBasicInformation, // q: THREAD_BASIC_INFORMATION
-        ThreadTimes, // q: KERNEL_USER_TIMES
-        ThreadPriority, // s: KPRIORITY (requires SeIncreaseBasePriorityPrivilege)
-        ThreadBasePriority, // s: KPRIORITY
-        ThreadAffinityMask, // s: KAFFINITY
-        ThreadImpersonationToken, // s: HANDLE
-        ThreadDescriptorTableEntry, // q: DESCRIPTOR_TABLE_ENTRY (or WOW64_DESCRIPTOR_TABLE_ENTRY)
-        ThreadEnableAlignmentFaultFixup, // s: BOOLEAN
-        ThreadEventPair, // Obsolete
-        ThreadQuerySetWin32StartAddress, // q: ULONG_PTR
-        ThreadZeroTlsCell, // s: ULONG // TlsIndex // 10
-        ThreadPerformanceCount, // q: LARGE_INTEGER
-        ThreadAmILastThread, // q: ULONG
-        ThreadIdealProcessor, // s: ULONG
-        ThreadPriorityBoost, // qs: ULONG
-        ThreadSetTlsArrayAddress, // s: ULONG_PTR // Obsolete
-        ThreadIsIoPending, // q: ULONG
-        ThreadHideFromDebugger, // q: BOOLEAN; s: void
-        ThreadBreakOnTermination, // qs: ULONG
-        ThreadSwitchLegacyState, // s: void // NtCurrentThread // NPX/FPU
-        ThreadIsTerminated, // q: ULONG // 20
-        ThreadLastSystemCall, // q: THREAD_LAST_SYSCALL_INFORMATION
-        ThreadIoPriority, // qs: IO_PRIORITY_HINT (requires SeIncreaseBasePriorityPrivilege)
-        ThreadCycleTime, // q: THREAD_CYCLE_TIME_INFORMATION (requires THREAD_QUERY_LIMITED_INFORMATION)
-        ThreadPagePriority, // qs: PAGE_PRIORITY_INFORMATION
-        ThreadActualBasePriority, // s: LONG (requires SeIncreaseBasePriorityPrivilege)
-        ThreadTebInformation, // q: THREAD_TEB_INFORMATION (requires THREAD_GET_CONTEXT + THREAD_SET_CONTEXT)
-        ThreadCSwitchMon, // Obsolete
-        ThreadCSwitchPmu, // Obsolete
-        ThreadWow64Context, // qs: WOW64_CONTEXT, ARM_NT_CONTEXT since 20H1
-        ThreadGroupInformation, // qs: GROUP_AFFINITY // 30
-        ThreadUmsInformation, // q: THREAD_UMS_INFORMATION // Obsolete
-        ThreadCounterProfiling, // q: BOOLEAN; s: THREAD_PROFILING_INFORMATION?
-        ThreadIdealProcessorEx, // qs: PROCESSOR_NUMBER; s: previous PROCESSOR_NUMBER on return
-        ThreadCpuAccountingInformation, // q: BOOLEAN; s: HANDLE (NtOpenSession) // NtCurrentThread // since WIN8
-        ThreadSuspendCount, // q: ULONG // since WINBLUE
-        ThreadHeterogeneousCpuPolicy, // q: KHETERO_CPU_POLICY // since THRESHOLD
-        ThreadContainerId, // q: GUID
-        ThreadNameInformation, // qs: THREAD_NAME_INFORMATION (requires THREAD_SET_LIMITED_INFORMATION)
-        ThreadSelectedCpuSets, // q: ULONG[]
-        ThreadSystemThreadInformation, // q: SYSTEM_THREAD_INFORMATION // 40
-        ThreadActualGroupAffinity, // q: GROUP_AFFINITY // since THRESHOLD2
-        ThreadDynamicCodePolicyInfo, // q: ULONG; s: ULONG (NtCurrentThread)
-        ThreadExplicitCaseSensitivity, // qs: ULONG; s: 0 disables, otherwise enables // (requires SeDebugPrivilege and PsProtectedSignerAntimalware)
-        ThreadWorkOnBehalfTicket, // RTL_WORK_ON_BEHALF_TICKET_EX
-        ThreadSubsystemInformation, // q: SUBSYSTEM_INFORMATION_TYPE // since REDSTONE2
-        ThreadDbgkWerReportActive, // s: ULONG; s: 0 disables, otherwise enables
-        ThreadAttachContainer, // s: HANDLE (job object) // NtCurrentThread
-        ThreadManageWritesToExecutableMemory, // MANAGE_WRITES_TO_EXECUTABLE_MEMORY // since REDSTONE3
-        ThreadPowerThrottlingState, // qs: POWER_THROTTLING_THREAD_STATE // since REDSTONE3 (set), WIN11 22H2 (query)
-        ThreadWorkloadClass, // THREAD_WORKLOAD_CLASS // since REDSTONE5 // 50
-        ThreadCreateStateChange, // since WIN11
-        ThreadApplyStateChange,
-        ThreadStrongerBadHandleChecks, // s: ULONG // NtCurrentThread // since 22H1
-        ThreadEffectiveIoPriority, // q: IO_PRIORITY_HINT
-        ThreadEffectivePagePriority, // q: ULONG
-        ThreadUpdateLockOwnership, // THREAD_LOCK_OWNERSHIP // since 24H2
-        ThreadSchedulerSharedDataSlot, // SCHEDULER_SHARED_DATA_SLOT_INFORMATION
-        ThreadTebInformationAtomic, // q: THREAD_TEB_INFORMATION (requires THREAD_GET_CONTEXT + THREAD_QUERY_INFORMATION)
-        ThreadIndexInformation, // THREAD_INDEX_INFORMATION
+        ThreadBasicInformation = 0, // q: THREAD_BASIC_INFORMATION
+        ThreadTimes = 1, // q: KERNEL_USER_TIMES
+        ThreadPriority = 2, // s: KPRIORITY (requires SeIncreaseBasePriorityPrivilege)
+        ThreadBasePriority = 3, // s: KPRIORITY
+        ThreadAffinityMask = 4, // s: KAFFINITY
+        ThreadImpersonationToken = 5, // s: HANDLE
+        ThreadDescriptorTableEntry = 6, // q: DESCRIPTOR_TABLE_ENTRY (or WOW64_DESCRIPTOR_TABLE_ENTRY)
+        ThreadEnableAlignmentFaultFixup = 7, // s: BOOLEAN
+        ThreadEventPair = 8, // Obsolete
+        ThreadQuerySetWin32StartAddress = 9, // q: ULONG_PTR
+        ThreadZeroTlsCell = 10, // s: ULONG // TlsIndex // 10
+        ThreadPerformanceCount = 11, // q: LARGE_INTEGER
+        ThreadAmILastThread = 12, // q: ULONG
+        ThreadIdealProcessor = 13, // s: ULONG
+        ThreadPriorityBoost = 14, // qs: ULONG
+        ThreadSetTlsArrayAddress = 15, // s: ULONG_PTR // Obsolete
+        ThreadIsIoPending = 16, // q: ULONG
+        ThreadHideFromDebugger = 17, // q: BOOLEAN; s: void
+        ThreadBreakOnTermination=  18, // qs: ULONG
+        ThreadSwitchLegacyState = 19, // s: void // NtCurrentThread // NPX/FPU
+        ThreadIsTerminated = 20, // q: ULONG // 20
+        ThreadLastSystemCall = 21, // q: THREAD_LAST_SYSCALL_INFORMATION
+        ThreadIoPriority = 22, // qs: IO_PRIORITY_HINT (requires SeIncreaseBasePriorityPrivilege)
+        ThreadCycleTime = 23, // q: THREAD_CYCLE_TIME_INFORMATION (requires THREAD_QUERY_LIMITED_INFORMATION)
+        ThreadPagePriority = 24, // qs: PAGE_PRIORITY_INFORMATION
+        ThreadActualBasePriority = 25, // s: LONG (requires SeIncreaseBasePriorityPrivilege)
+        ThreadTebInformation = 26, // q: THREAD_TEB_INFORMATION (requires THREAD_GET_CONTEXT + THREAD_SET_CONTEXT)
+        ThreadCSwitchMon = 27, // Obsolete
+        ThreadCSwitchPmu = 28, // Obsolete
+        ThreadWow64Context = 29, // qs: WOW64_CONTEXT, ARM_NT_CONTEXT since 20H1
+        ThreadGroupInformation = 30, // qs: GROUP_AFFINITY // 30
+        ThreadUmsInformation = 31, // q: THREAD_UMS_INFORMATION // Obsolete
+        ThreadCounterProfiling = 32, // q: BOOLEAN; s: THREAD_PROFILING_INFORMATION?
+        ThreadIdealProcessorEx = 33, // qs: PROCESSOR_NUMBER; s: previous PROCESSOR_NUMBER on return
+        ThreadCpuAccountingInformation = 34, // q: BOOLEAN; s: HANDLE (NtOpenSession) // NtCurrentThread // since WIN8
+        ThreadSuspendCount = 35, // q: ULONG // since WINBLUE
+        ThreadHeterogeneousCpuPolicy = 36, // q: KHETERO_CPU_POLICY // since THRESHOLD
+        ThreadContainerId = 37, // q: GUID
+        ThreadNameInformation = 38, // qs: THREAD_NAME_INFORMATION (requires THREAD_SET_LIMITED_INFORMATION)
+        ThreadSelectedCpuSets = 39, // q: ULONG[]
+        ThreadSystemThreadInformation = 40, // q: SYSTEM_THREAD_INFORMATION // 40
+        ThreadActualGroupAffinity = 41, // q: GROUP_AFFINITY // since THRESHOLD2
+        ThreadDynamicCodePolicyInfo = 42, // q: ULONG; s: ULONG (NtCurrentThread)
+        ThreadExplicitCaseSensitivity = 43, // qs: ULONG; s: 0 disables, otherwise enables // (requires SeDebugPrivilege and PsProtectedSignerAntimalware)
+        ThreadWorkOnBehalfTicket = 44, // RTL_WORK_ON_BEHALF_TICKET_EX
+        ThreadSubsystemInformation = 45, // q: SUBSYSTEM_INFORMATION_TYPE // since REDSTONE2
+        ThreadDbgkWerReportActive = 46, // s: ULONG; s: 0 disables, otherwise enables
+        ThreadAttachContainer = 47, // s: HANDLE (job object) // NtCurrentThread
+        ThreadManageWritesToExecutableMemory = 48, // MANAGE_WRITES_TO_EXECUTABLE_MEMORY // since REDSTONE3
+        ThreadPowerThrottlingState = 49, // qs: POWER_THROTTLING_THREAD_STATE // since REDSTONE3 (set), WIN11 22H2 (query)
+        ThreadWorkloadClass = 50, // THREAD_WORKLOAD_CLASS // since REDSTONE5 // 50
+        ThreadCreateStateChange = 51, // since WIN11
+        ThreadApplyStateChange = 52,
+        ThreadStrongerBadHandleChecks = 53, // s: ULONG // NtCurrentThread // since 22H1
+        ThreadEffectiveIoPriority = 54, // q: IO_PRIORITY_HINT
+        ThreadEffectivePagePriority = 55, // q: ULONG
+        ThreadUpdateLockOwnership = 56, // THREAD_LOCK_OWNERSHIP // since 24H2
+        ThreadSchedulerSharedDataSlot = 57, // SCHEDULER_SHARED_DATA_SLOT_INFORMATION
+        ThreadTebInformationAtomic = 58, // q: THREAD_TEB_INFORMATION (requires THREAD_GET_CONTEXT + THREAD_QUERY_INFORMATION)
+        ThreadIndexInformation = 59, // THREAD_INDEX_INFORMATION
         MaxThreadInfoClass
     } THREADINFOCLASS;
 

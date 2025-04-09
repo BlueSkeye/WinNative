@@ -286,6 +286,7 @@ typedef struct _ACL {
 } ACL, *PACL;
 
 typedef ULONG_PTR KAFFINITY;
+typedef LONG KPRIORITY;
 
 // From ntdef.h
 typedef struct _GROUP_AFFINITY {

@@ -15,7 +15,8 @@ extern "C" {
 	//TpCallbackSendPendingAlpcMessage
 	//TpDbgDumpHeapUsage
 
-	//TpDisablePoolCallbackChecks
+	NTSYSAPI NTSTATUS NTAPI TpDisablePoolCallbackChecks(
+		PVOID undefined);
 
 	//TpSetDefaultPoolStackInformation
 	//TpSetPoolMaxThreadsSoftLimit
@@ -25,13 +26,16 @@ extern "C" {
 
 	// END OF UNRESOLVED FUNCTIONS
 
-	typedef struct _TP_ALPC TP_ALPC, * PTP_ALPC;
+	// Reversed
+	typedef struct _TP_ALPC {
+		__int64 field_0;
+	} TP_ALPC, * PTP_ALPC;
 
 	// From winnt.h
 	typedef struct _TP_CALLBACK_INSTANCE TP_CALLBACK_INSTANCE, * PTP_CALLBACK_INSTANCE;
 
 	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L15
-	typedef VOID(NTAPI* PTP_ALPC_CALLBACK)(
+	typedef VOID (NTAPI * PTP_ALPC_CALLBACK)(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance,
 		_Inout_opt_ PVOID Context,
 		_In_ PTP_ALPC Alpc);
@@ -350,7 +354,7 @@ extern "C" {
 	typedef struct _FULL_TP_JOB {
 		struct _TP_DIRECT Direct;
 		struct _TPP_CLEANUP_GROUP_MEMBER CleanupGroupMember;
-		void* JobHandle;
+		HANDLE JobHandle;
 		union {
 			volatile int64_t CompletionState;
 			int64_t Rundown : 1;
@@ -409,7 +413,7 @@ extern "C" {
 	// https://urien.gitbook.io/diago-lima/a-deep-dive-into-exploiting-windows-thread-pools/attacking-i-o-ports
 	NTSYSAPI NTSTATUS TpAllocJobNotification(
 		_Out_ PFULL_TP_JOB* JobReturn,
-		_In_ HANDLE HJob,
+		_In_ HANDLE hJob,
 		_In_ PVOID Callback,
 		_Inout_opt_ PVOID Context,
 		_In_opt_ PTP_CALLBACK_ENVIRON CallbackEnviron);
@@ -440,54 +444,54 @@ extern "C" {
 		_Inout_opt_ PVOID Context,
 		_In_opt_ PTP_CALLBACK_ENVIRON CallbackEnviron);
 
-	// https://github.com/x64dbg/TitanEngine/blob/x64dbg/TitanEngine/ntdll.h
-	NTSYSAPI NTSTATUS NTAPI TpAlpcRegisterCompletionList(
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L437
+	NTSYSAPI VOID NTAPI TpAlpcRegisterCompletionList(
 		_Inout_ PTP_ALPC Alpc);
 
-	// https://github.com/x64dbg/TitanEngine/blob/x64dbg/TitanEngine/ntdll.h
-	NTSYSAPI NTSTATUS NTAPI TpAlpcUnregisterCompletionList(
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L445
+	NTSYSAPI VOID NTAPI TpAlpcUnregisterCompletionList(
 			_Inout_ PTP_ALPC Alpc);
 
 	// Reversed. Not invoked from other NTDLL.DLL functions
-	NTSYSAPI VOID NTAPI TpCallbackDetectedUnrecoverableError(
-		_In_ PVOID unidentified);
+	NTSYSAPI NTSTATUS NTAPI TpCallbackDetectedUnrecoverableError(
+		_In_ PVOID pUnidentified);
 
 	// https://processhacker.sourceforge.io/doc/nttp_8h.html
 	NTSYSAPI VOID NTAPI TpCallbackLeaveCriticalSectionOnCompletion(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance,
 		_Inout_ PRTL_CRITICAL_SECTION CriticalSection);
 
-	// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L168
 	NTSYSAPI NTSTATUS NTAPI TpCallbackMayRunLong(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance);
 
 	// https://processhacker.sourceforge.io/doc/nttp_8h.html
-	//NTSYSAPI NTSTATUS NTAPI TpQueryPoolStackInformation(
-	//	_In_ PTP_POOL Pool,
-	//	_Out_ PTP_POOL_STACK_INFORMATION PoolStackInformation);
+	NTSYSAPI NTSTATUS NTAPI TpQueryPoolStackInformation(
+		_In_ PTP_POOL Pool,
+		_Out_ PTP_POOL_STACK_INFORMATION PoolStackInformation);
 
-	// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L68C1-L74C7
 	NTSYSAPI VOID NTAPI TpCallbackReleaseMutexOnCompletion(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance,
 		_In_ HANDLE Mutex);
 
-	// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L131
 	NTSYSAPI VOID NTAPI TpCallbackReleaseSemaphoreOnCompletion(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance,
 		_In_ HANDLE Semaphore,
 		_In_ LONG ReleaseCount);
 
-	// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L122
 	NTSYSAPI VOID NTAPI TpCallbackSetEventOnCompletion(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance,
 		_In_ HANDLE Event);
 
-	// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L159
 	NTSYSAPI VOID NTAPI TpCallbackUnloadDllOnCompletion(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance,
 		_In_ PVOID DllHandle);
 
-	// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L378
 	NTSYSAPI VOID NTAPI TpCancelAsyncIoOperation(
 		_Inout_ PTP_IO Io);
 
@@ -502,23 +506,23 @@ extern "C" {
 	// Reversed. Empty function always returning 0. Arguments unknown may not be VOID.
 	NTSYSAPI NTSTATUS NTAPI TpDbgSetLogRoutine(VOID);
 
-	// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L176
 	NTSYSAPI VOID NTAPI TpDisassociateCallback(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance);
 
-	// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L273
 	NTSYSAPI LOGICAL NTAPI TpIsTimerSet(
 		_In_ PTP_TIMER Timer);
 
-	// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L213
 	NTSYSAPI VOID NTAPI TpPostWork(
 		_Inout_ PTP_WORK Work);
 
-	// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L421
 	NTSYSAPI VOID NTAPI TpReleaseAlpcCompletion(
 		_Inout_ PTP_ALPC Alpc);
 
-	// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L104
 	NTSYSAPI VOID NTAPI TpReleaseCleanupGroup(
 		_Inout_ PTP_CLEANUP_GROUP CleanupGroup);
 
@@ -528,7 +532,7 @@ extern "C" {
 		_In_ LOGICAL CancelPendingCallbacks,
 		_Inout_opt_ PVOID CleanupParameter);
 
-	// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L362
 	NTSYSAPI VOID NTAPI TpReleaseIoCompletion(
 		_Inout_ PTP_IO Io);
 
@@ -536,7 +540,7 @@ extern "C" {
 	NTSYSAPI NTSTATUS NTAPI TpReleaseJobNotification(
 		_In_ PFULL_TP_JOB Job);
 
-	// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L41
 	NTSYSAPI VOID NTAPI TpReleasePool(
 		_Inout_ PTP_POOL Pool);
 
@@ -624,10 +628,6 @@ extern "C" {
 		HANDLE PortHandle,
 		ULONG Flags,
 		PPORT_MESSAGE SendMessage);
-	
-	//https://docs.rs/phnt/latest/src/phnt/ffi/x86_64_bindgen.rs.html#80957
-	NTSYSAPI VOID NTAPI TpReleaseIoCompletion(
-		_In_ PTP_IO Io);
 	
 	//https://docs.rs/phnt/latest/phnt/ffi/fn.TpSetPoolThreadBasePriority.html
 	NTSYSAPI NTSTATUS NTAPI TpSetPoolThreadBasePriority(

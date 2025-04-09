@@ -262,6 +262,7 @@ extern "C" {
 	// https://github.com/Uri3n/Thread-Pool-Injection-PoC/blob/main/include/FunctionPtrs.hpp
 	// https://urien.gitbook.io/diago-lima/a-deep-dive-into-exploiting-windows-thread-pools/attacking-i-o-ports
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntioapi.h#L2361
 	NTSYSCALLAPI NTSTATUS NTAPI NtAssociateWaitCompletionPacket(
 		_In_ HANDLE WaitCompletionPacketHandle,
 		_In_ HANDLE IoCompletionHandle,

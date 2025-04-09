@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NtCommonDefs.h"
+#include "NtContext.h"
 #include "NtAccessRights.h"
 #include "NtExceptionRecord.h"
 #include "NtPeImage.h"
@@ -593,21 +594,6 @@ extern "C" {
 		MaxImageMitigationPolicy
 	} IMAGE_MITIGATION_POLICY;
 
-	// From winnt.h
-	typedef enum _ACTIVATION_CONTEXT_INFO_CLASS {
-		ActivationContextBasicInformation = 1,
-		ActivationContextDetailedInformation = 2,
-		AssemblyDetailedInformationInActivationContext = 3,
-		FileInformationInAssemblyOfAssemblyInActivationContext = 4,
-		RunlevelInformationInActivationContext = 5,
-		CompatibilityInformationInActivationContext = 6,
-		ActivationContextManifestResourceName = 7,
-		MaxActivationContextInfoClass,
-		// compatibility with old names
-		AssemblyDetailedInformationInActivationContxt = 3,
-		FileInformationInAssemblyOfAssemblyInActivationContxt = 4
-	} ACTIVATION_CONTEXT_INFO_CLASS;
-
 	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L9185C1-L9194C65
 	typedef NTSTATUS(NTAPI* PRTL_QUERY_REGISTRY_ROUTINE)(
 		_In_ PCWSTR ValueName,
@@ -1171,10 +1157,6 @@ extern "C" {
 
 	// Reversed
 	NTSYSAPI NTSTATUS NTAPI RtlAcquirePebLock();
-
-	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
-	NTSYSAPI VOID NTAPI RtlReleaseSRWLockExclusive(
-		_Inout_ PRTL_SRWLOCK SRWLock);
 
 	//https://processhacker.sourceforge.io/doc/ntrtl_8h.html
 	NTSYSAPI BOOLEAN NTAPI RtlAcquireResourceExclusive(
@@ -2736,11 +2718,11 @@ extern "C" {
 
 	// https://github.com/reactos/reactos/blob/master/sdk/include/ndk/rtlfuncs.h#L2819
 	NTSYSAPI VOID NTAPI RtlReleaseSRWLockExclusive(
-		_In_ _Out_ PRTL_SRWLOCK SRWLock);
+		_Inout_ PRTL_SRWLOCK SRWLock);
 
 	// https://github.com/reactos/reactos/blob/master/sdk/include/ndk/rtlfuncs.h#L2819
 	NTSYSAPI VOID NTAPI RtlReleaseSRWLockShared(
-		_In_ _Out_ PRTL_SRWLOCK SRWLock);
+		_Inout_ PRTL_SRWLOCK SRWLock);
 
 	// https://www.alex-ionescu.com/rtlremotecall/
 	NTSYSAPI NTSTATUS NTAPI RtlRemoteCall(

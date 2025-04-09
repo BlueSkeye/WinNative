@@ -58,6 +58,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Includes", "Includes", "{02
 		Includes\NtSiloing.h = Includes\NtSiloing.h
 		Includes\NTSoftwareQualityMgmt.h = Includes\NTSoftwareQualityMgmt.h
 		Includes\NtStrings.h = Includes\NtStrings.h
+		Includes\NtSysInfo.h = Includes\NtSysInfo.h
 		Includes\NtTables.h = Includes\NtTables.h
 		Includes\NtThreadPool.h = Includes\NtThreadPool.h
 		Includes\NtTime.h = Includes\NtTime.h
@@ -73,6 +74,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reversed", "Reversed", "{0D
 	ProjectSection(SolutionItems) = preProject
 		Reversed\LdrRscIsTypeExist.cpp = Reversed\LdrRscIsTypeExist.cpp
 		Reversed\RtlGetCurrentServiceSessionId.cpp = Reversed\RtlGetCurrentServiceSessionId.cpp
+		Reversed\TpAllocPool.cpp = Reversed\TpAllocPool.cpp
 	EndProjectSection
 EndProject
 Global

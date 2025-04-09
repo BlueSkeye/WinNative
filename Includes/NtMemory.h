@@ -341,11 +341,31 @@ extern "C" {
 		_Out_opt_ PSIZE_T NumberOfBytesWritten);
 	//ZwWriteVirtualMemory
 
+	// From winnt.h
+	typedef enum _HEAPALLOC_FLAGS {
+		HEAP_NO_SERIALIZE = 0x00000001,
+		HEAP_GROWABLE = 0x00000002,
+		HEAP_GENERATE_EXCEPTIONS = 0x00000004,
+		HEAP_ZERO_MEMORY = 0x00000008,
+		HEAP_REALLOC_IN_PLACE_ONLY = 0x00000010,
+		HEAP_TAIL_CHECKING_ENABLED = 0x00000020,
+		HEAP_FREE_CHECKING_ENABLED = 0x00000040,
+		HEAP_DISABLE_COALESCE_ON_FREE = 0x00000080,
+		HEAP_CREATE_ALIGN_16 = 0x00010000,
+		HEAP_CREATE_ENABLE_TRACING = 0x00020000,
+		HEAP_CREATE_ENABLE_EXECUTE = 0x00040000,
+		HEAP_MAXIMUM_TAG = 0x0FFF,
+		HEAP_PSEUDO_TAG_FLAG = 0x8000,
+		HEAP_TAG_SHIFT = 18,
+		HEAP_CREATE_SEGMENT_HEAP = 0x00000100,
+		HEAP_CREATE_HARDENED = 0x00000200
+	} HEALLOC_FLAGS, *PHEAPALLOC_FLAGS;
+
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlallocateheap
 	NTSYSAPI PVOID RtlAllocateHeap(
-		_In_           PVOID  HeapHandle,
-		_In_opt_ ULONG  Flags,
-		_In_           SIZE_T Size);
+		_In_ PVOID HeapHandle,
+		_In_opt_ HEALLOC_FLAGS Flags,
+		_In_ SIZE_T Size);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html#a45d5646d40fe2acf29e8137ca6b93795
 	NTSYSAPI NTSTATUS NTAPI RtlAllocateMemoryBlockLookaside(
