@@ -27,6 +27,41 @@ extern "C" {
 		WORD  Characteristics;
 	} IMAGE_FILE_HEADER, * PIMAGE_FILE_HEADER;
 
+	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_optional_header32
+	typedef struct _IMAGE_OPTIONAL_HEADER32 {
+		WORD                 Magic;
+		BYTE                 MajorLinkerVersion;
+		BYTE                 MinorLinkerVersion;
+		DWORD                SizeOfCode;
+		DWORD                SizeOfInitializedData;
+		DWORD                SizeOfUninitializedData;
+		DWORD                AddressOfEntryPoint;
+		DWORD                BaseOfCode;
+		DWORD                BaseOfData;
+		DWORD                ImageBase;
+		DWORD                SectionAlignment;
+		DWORD                FileAlignment;
+		WORD                 MajorOperatingSystemVersion;
+		WORD                 MinorOperatingSystemVersion;
+		WORD                 MajorImageVersion;
+		WORD                 MinorImageVersion;
+		WORD                 MajorSubsystemVersion;
+		WORD                 MinorSubsystemVersion;
+		DWORD                Win32VersionValue;
+		DWORD                SizeOfImage;
+		DWORD                SizeOfHeaders;
+		DWORD                CheckSum;
+		WORD                 Subsystem;
+		WORD                 DllCharacteristics;
+		DWORD                SizeOfStackReserve;
+		DWORD                SizeOfStackCommit;
+		DWORD                SizeOfHeapReserve;
+		DWORD                SizeOfHeapCommit;
+		DWORD                LoaderFlags;
+		DWORD                NumberOfRvaAndSizes;
+		IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
+	} IMAGE_OPTIONAL_HEADER32, * PIMAGE_OPTIONAL_HEADER32;
+
 	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_optional_header64
 	typedef struct _IMAGE_OPTIONAL_HEADER64 {
 		WORD Magic;
@@ -60,7 +95,14 @@ extern "C" {
 		DWORD NumberOfRvaAndSizes;
 		IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
 	} IMAGE_OPTIONAL_HEADER64, * PIMAGE_OPTIONAL_HEADER64;
-	typedef IMAGE_OPTIONAL_HEADER64 IMAGE_OPTIONAL_HEADER, * PIMAGE_OPTIONAL_HEADER;
+	// typedef IMAGE_OPTIONAL_HEADER64 IMAGE_OPTIONAL_HEADER, * PIMAGE_OPTIONAL_HEADER;
+
+	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_nt_headers32
+	typedef struct _IMAGE_NT_HEADERS32 {
+		DWORD                   Signature;
+		IMAGE_FILE_HEADER       FileHeader;
+		IMAGE_OPTIONAL_HEADER32 OptionalHeader;
+	} IMAGE_NT_HEADERS32, * PIMAGE_NT_HEADERS32;
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_nt_headers64
 	typedef struct _IMAGE_NT_HEADERS64 {
@@ -68,7 +110,7 @@ extern "C" {
 		IMAGE_FILE_HEADER FileHeader;
 		IMAGE_OPTIONAL_HEADER64 OptionalHeader;
 	} IMAGE_NT_HEADERS64, * PIMAGE_NT_HEADERS64;
-	typedef IMAGE_NT_HEADERS64 IMAGE_NT_HEADERS, *PIMAGE_NT_HEADERS;
+	// typedef IMAGE_NT_HEADERS64 IMAGE_NT_HEADERS, *PIMAGE_NT_HEADERS;
 
 	// From winnt.h
 	typedef struct _IMAGE_RESOURCE_DIRECTORY {

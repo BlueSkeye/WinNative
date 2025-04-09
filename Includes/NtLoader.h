@@ -900,7 +900,7 @@ extern "C" {
 		_In_ SIZE_T Size,
 		_In_ ULONG Flags,
 		_Out_opt_ PIMAGE_RESOURCE_DIRECTORY* ResourceDirectory,
-		_Out_ PIMAGE_NT_HEADERS* OutHeaders);
+		_Out_ PIMAGE_NT_HEADERS64* OutHeaders);
 
 #ifdef __cplusplus
 }

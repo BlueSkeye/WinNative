@@ -26,10 +26,7 @@ extern "C" {
 
 	// END OF UNRESOLVED FUNCTIONS
 
-	// Reversed
-	typedef struct _TP_ALPC {
-		__int64 field_0;
-	} TP_ALPC, * PTP_ALPC;
+	typedef struct _TP_ALPC TP_ALPC, * PTP_ALPC;
 
 	// From winnt.h
 	typedef struct _TP_CALLBACK_INSTANCE TP_CALLBACK_INSTANCE, * PTP_CALLBACK_INSTANCE;

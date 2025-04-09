@@ -2,6 +2,7 @@
 
 #include "NtCommonDefs.h"
 #include "NtContext.h"
+#include "NtContexts.h"
 #include "NtAccessRights.h"
 #include "NtExceptionRecord.h"
 #include "NtPeImage.h"
@@ -2143,7 +2144,7 @@ extern "C" {
 		PULONG Size);
 
 	// https://github.com/mic101/windows/blob/master/WRK-v1.2/base/ntos/rtl/rtlnthdr.c
-	NTSYSAPI PIMAGE_NT_HEADERS NTAPI RtlImageNtHeader(
+	NTSYSAPI PIMAGE_NT_HEADERS64 NTAPI RtlImageNtHeader(
 		_In_ PVOID Base);
 
 	// https://github.com/mic101/windows/blob/master/WRK-v1.2/base/ntos/rtl/rtlnthdr.c
@@ -2151,17 +2152,17 @@ extern "C" {
 		_In_ ULONG Flags,
 		_In_ PVOID Base,
 		_In_ ULONG64 Size,
-		_Out_ PIMAGE_NT_HEADERS* OutHeaders);
+		_Out_ PIMAGE_NT_HEADERS64* OutHeaders);
 
 	// https://doxygen.reactos.org/df/da2/sdk_2lib_2rtl_2image_8c.html
 	NTSYSAPI PIMAGE_SECTION_HEADER NTAPI RtlImageRvaToSection(
-		PIMAGE_NT_HEADERS NtHeader,
+		PIMAGE_NT_HEADERS64 NtHeader,
 		PVOID BaseAddress,
 		ULONG Rva);
 
 	// https://doxygen.reactos.org/df/da2/sdk_2lib_2rtl_2image_8c.html
 	NTSYSAPI PVOID NTAPI RtlImageRvaToVa(
-		PIMAGE_NT_HEADERS NtHeader,
+		PIMAGE_NT_HEADERS64 NtHeader,
 		PVOID BaseAddress,
 		ULONG Rva,
 		PIMAGE_SECTION_HEADER* SectionHeader);
