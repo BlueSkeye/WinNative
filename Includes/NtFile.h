@@ -417,15 +417,6 @@ extern "C" {
 		_Out_ PIO_STATUS_BLOCK IoStatusBlock);
 	//ZwFlushBuffersFile
 
-	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwflushbuffersfileex
-	NTSYSAPI NTSTATUS NtFlushBuffersFileEx(
-		_In_  HANDLE           FileHandle,
-		ULONG            FLags,
-		PVOID            Parameters,
-		ULONG            ParametersSize,
-		_Out_ PIO_STATUS_BLOCK IoStatusBlock);
-	//ZwFlushBuffersFileEx
-
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwfscontrolfile
 	NTSYSAPI NTSTATUS NtFsControlFile(
 		_In_            HANDLE           FileHandle,

@@ -110,7 +110,11 @@ typedef CONST WCHAR* LPCWCHAR, * PCWCHAR;
 typedef CONST WCHAR UNALIGNED* LPCUWCHAR, * PCUWCHAR;
 
 #define NTSYSAPI __declspec(dllimport)
+#ifdef _NTDLL_IMPL_
+#define NTSYSCALLAPI 
+#else
 #define NTSYSCALLAPI __declspec(dllimport)
+#endif
 #define NTAPI __stdcall
 
 typedef INT_PTR(__stdcall* FARPROC)();
