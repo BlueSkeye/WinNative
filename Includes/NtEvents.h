@@ -451,7 +451,7 @@ extern "C" {
 	//ZwTraceControl
 
 	// https://www.geoffchappell.com/studies/windows/km/ntoskrnl/api/etw/traceapi/event/index.htm?tx=27,29,32,41&ts=0,160
-	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntwmi.h#L5986
 	NTSYSAPI NTSTATUS NTAPI NtTraceEvent(
 		_In_ HANDLE TraceHandle,
 		_In_ ULONG Flags,

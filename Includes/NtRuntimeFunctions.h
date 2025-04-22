@@ -36,8 +36,7 @@ extern "C" {
 		DWORD   Characteristics;
 	} IMAGE_SECTION_HEADER, * PIMAGE_SECTION_HEADER;
 
-	typedef PRUNTIME_FUNCTION(NTAPI* PGET_RUNTIME_FUNCTION_CALLBACK)(
-		_In_ DWORD64 ControlPc,
+	typedef PRUNTIME_FUNCTION(NTAPI* PGET_RUNTIME_FUNCTION_CALLBACK)(_In_ DWORD64 ControlPc,
 		_In_opt_ PVOID Context);
 
 #ifdef __cplusplus

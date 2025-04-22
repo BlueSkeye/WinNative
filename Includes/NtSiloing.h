@@ -20,7 +20,7 @@ extern "C" {
         BOOLEAN IsMultiSessionSku;
         BOOLEAN IsStateSeparationEnabled;
         WCHAR NtSystemRoot[260];
-        USHORT UserModeGlobalLogger[16];
+        BYTE UserModeGlobalLogger[32];
         ULONG TimeZoneId; // since 21H2
         LONG TimeZoneBiasStamp;
         KSYSTEM_TIME TimeZoneBias;

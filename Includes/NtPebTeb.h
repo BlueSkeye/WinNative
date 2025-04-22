@@ -51,11 +51,19 @@ extern "C" {
     } PEB_LDR_DATA, * PPEB_LDR_DATA;
 
     // https://learn.microsoft.com/fr-fr/windows/win32/api/winternl/ns-winternl-rtl_user_process_parameters
+    // Reversed members also added.
     struct _RTL_USER_PROCESS_PARAMETERS {
         BYTE Reserved1[16];
-        PVOID Reserved2[10];
+        PVOID Reserved2[5];
+        // Probably a UNICODE_STRING
+        WORD field_38;
+        WORD field_3A;
+        PWSTR field_40;
+        PVOID Reserved3[3];
         UNICODE_STRING ImagePathName; // MS official
         UNICODE_STRING CommandLine; // MS official
+        // Additional fields not defined in MS documentation
+        PWSTR pEnvironment;
     };
 
     // https://github.com/winsiderss/systeminformer/blob/master/phnt/include/ntpebteb.h
@@ -257,32 +265,6 @@ extern "C" {
 #ifndef TLS_EXPANSION_SLOTS
 #define TLS_EXPANSION_SLOTS 1024
 #endif
-
-    // https://github.com/winsiderss/systeminformer/blob/fb60c2a4494de6f27ffdfefc85364d5b357a2ffa/phnt/include/ntsxs.h#L36C1-L46C54
-    typedef struct _ACTIVATION_CONTEXT_DATA {
-        ULONG Magic;
-        ULONG HeaderSize;
-        ULONG FormatVersion;
-        ULONG TotalSize;
-        ULONG DefaultTocOffset; // to ACTIVATION_CONTEXT_DATA_TOC_HEADER
-        ULONG ExtendedTocOffset; // to ACTIVATION_CONTEXT_DATA_EXTENDED_TOC_HEADER
-        ULONG AssemblyRosterOffset; // to ACTIVATION_CONTEXT_DATA_ASSEMBLY_ROSTER_HEADER
-        ULONG Flags; // ACTIVATION_CONTEXT_FLAG_*
-    } ACTIVATION_CONTEXT_DATA, * PACTIVATION_CONTEXT_DATA;
-
-    // https://github.com/winsiderss/systeminformer/blob/fb60c2a4494de6f27ffdfefc85364d5b357a2ffa/phnt/include/ntsxs.h#L445
-    typedef struct _ASSEMBLY_STORAGE_MAP_ENTRY {
-        ULONG Flags;
-        UNICODE_STRING DosPath;
-        HANDLE Handle;
-    } ASSEMBLY_STORAGE_MAP_ENTRY, * PASSEMBLY_STORAGE_MAP_ENTRY;
-
-    // https://github.com/winsiderss/systeminformer/blob/fb60c2a4494de6f27ffdfefc85364d5b357a2ffa/phnt/include/ntsxs.h#L454C1-L459C48
-    typedef struct _ASSEMBLY_STORAGE_MAP {
-        ULONG Flags;
-        ULONG AssemblyCount;
-        PASSEMBLY_STORAGE_MAP_ENTRY* AssemblyArray;
-    } ASSEMBLY_STORAGE_MAP, * PASSEMBLY_STORAGE_MAP;
 
     // https://github.com/winsiderss/systeminformer/blob/fb60c2a4494de6f27ffdfefc85364d5b357a2ffa/phnt/include/ntpebteb.h#L230
     /* Process Environment Block (PEB) structure.

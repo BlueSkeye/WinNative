@@ -3,6 +3,7 @@
 #include "NtCommonDefs.h"
 #include "NtContext.h"
 #include "NtContexts.h"
+#include "NTCRuntime.h"
 #include "NtAccessRights.h"
 #include "NtExceptionRecord.h"
 #include "NtPeImage.h"
@@ -1368,17 +1369,17 @@ extern "C" {
 		_Out_ PULONG FinalCompressedSize,
 		_In_  PVOID  WorkSpace);
 
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
-	NTSYSAPI DWORD NTAPI RtlComputeCrc32(
-		DWORD dwInitial,
-		const PBYTE pData,
-		int iLen);
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L9376C1-L9383C7
+	NTSYSAPI ULONG32 NTAPI RtlComputeCrc32(
+		_In_ ULONG32 PartialCrc,
+		_In_ PVOID Buffer,
+		_In_ ULONG Length);
 
-	//https://doxygen.reactos.org/d8/dd5/ndk_2rtlfuncs_8h.html#affe1add420874a2869fbd93ddf8913fb
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L4844C1-L4851C7
 	NTSYSAPI NTSTATUS NTAPI RtlComputePrivatizedDllName_U(
 		_In_ PUNICODE_STRING DllName,
-		_Inout_ PUNICODE_STRING RealName,
-		_Inout_ PUNICODE_STRING LocalName);
+		_Out_ PUNICODE_STRING RealName,
+		_Out_ PUNICODE_STRING LocalName);
 
 	// https://github.com/xmoezzz/NativeLib-R/blob/master/ntsmss.h
 	NTSYSAPI NTSTATUS NTAPI RtlConnectToSm(
@@ -1387,35 +1388,35 @@ extern "C" {
 		_In_ DWORD ProcessImageType,
 		_Out_ PHANDLE SmssConnection);
 
-	// https://doxygen.reactos.org/d6/d28/sdk_2lib_2rtl_2nls_8c.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L2157C1-L2167C7
 	NTSYSAPI NTSTATUS NTAPI RtlConsoleMultiByteToUnicodeN(
-		_Out_ PWCHAR UnicodeString,
-		_In_ ULONG UnicodeSize,
-		_Out_ PULONG ResultSize,
-		_In_ PCSTR MbString,
-		_In_ ULONG MbSize,
-		_Out_ PULONG Unknown);
+		_Out_writes_bytes_to_(MaxBytesInUnicodeString, *BytesInUnicodeString) PWCH UnicodeString,
+		_In_ ULONG MaxBytesInUnicodeString,
+		_Out_opt_ PULONG BytesInUnicodeString,
+		_In_reads_bytes_(BytesInMultiByteString) PCCH MultiByteString,
+		_In_ ULONG BytesInMultiByteString,
+		_Out_ PULONG pdwSpecialChar);
 
-	// https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/rtl.c
+	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtlconvertdevicefamilyinfotostring
 	NTSYSAPI DWORD NTAPI RtlConvertDeviceFamilyInfoToString(
 		PDWORD device_family_size,
 		PDWORD device_form_size,
-		WCHAR* device_family,
-		WCHAR* device_form);
+		PWSTR device_family,
+		PWSTR device_form);
 
-	//https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L1166C1-L1171C7
 	NTSYSAPI VOID NTAPI RtlConvertExclusiveToShared(
 		_Inout_ PRTL_RESOURCE Resource);
 
-	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L2774
 	NTSYSAPI NTSTATUS NTAPI RtlConvertLCIDToString(
 		_In_ LCID LcidValue,
 		_In_ ULONG Base,
-		_In_ ULONG Padding,
+		_In_ ULONG Padding, // string is padded to this width
 		_Out_writes_(Size) PWSTR pResultBuf,
 		_In_ ULONG Size);
 
-	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L1159
 	NTSYSAPI VOID NTAPI RtlConvertSharedToExclusive(
 		_Inout_ PRTL_RESOURCE Resource);
 
@@ -1423,7 +1424,7 @@ extern "C" {
 	NTSYSAPI BOOLEAN NTAPI RtlConvertSRWLockExclusiveToShared(
 		_Inout_ PRTL_SRWLOCK SRWLock);
 
-	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L7340
 	NTSYSAPI VOID NTAPI RtlCopyBitMap(
 		_In_ PRTL_BITMAP Source,
 		_In_ PRTL_BITMAP Destination,
@@ -1446,19 +1447,19 @@ extern "C" {
 		_Out_ PLUID DestinationLuid,
 		_In_  PLUID SourceLuid);
 
-	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L6173
 	NTSYSAPI VOID NTAPI RtlCopyLuidAndAttributesArray(
 		_In_ ULONG Count,
 		_In_ PLUID_AND_ATTRIBUTES Src,
 		_In_ PLUID_AND_ATTRIBUTES Dest);
 
-	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L4295
 	NTSYSAPI ULONG NTAPI RtlCrc32(
 		_In_reads_bytes_(Size) const void* Buffer,
 		_In_ size_t Size,
 		_In_ ULONG InitialCrc);
 
-	// https://github.com/winsiderss/phnt/blob/master/ntrtl.h
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L4304
 	NTSYSAPI ULONGLONG NTAPI RtlCrc64(
 		_In_reads_bytes_(Size) const void* Buffer,
 		_In_ size_t Size,
@@ -2509,16 +2510,18 @@ extern "C" {
 
 	// Reversed. Based on invocation of RtlQueryEnvironmentVariable_U
 	NTSYSAPI NTSTATUS NTAPI RtlQueryEnvironmentVariable(
-		PWSTR Environment,
-		PWSTR Name,
-		UINT NameLength,
-		PWSTR Value);
+		_In_ PWSTR Environment,
+		_In_ PWSTR Name,
+		_In_ UINT NameLength,
+		_In_ PWSTR Value,
+		_In_ DWORD ValueMaxCchCount,
+		_Out_ PUINT32 ValueActualCchCount);
 
 	// https://docs.rs/ntapi/latest/ntapi/ntrtl/fn.RtlQueryEnvironmentVariable_U.html
 	NTSYSAPI NTSTATUS NTAPI RtlQueryEnvironmentVariable_U(
-		PVOID Environment,
-		PUNICODE_STRING Name,
-		PUNICODE_STRING Value);
+		_In_ PWSTR Environment,
+		_In_ PUNICODE_STRING Name,
+		_Out_ PUNICODE_STRING Value);
 
 	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L11187
 	NTSYSAPI NTSTATUS NTAPI RtlQueryFeatureConfiguration(
@@ -3264,8 +3267,8 @@ extern "C" {
 	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-versetconditionmask
 	NTSYSAPI ULONGLONG NTAPI VerSetConditionMask(
 		_In_ ULONGLONG ConditionMask,
-		_In_ DWORD     TypeMask,
-		_In_ BYTE      Condition);
+		_In_  DWORD TypeMask,
+		_In_ BYTE Condition);
 
 #ifdef __cplusplus
 }

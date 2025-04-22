@@ -19,7 +19,55 @@ extern "C" {
     //RtlpTimeToTimeFields
     // END OF UNRESOLVED FUNCTIONS
 
-    typedef enum _DBG_STATE {
+    typedef struct _CREATE_PROCESS_DEBUG_INFO
+        CREATE_PROCESS_DEBUG_INFO, * LPCREATE_PROCESS_DEBUG_INFO;
+    typedef struct _CREATE_THREAD_DEBUG_INFO CREATE_THREAD_DEBUG_INFO, * LPCREATE_THREAD_DEBUG_INFO;
+    typedef enum _DBG_STATE DBG_STATE, * PDBG_STATE;
+    typedef struct _DBGKM_CREATE_PROCESS DBGKM_CREATE_PROCESS, * PDBGKM_CREATE_PROCESS;
+    typedef struct _DBGKM_CREATE_THREAD DBGKM_CREATE_THREAD, * PDBGKM_CREATE_THREAD;
+    typedef struct _DBGKM_EXCEPTION DBGKM_EXCEPTION, * PDBGKM_EXCEPTION;
+    typedef struct _DBGKM_EXIT_PROCESS DBGKM_EXIT_PROCESS, * PDBGKM_EXIT_PROCESS;
+    typedef struct _DBGKM_EXIT_THREAD DBGKM_EXIT_THREAD, * PDBGKM_EXIT_THREAD;
+    typedef struct _DBGKM_LOAD_DLL DBGKM_LOAD_DLL, * PDBGKM_LOAD_DLL;
+    typedef struct _DBGKM_UNLOAD_DLL DBGKM_UNLOAD_DLL, * PDBGKM_UNLOAD_DLL;
+    typedef struct _DBGUI_CREATE_PROCESS DBGUI_CREATE_PROCESS, * PDBGUI_CREATE_PROCESS;
+    typedef struct _DBGUI_CREATE_THREAD DBGUI_CREATE_THREAD, * PDBGUI_CREATE_THREAD;
+    typedef struct _DBGUI_WAIT_STATE_CHANGE DBGUI_WAIT_STATE_CHANGE, * PDBGUI_WAIT_STATE_CHANGE;
+    typedef struct _DEBUG_EVENT DEBUG_EVENT, * LPDEBUG_EVENT;
+    typedef struct _EXCEPTION_DEBUG_INFO EXCEPTION_DEBUG_INFO, * LPEXCEPTION_DEBUG_INFO;
+    typedef struct _EXIT_PROCESS_DEBUG_INFO EXIT_PROCESS_DEBUG_INFO, * LPEXIT_PROCESS_DEBUG_INFO;
+    typedef struct _EXIT_THREAD_DEBUG_INFO EXIT_THREAD_DEBUG_INFO, * LPEXIT_THREAD_DEBUG_INFO;
+    typedef struct _LOAD_DLL_DEBUG_INFO LOAD_DLL_DEBUG_INFO, * LPLOAD_DLL_DEBUG_INFO;
+    typedef struct _OUTPUT_DEBUG_STRING_INFO OUTPUT_DEBUG_STRING_INFO, * LPOUTPUT_DEBUG_STRING_INFO;
+    typedef struct _RIP_INFO RIP_INFO, * LPRIP_INFO;
+    typedef struct _UNLOAD_DLL_DEBUG_INFO UNLOAD_DLL_DEBUG_INFO, * LPUNLOAD_DLL_DEBUG_INFO;
+    // https://learn.microsoft.com/en-us/dotnet/framework/unmanaged-api/hosting/lpthread-start-routine-function-pointer
+    typedef DWORD(__stdcall* LPTHREAD_START_ROUTINE) (
+        _In_ LPVOID lpThreadParameter);
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-create_process_debug_info
+    struct _CREATE_PROCESS_DEBUG_INFO {
+        HANDLE hFile;
+        HANDLE hProcess;
+        HANDLE hThread;
+        LPVOID lpBaseOfImage;
+        DWORD dwDebugInfoFileOffset;
+        DWORD nDebugInfoSize;
+        LPVOID lpThreadLocalBase;
+        LPTHREAD_START_ROUTINE lpStartAddress;
+        LPVOID lpImageName;
+        WORD fUnicode;
+    };
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-create_thread_debug_info
+    struct _CREATE_THREAD_DEBUG_INFO {
+        HANDLE hThread;
+        LPVOID lpThreadLocalBase;
+        LPTHREAD_START_ROUTINE lpStartAddress;
+    };
+
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntdbg.h#L162
+    enum _DBG_STATE {
         DbgIdle,
         DbgReplyPending,
         DbgCreateThreadStateChange,
@@ -31,57 +79,69 @@ extern "C" {
         DbgSingleStepStateChange,
         DbgLoadDllStateChange,
         DbgUnloadDllStateChange
-    } DBG_STATE, *PDBG_STATE;
+    };
 
-    // https://processhacker.sourceforge.io/doc/struct___d_b_g_k_m___e_x_c_e_p_t_i_o_n.html
-    typedef struct _DBGKM_EXCEPTION {
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntdbg.h#L116C1-L120C38
+    struct _DBGKM_EXCEPTION {
         EXCEPTION_RECORD ExceptionRecord;
         ULONG FirstChance;
-    } DBGKM_EXCEPTION, *PDBGKM_EXCEPTION;
+    };
 
-    // https://processhacker.sourceforge.io/doc/struct___d_b_g_k_m___c_r_e_a_t_e___t_h_r_e_a_d.html
-    typedef struct _DBGKM_CREATE_THREAD {
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntdbg.h#L177C1-L181C46
+    struct _DBGKM_CREATE_THREAD {
         ULONG SubSystemKey;
         PVOID StartAddress;
-    } DBGKM_CREATE_THREAD;
+    };
 
-    // https://processhacker.sourceforge.io/doc/struct___d_b_g_u_i___c_r_e_a_t_e___t_h_r_e_a_d.html
-    typedef struct _DBGUI_CREATE_THREAD {
-        HANDLE HandleToThread;
-        DBGKM_CREATE_THREAD NewThread;
-    } DBGUI_CREATE_THREAD;
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntdbg.h#L128C1-L136C48
+    struct _DBGKM_CREATE_PROCESS {
+        ULONG SubSystemKey;
+        HANDLE FileHandle;
+        PVOID BaseOfImage;
+        ULONG DebugInfoFileOffset;
+        ULONG DebugInfoSize;
+        DBGKM_CREATE_THREAD InitialThread;
+    };
 
-    // https://processhacker.sourceforge.io/doc/struct___d_b_g_u_i___c_r_e_a_t_e___p_r_o_c_e_s_s.html
-    typedef struct _DBGUI_CREATE_PROCESS {
-        HANDLE HandleToProcess;
-        HANDLE HandleToThread;
-    } DBGUI_CREATE_PROCESS;
-
-    // https://processhacker.sourceforge.io/doc/struct___d_b_g_k_m___e_x_i_t___p_r_o_c_e_s_s.html
-    typedef struct _DBGKM_EXIT_PROCESS {
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntdbg.h#L138C1-L141C42
+    struct _DBGKM_EXIT_THREAD {
         NTSTATUS ExitStatus;
-    } DBGKM_EXIT_PROCESS;
+    };
 
-    // https://processhacker.sourceforge.io/doc/struct___d_b_g_k_m___e_x_i_t___t_h_r_e_a_d.html
-    typedef struct _DBGKM_EXIT_THREAD {
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntdbg.h#L143C1-L146C44
+    struct _DBGKM_EXIT_PROCESS {
         NTSTATUS ExitStatus;
-    } DBGKM_EXIT_THREAD;
+    };
 
-    typedef struct _DBGKM_LOAD_DLL {
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntdbg.h#L148
+    struct _DBGKM_LOAD_DLL {
         HANDLE FileHandle;
         PVOID BaseOfDll;
         ULONG DebugInfoFileOffset;
         ULONG DebugInfoSize;
         PVOID NamePointer;
-    } DBGKM_LOAD_DLL;
+    };
 
-    // https://processhacker.sourceforge.io/doc/struct___d_b_g_k_m___u_n_l_o_a_d___d_l_l.html
-    typedef struct _DBGKM_UNLOAD_DLL {
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntdbg.h#L157
+    struct _DBGKM_UNLOAD_DLL {
         PVOID BaseAddress;
-    } DBGKM_UNLOAD_DLL;
+    };
 
-    // https://processhacker.sourceforge.io/doc/struct___d_b_g_u_i___w_a_i_t___s_t_a_t_e___c_h_a_n_g_e.html
-    typedef struct _DBGUI_WAIT_STATE_CHANGE {
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntdbg.h#L183C1-L188C48
+    struct _DBGUI_CREATE_PROCESS {
+        HANDLE HandleToProcess;
+        HANDLE HandleToThread;
+        DBGKM_CREATE_PROCESS NewProcess;
+    };
+
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntdbg.h#L177C1-L181C46
+    struct _DBGUI_CREATE_THREAD {
+        HANDLE HandleToThread;
+        DBGKM_CREATE_THREAD NewThread;
+    };
+
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntdbg.h#L190C1-L204C54
+    struct _DBGUI_WAIT_STATE_CHANGE  {
         DBG_STATE NewState;
         CLIENT_ID AppClientId;
         union {
@@ -93,7 +153,69 @@ extern "C" {
             DBGKM_LOAD_DLL LoadDll;
             DBGKM_UNLOAD_DLL UnloadDll;
         } StateInfo;
-    } DBGUI_WAIT_STATE_CHANGE,*PDBGUI_WAIT_STATE_CHANGE;
+    };
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-exception_debug_info
+    struct _EXCEPTION_DEBUG_INFO {
+        EXCEPTION_RECORD ExceptionRecord;
+        DWORD dwFirstChance;
+    };
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-load_dll_debug_info
+    struct _LOAD_DLL_DEBUG_INFO {
+        HANDLE hFile;
+        LPVOID lpBaseOfDll;
+        DWORD  dwDebugInfoFileOffset;
+        DWORD  nDebugInfoSize;
+        LPVOID lpImageName;
+        WORD   fUnicode;
+    };
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-unload_dll_debug_info
+    struct _UNLOAD_DLL_DEBUG_INFO {
+        LPVOID lpBaseOfDll;
+    };
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-output_debug_string_info
+    struct _OUTPUT_DEBUG_STRING_INFO {
+        LPSTR lpDebugStringData;
+        WORD  fUnicode;
+        WORD  nDebugStringLength;
+    };
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-exit_process_debug_info
+    struct _EXIT_PROCESS_DEBUG_INFO {
+        DWORD dwExitCode;
+    };
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-exit_thread_debug_info
+    struct _EXIT_THREAD_DEBUG_INFO {
+        DWORD dwExitCode;
+    };
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-rip_info
+    struct _RIP_INFO {
+        DWORD dwError;
+        DWORD dwType;
+    };
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-debug_event
+    struct _DEBUG_EVENT {
+        DWORD dwDebugEventCode;
+        DWORD dwProcessId;
+        DWORD dwThreadId;
+        union {
+            EXCEPTION_DEBUG_INFO Exception;
+            CREATE_THREAD_DEBUG_INFO CreateThread;
+            CREATE_PROCESS_DEBUG_INFO CreateProcessInfo;
+            EXIT_THREAD_DEBUG_INFO ExitThread;
+            EXIT_PROCESS_DEBUG_INFO ExitProcess;
+            LOAD_DLL_DEBUG_INFO LoadDll;
+            UNLOAD_DLL_DEBUG_INFO UnloadDll;
+            OUTPUT_DEBUG_STRING_INFO DebugString;
+            RIP_INFO RipInfo;
+        } u;
+    };
 
     // http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FProfile%2FKPROFILE_SOURCE.html
     typedef enum _KPROFILE_SOURCE {
@@ -233,18 +355,18 @@ extern "C" {
         _In_ ULONG Level,
         _In_ BOOLEAN State);
 
-    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-    NTSYSCALLAPI NTSTATUS NTAPI DbgUiConnectToDbg(void);
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntdbg.h#L283C1-L288C7
+    NTSYSAPI NTSTATUS NTAPI DbgUiConnectToDbg(VOID);
 
-    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
-    NTSYSCALLAPI NTSTATUS NTAPI DbgUiContinue(
-        CLIENT_ID* client,
-        NTSTATUS status);
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntdbg.h#L312C1-L318C7
+    NTSYSAPI NTSTATUS NTAPI DbgUiContinue(
+        _In_ PCLIENT_ID AppClientId,
+        _In_ NTSTATUS ContinueStatus);
 
-    // https://raw.githubusercontent.com/wine-mirror/wine/refs/heads/master/dlls/ntdll/process.c
+    // https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntdbg.h#L348C1-L354C7
     NTSYSAPI NTSTATUS NTAPI DbgUiConvertStateChangeStructure(
         _In_ PDBGUI_WAIT_STATE_CHANGE StateChange,
-        _Out_ struct _DEBUG_EVENT* DebugEvent);
+        _Out_ LPDEBUG_EVENT DebugEvent);
 
     //DbgUiConvertStateChangeStructureEx
     //https://unprotect.it/media/archive/2022/06/22/NtSetDebugFilterState.pdf

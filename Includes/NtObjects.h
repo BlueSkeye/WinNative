@@ -96,7 +96,7 @@ extern "C" {
         _In_ HANDLE NamespaceHandle);
     //ZwDeletePrivateNamespace
 
-    //https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwduplicateobject
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwduplicateobject
     NTSYSAPI NTSTATUS NtDuplicateObject(
         _In_ HANDLE SourceProcessHandle,
         _In_ HANDLE SourceHandle,

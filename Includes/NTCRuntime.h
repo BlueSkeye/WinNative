@@ -174,20 +174,20 @@ extern "C" {
 		const void* buffer2,
 		size_t count);
 
-	//https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/setjmp?view=msvc-170
-	// https://learn.microsoft.com/en-us/cpp/cpp/using-setjmp-longjmp?view=msvc-170
-	typedef struct /* _VCRT_ALIGN(16) */ _SETJMP_FLOAT128 {
-		unsigned __int64 Part[2];
-	} SETJMP_FLOAT128, _JBTYPE;
-#define _JBLEN  16
-	typedef _JBTYPE jmp_buf[_JBLEN];
+	////https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/setjmp?view=msvc-170
+	//// https://learn.microsoft.com/en-us/cpp/cpp/using-setjmp-longjmp?view=msvc-170
+	//typedef struct /* _VCRT_ALIGN(16) */ _SETJMP_FLOAT128 {
+	//	unsigned __int64 Part[2];
+	//} SETJMP_FLOAT128, _JBTYPE;
+//#define _JBLEN  16
+//	typedef _JBTYPE jmp_buf[_JBLEN];
 
-	NTSYSAPI int __cdecl setjmp(
-		jmp_buf env);
+	//NTSYSAPI int __cdecl setjmp(
+	//	jmp_buf env);
 
-	// Unclear.
-	NTSYSAPI int __cdecl setjmpex(
-		jmp_buf env);
+	//// Unclear.
+	//NTSYSAPI int __cdecl setjmpex(
+	//	jmp_buf env);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/snprintf-snprintf-snprintf-l-snwprintf-snwprintf-l?view=msvc-170
 	NTSYSAPI int __cdecl _snprintf(
@@ -635,10 +635,10 @@ extern "C" {
 	NTSYSAPI double NTAPI log(
 		double x);
 
-	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/longjmp?view=msvc-170
-	NTSYSAPI void NTAPI longjmp(
-		jmp_buf env,
-		int value);
+	//// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/longjmp?view=msvc-170
+	//NTSYSAPI void NTAPI longjmp(
+	//	jmp_buf env,
+	//	int value);
 
 	// https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/mbstowcs-mbstowcs-l?view=msvc-170
 	NTSYSAPI size_t NTAPI mbstowcs(

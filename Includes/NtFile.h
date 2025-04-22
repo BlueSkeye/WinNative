@@ -192,7 +192,8 @@ extern "C" {
 	} RTLP_CURDIR_REF, * PRTLP_CURDIR_REF;
 
 	// https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
-	typedef enum _RTL_PATH_TYPE {
+	typedef enum _RTL_PATH_TYPE RTL_PATH_TYPE, * PRTL_PATH_TYPE;
+	enum _RTL_PATH_TYPE {
 		RtlPathTypeUnknown,
 		RtlPathTypeUncAbsolute,     // "\\\\server\\share\\folder\\file.txt
 		RtlPathTypeDriveAbsolute,   // "C:\\folder\\file.txt"
@@ -201,7 +202,7 @@ extern "C" {
 		RtlPathTypeRelative,        // "folder\\file.txt"
 		RtlPathTypeLocalDevice,     // "\\\\.\\PhysicalDrive0"
 		RtlPathTypeRootLocalDevice  // "\\\\?\\C:\\folder\\file.txt"
-	} RTL_PATH_TYPE;
+	};
 
 	// https://raw.githubusercontent.com/winsiderss/phnt/refs/heads/master/ntrtl.h
 	typedef struct _RTL_RELATIVE_NAME_U {
@@ -419,17 +420,16 @@ extern "C" {
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwfscontrolfile
 	NTSYSAPI NTSTATUS NtFsControlFile(
-		_In_            HANDLE           FileHandle,
-		_In_opt_
-		_In_opt_  HANDLE           Event,
-		_In_opt_  PIO_APC_ROUTINE  ApcRoutine,
-		_In_opt_  PVOID            ApcContext,
-		_Out_           PIO_STATUS_BLOCK IoStatusBlock,
-		_In_            ULONG            FsControlCode,
-		_In_opt_  PVOID            InputBuffer,
-		_In_            ULONG            InputBufferLength,
-		_Out_opt_ PVOID            OutputBuffer,
-		_In_            ULONG            OutputBufferLength);
+		_In_ HANDLE FileHandle,
+		_In_opt_ HANDLE Event,
+		_In_opt_ PIO_APC_ROUTINE  ApcRoutine,
+		_In_opt_ PVOID ApcContext,
+		_Out_ PIO_STATUS_BLOCK IoStatusBlock,
+		_In_ ULONG FsControlCode,
+		_In_opt_ PVOID InputBuffer,
+		_In_ ULONG InputBufferLength,
+		_Out_opt_ PVOID OutputBuffer,
+		_In_ ULONG OutputBufferLength);
 	//ZwFsControlFile
 
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg

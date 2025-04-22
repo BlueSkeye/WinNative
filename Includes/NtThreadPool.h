@@ -4,6 +4,8 @@
 #define _NTTHREADPOOL_
 
 #include "NtCommonDefs.h"
+#include "NtFile.h"
+#include "NtLocalProcedureCalls.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,28 +16,62 @@ extern "C" {
 	//TpCallbackIndependent
 	//TpCallbackSendPendingAlpcMessage
 	//TpDbgDumpHeapUsage
-
-	NTSYSAPI NTSTATUS NTAPI TpDisablePoolCallbackChecks(
-		PVOID undefined);
-
 	//TpSetDefaultPoolStackInformation
 	//TpSetPoolMaxThreadsSoftLimit
 	//TpSetPoolThreadCpuSets
 	//TpSetPoolWorkerThreadIdleTimeout
 	//TpTimerOutstandingCallbackCount
-
 	// END OF UNRESOLVED FUNCTIONS
 
+	typedef struct _ALPC_WORK_ON_BEHALF_TICKET ALPC_WORK_ON_BEHALF_TICKET, * PALPC_WORK_ON_BEHALF_TICKET;
+	typedef struct _FULL_TP_JOB FULL_TP_JOB, * PFULL_TP_JOB;
+	typedef struct _FULL_TP_POOL FULL_TP_POOL, * PFULL_TP_POOL;
+	// https://processhacker.sourceforge.io/doc/ntpebteb_8h.html#a1568328a2da2422fe7df18f8069c3cfe
+	typedef struct _RTL_CRITICAL_SECTION* PRTL_CRITICAL_SECTION;
 	typedef struct _TP_ALPC TP_ALPC, * PTP_ALPC;
-
-	// From winnt.h
 	typedef struct _TP_CALLBACK_INSTANCE TP_CALLBACK_INSTANCE, * PTP_CALLBACK_INSTANCE;
+	typedef struct _TP_CALLBACK_ENVIRON_V3 TP_CALLBACK_ENVIRON_V3, * PTP_CALLBACK_ENVIRON_V3;
+	typedef struct _TP_CALLBACK_ENVIRON TP_CALLBACK_ENVIRON, * PTP_CALLBACK_ENVIRON;
+	typedef enum _TP_CALLBACK_PRIORITY TP_CALLBACK_PRIORITY, * PTP_CALLBACK_PRIORITY;
+	typedef struct _TP_DIRECT TP_DIRECT, * PTP_DIRECT;
+	typedef struct _TP_IO TP_IO, * PTP_IO;
+	typedef struct _TP_POOL_STACK_INFORMATION TP_POOL_STACK_INFORMATION, * PTP_POOL_STACK_INFORMATION;
+	typedef struct _TP_TASK TP_TASK, * PTP_TASK;
+	typedef struct _TP_TASK_CALLBACKS TP_TASK_CALLBACKS, * PTP_TASK_CALLBACKS;
+	// From winnt.h
+	typedef struct _TP_TIMER TP_TIMER, * PTP_TIMER;
+	typedef enum _TP_TRACE_TYPE TP_TRACE_TYPE, * PTP_TRACE_TYPE;
+	// From winnt.h
+	typedef struct _TP_WAIT TP_WAIT, * PTP_WAIT;
+	// From winnt.h
+	typedef struct _TP_WORK TP_WORK, * PTP_WORK;
+	typedef struct _TPP_BARRIER TPP_BARRIER, * PTPP_BARRIER;
+	typedef struct _TPP_CALLER TPP_CALLER, * PTPP_CALLER;
+	typedef struct _TPP_CLEANUP_GROUP_MEMBER TPP_CLEANUP_GROUP_MEMBER, * PTPP_CLEANUP_GROUP_MEMBER;
+	typedef union _TPP_FLAGS_COUNT TPP_FLAGS_COUNT, * PTPP_FLAGS_COUNT;
+	typedef struct _TPP_ITE TPP_ITE, * PTPP_ITE;
+	typedef struct _TPP_ITE_WAITER TPP_ITE_WAITER, * PTPP_ITE_WAITER;
+	typedef struct _TPP_NUMA_NODE TPP_NUMA_NODE, * PTPP_NUMA_NODE;
+	typedef struct _TPP_PH TPP_PH, * PTPP_PH;
+	typedef struct _TPP_PH_LINKS TPP_PH_LINKS, * PTPP_PH_LINKS;
+	typedef union _TPP_POOL_QUEUE_STATE TPP_POOL_QUEUE_STATE, * PTPP_POOL_QUEUE_STATE;
+	typedef struct _TPP_QUEUE TPP_QUEUE, * PTPP_QUEUE;
+	typedef struct _TPP_REFCOUNT TPP_REFCOUNT, * PTPP_REFCOUNT;
+	typedef struct _TPP_TIMER_QUEUE TPP_TIMER_QUEUE, * PTPP_TIMER_QUEUE;
+	typedef struct _TPP_TIMER_SUBQUEUE TPP_TIMER_SUBQUEUE, * PTPP_TIMER_SUBQUEUE;
 
 	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L15
 	typedef VOID (NTAPI * PTP_ALPC_CALLBACK)(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance,
 		_Inout_opt_ PVOID Context,
 		_In_ PTP_ALPC Alpc);
+
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L22
+	typedef VOID(NTAPI* PTP_ALPC_CALLBACK_EX)(
+		_Inout_ PTP_CALLBACK_INSTANCE Instance,
+		_Inout_opt_ PVOID Context,
+		_In_ PTP_ALPC Alpc,
+		_In_ PVOID ApcContext);
 
 	// From winnt.h
 	typedef DWORD TP_VERSION, * PTP_VERSION;
@@ -48,15 +84,15 @@ extern "C" {
 		_Inout_ PTP_CALLBACK_INSTANCE Instance,
 		_Inout_opt_ PVOID Context);
 	
-	typedef enum _TP_CALLBACK_PRIORITY {
+	enum _TP_CALLBACK_PRIORITY {
 		TP_CALLBACK_PRIORITY_HIGH,
 		TP_CALLBACK_PRIORITY_NORMAL,
 		TP_CALLBACK_PRIORITY_LOW,
 		TP_CALLBACK_PRIORITY_INVALID,
 		TP_CALLBACK_PRIORITY_COUNT = TP_CALLBACK_PRIORITY_INVALID
-	} TP_CALLBACK_PRIORITY;
+	};
 
-	typedef struct _TP_CALLBACK_ENVIRON_V3 {
+	struct _TP_CALLBACK_ENVIRON_V3 {
 		TP_VERSION Version;
 		PTP_POOL Pool;
 		PTP_CLEANUP_GROUP CleanupGroup;
@@ -74,10 +110,7 @@ extern "C" {
 		} u;
 		TP_CALLBACK_PRIORITY               CallbackPriority;
 		DWORD                              Size;
-	} TP_CALLBACK_ENVIRON_V3;
-
-	typedef TP_CALLBACK_ENVIRON_V3 TP_CALLBACK_ENVIRON, * PTP_CALLBACK_ENVIRON;
-	typedef struct _TP_IO TP_IO, * PTP_IO;
+	};
 
 	typedef VOID(NTAPI* PTP_IO_CALLBACK)(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance,
@@ -86,24 +119,11 @@ extern "C" {
 		_In_ PIO_STATUS_BLOCK IoSB,
 		_In_ PTP_IO Io);
 
-	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L22
-	typedef VOID(NTAPI* PTP_ALPC_CALLBACK_EX)(
-		_Inout_ PTP_CALLBACK_INSTANCE Instance,
-		_Inout_opt_ PVOID Context,
-		_In_ PTP_ALPC Alpc,
-		_In_ PVOID ApcContext);
-
-	// From winnt.h
-	typedef struct _TP_TIMER TP_TIMER, * PTP_TIMER;
-
 	// From winnt.h
 	typedef VOID(NTAPI* PTP_TIMER_CALLBACK)(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance,
 		_Inout_opt_ PVOID Context,
 		_Inout_ PTP_TIMER Timer);
-
-	// From winnt.h
-	typedef struct _TP_WAIT TP_WAIT, * PTP_WAIT;
 
 	// From winnt.h
 	typedef DWORD TP_WAIT_RESULT;
@@ -114,79 +134,62 @@ extern "C" {
 		_In_        TP_WAIT_RESULT        WaitResult);
 
 	// From winnt.h
-	typedef struct _TP_WORK TP_WORK, * PTP_WORK;
-
-	// From winnt.h
 	typedef VOID(NTAPI* PTP_WORK_CALLBACK)(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance,
 		_Inout_opt_ PVOID Context,
 		_Inout_ PTP_WORK Work);
 
-	// https://processhacker.sourceforge.io/doc/ntpebteb_8h.html#a1568328a2da2422fe7df18f8069c3cfe
-	typedef struct _RTL_CRITICAL_SECTION * PRTL_CRITICAL_SECTION;
-
-	typedef enum _TP_TRACE_TYPE {
+	enum _TP_TRACE_TYPE {
 		TpTraceThreadPriority,
 		TpTraceThreadAffinity,
 		MaxTpTraceType
-	} TP_TRACE_TYPE;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L44
-	typedef struct _TPP_REFCOUNT {
+	struct _TPP_REFCOUNT {
 		volatile INT32 Refcount;
-	} TPP_REFCOUNT, * PTPP_REFCOUNT;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L49
-	typedef struct _TPP_CALLER {
+	struct _TPP_CALLER {
 		void* ReturnAddress;
-	} TPP_CALLER, * PTPP_CALLER;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L186
-	typedef union _TPP_FLAGS_COUNT {
+	union _TPP_FLAGS_COUNT {
 		union {
 			UINT64 Count : 60;
 			UINT64 Flags : 4;
 			INT64 Data;
 		} DUMMYUNIONNAME;
-	} TPP_FLAGS_COUNT, * PTPP_FLAGS_COUNT;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L168
-	typedef struct _TPP_ITE_WAITER {
+	struct _TPP_ITE_WAITER {
 		struct _TPP_ITE_WAITER* Next;
 		void* ThreadId;
-	} TPP_ITE_WAITER, * PTPP_ITE_WAITER;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L181
-	typedef struct _TPP_ITE {
+	struct _TPP_ITE {
 		struct _TPP_ITE_WAITER* First;
-	} TPP_ITE, * PTPP_ITE;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L196
-	typedef struct _TPP_BARRIER {
+	struct _TPP_BARRIER {
 		volatile union _TPP_FLAGS_COUNT Ptr;
 		struct _RTL_SRWLOCK WaitLock;
 		struct _TPP_ITE WaitList;
-	} TPP_BARRIER, * PTPP_BARRIER;
-
-	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L202C1-L213C1
-	typedef struct _TP_CLEANUP_GROUP {
-		struct _TPP_REFCOUNT Refcount;
-		INT32 Released;
-		struct _RTL_SRWLOCK MemberLock;
-		struct _LIST_ENTRY MemberList;
-		struct _TPP_BARRIER Barrier;
-		struct _RTL_SRWLOCK CleanupLock;
-		struct _LIST_ENTRY CleanupList;
-	} TP_CLEANUP_GROUP, * PTP_CLEANUP_GROUP;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L152
-	typedef struct _ALPC_WORK_ON_BEHALF_TICKET {
+	struct _ALPC_WORK_ON_BEHALF_TICKET {
 		UINT32 ThreadId;
 		UINT32 ThreadCreationTimeLow;
-	} ALPC_WORK_ON_BEHALF_TICKET, * PALPC_WORK_ON_BEHALF_TICKET;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L96
-	typedef union _TPP_POOL_QUEUE_STATE {
+	union _TPP_POOL_QUEUE_STATE {
 		union {
 			INT64 Exchange;
 			struct {
@@ -195,42 +198,42 @@ extern "C" {
 				UINT32 QueueLength;
 			} DUMMYSTRUCTNAME;
 		} DUMMYUNIONNAME;
-	} TPP_POOL_QUEUE_STATE, * PTPP_POOL_QUEUE_STATE;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L91
-	typedef struct _TPP_NUMA_NODE {
+	struct _TPP_NUMA_NODE {
 		INT32 WorkerCount;
-	} TPP_NUMA_NODE, * PTPP_NUMA_NODE;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L174
-	typedef struct _TPP_PH_LINKS {
+	struct _TPP_PH_LINKS {
 		_LIST_ENTRY Siblings;
 		_LIST_ENTRY Children;
 		INT64 Key;
-	} TPP_PH_LINKS, * PTPP_PH_LINKS;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L54C1-L58C1
-	typedef struct _TPP_PH {
+	struct _TPP_PH {
 		struct _TPP_PH_LINKS* Root;
-	} TPP_PH, * PTPP_PH;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L29C1-L34C1
-	typedef struct _TP_TASK_CALLBACKS {
-		void* ExecuteCallback;
-		void* Unposted;
-	} TP_TASK_CALLBACKS, * PTP_TASK_CALLBACKS;
+	struct _TP_TASK_CALLBACKS {
+		PVOID ExecuteCallback;
+		PVOID Unposted;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L35
-	typedef struct _TP_TASK {
+	struct _TP_TASK {
 		struct _TP_TASK_CALLBACKS* Callbacks;
 		UINT32 NumaNode;
 		UINT8 IdealProcessor;
 		char Padding_242[3];
 		_LIST_ENTRY ListEntry;
-	} TP_TASK, * PTP_TASK;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L59
-	typedef struct _TP_DIRECT {
+	struct _TP_DIRECT {
 		TP_TASK Task;
 		UINT64 Lock;
 		LIST_ENTRY IoCompletionInformationList;
@@ -238,10 +241,10 @@ extern "C" {
 		UINT32 NumaNode;
 		UINT8 IdealProcessor;
 		char __PADDING__[3];
-	} TP_DIRECT, * PTP_DIRECT;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L70C1-L80C45
-	typedef struct _TPP_TIMER_SUBQUEUE {
+	struct _TPP_TIMER_SUBQUEUE {
 		INT64 Expiration;
 		TPP_PH WindowStart;
 		TPP_PH WindowEnd;
@@ -250,25 +253,25 @@ extern "C" {
 		TP_DIRECT Direct;
 		UINT32 ExpirationWindow;
 		INT32 __PADDING__[1];
-	} TPP_TIMER_SUBQUEUE, * PTPP_TIMER_SUBQUEUE;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L82
-	typedef struct _TPP_TIMER_QUEUE {
+	struct _TPP_TIMER_QUEUE {
 		_RTL_SRWLOCK Lock;
 		_TPP_TIMER_SUBQUEUE AbsoluteQueue;
 		_TPP_TIMER_SUBQUEUE RelativeQueue;
 		INT32 AllocatedTimerCount;
 		INT32 __PADDING__[1];
-	} TPP_TIMER_QUEUE, * PTPP_TIMER_QUEUE;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L110
-	typedef struct _TPP_QUEUE {
+	struct _TPP_QUEUE {
 		LIST_ENTRY Queue;
 		RTL_SRWLOCK Lock;
-	} TPP_QUEUE, * PTPP_QUEUE;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L116C1-L151C1
-	typedef struct _FULL_TP_POOL {
+	struct _FULL_TP_POOL {
 		TPP_REFCOUNT Refcount;
 		long Padding_239;
 		TPP_POOL_QUEUE_STATE QueueState;
@@ -301,16 +304,16 @@ extern "C" {
 		long Padding_241;
 		RTL_CONDITION_VARIABLE TrimComplete;
 		LIST_ENTRY TrimmedWorkerList;
-	} FULL_TP_POOL, * PFULL_TP_POOL;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L215
-	typedef struct _TPP_CLEANUP_GROUP_MEMBER {
+	struct _TPP_CLEANUP_GROUP_MEMBER {
 		TPP_REFCOUNT Refcount;
-		long Padding_233;
+		// long Padding_233;
 		const struct _TPP_CLEANUP_GROUP_MEMBER_VFUNCS* VFuncs;
 		PTP_CLEANUP_GROUP CleanupGroup;
-		void* CleanupGroupCancelCallback;
-		void* FinalizationCallback;
+		PVOID CleanupGroupCancelCallback;
+		PVOID FinalizationCallback;
 		LIST_ENTRY CleanupGroupMemberLinks;
 		TPP_BARRIER CallbackBarrier;
 		union {
@@ -347,10 +350,10 @@ extern "C" {
 		TPP_CALLER ReleaseCaller;
 		TP_CALLBACK_PRIORITY CallbackPriority;
 		INT32 __PADDING__[1];
-	} TPP_CLEANUP_GROUP_MEMBER, * PTPP_CLEANUP_GROUP_MEMBER;
+	};
 
 	// https://github.com/icyguider/Shhhloader/blob/f5f1ed1cf004e49d6d10b5a98038213b467a7d0b/PoolParty.h#L452C1-L464C31
-	typedef struct _FULL_TP_JOB {
+	struct _FULL_TP_JOB {
 		struct _TP_DIRECT Direct;
 		struct _TPP_CLEANUP_GROUP_MEMBER CleanupGroupMember;
 		HANDLE JobHandle;
@@ -360,13 +363,13 @@ extern "C" {
 			int64_t CompletionCount : 63;
 		} DUMMYUNIONNAME;
 		RTL_SRWLOCK RundownLock;
-	} FULL_TP_JOB, * PFULL_TP_JOB;
+	};
 
 	// From winnt.h
-	typedef struct _TP_POOL_STACK_INFORMATION {
+	struct _TP_POOL_STACK_INFORMATION {
 		SIZE_T StackReserve;
 		SIZE_T StackCommit;
-	}TP_POOL_STACK_INFORMATION, * PTP_POOL_STACK_INFORMATION;
+	};
 
 	// ========================== functions ==========================
 
@@ -417,7 +420,7 @@ extern "C" {
 		_Inout_opt_ PVOID Context,
 		_In_opt_ PTP_CALLBACK_ENVIRON CallbackEnviron);
 
-	// https://processhacker.sourceforge.io/doc/nttp_8h.html
+	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L32
 	NTSYSAPI NTSTATUS NTAPI TpAllocPool(
 		_Out_ PTP_POOL* PoolReturn,
 		_Reserved_ PVOID Reserved);
@@ -477,7 +480,7 @@ extern "C" {
 	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L131
 	NTSYSAPI VOID NTAPI TpCallbackReleaseSemaphoreOnCompletion(
 		_Inout_ PTP_CALLBACK_INSTANCE Instance,
-		_In_ HANDLE Semaphore,
+		_In_ DWORD Semaphore,
 		_In_ LONG ReleaseCount);
 
 	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L122
@@ -504,6 +507,9 @@ extern "C" {
 
 	// Reversed. Empty function always returning 0. Arguments unknown may not be VOID.
 	NTSYSAPI NTSTATUS NTAPI TpDbgSetLogRoutine(VOID);
+
+	NTSYSAPI NTSTATUS NTAPI TpDisablePoolCallbackChecks(
+		PVOID undefined);
 
 	// https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/nttp.h#L176
 	NTSYSAPI VOID NTAPI TpDisassociateCallback(

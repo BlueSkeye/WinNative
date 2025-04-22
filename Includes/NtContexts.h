@@ -212,28 +212,6 @@ extern "C" {
 		ULONG names_len;
 	};
 
-
-	// https://github.com/wine-mirror/wine/blob/6298b0cab2086ae61f46b284d22c420dfbb2b44e/dlls/ntdll/actctx.c#L566
-	struct _ACTIVATION_CONTEXT {
-		ULONG magic;
-		LONG ref_count;
-		struct file_info config;
-		struct file_info appdir;
-		struct assembly* assemblies;
-		unsigned int num_assemblies;
-		unsigned int allocated_assemblies;
-		/* section data */
-		DWORD sections;
-		struct strsection_header* wndclass_section;
-		struct strsection_header* dllredirect_section;
-		struct strsection_header* progid_section;
-		struct strsection_header* activatable_class_section;
-		struct guidsection_header* tlib_section;
-		struct guidsection_header* comserver_section;
-		struct guidsection_header* ifaceps_section;
-		struct guidsection_header* clrsurrogate_section;
-	};
-
 	// =========================== functions ===========================
 	//https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/actctx.c
 	NTSYSAPI NTSTATUS NTAPI RtlActivateActivationContext(
@@ -255,7 +233,7 @@ extern "C" {
 	//https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/actctx.c
 	NTSYSAPI NTSTATUS NTAPI RtlCreateActivationContext(
 		PHANDLE handle,
-		const PVOID ptr);
+		LPCVOID ptr);
 
 	//https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/actctx.c
 	NTSYSAPI VOID NTAPI RtlDeactivateActivationContext(
@@ -265,17 +243,17 @@ extern "C" {
 	//https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/actctx.c
 	NTSYSAPI NTSTATUS NTAPI RtlFindActivationContextSectionGuid(
 		_In_ ULONG Flags,
-		const PGUID extguid,
+		LPCGUID extguid,
 		ULONG section_kind,
-		const PGUID guid,
+		LPCGUID guid,
 		PVOID ptr);
 
 	// https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/actctx.c
 	NTSYSAPI NTSTATUS NTAPI RtlFindActivationContextSectionString(
 		_In_ ULONG Flags,
-		const PGUID guid,
+		LPCGUID guid,
 		ULONG section_kind,
-		const PUNICODE_STRING section_name,
+		LPCUNICODE_STRING section_name,
 		PVOID ptr);
 
 	// https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/actctx.c
@@ -313,9 +291,9 @@ extern "C" {
 		_In_ SIZE_T ActivationContextInformationLength,
 		_Out_ PSIZE_T retlen);
 
-	//https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/actctx.c
+	//https://github.com/winsiderss/phnt/blob/7e097448b3a2dc3d1b43f9d0e396bbf49f2655a1/ntrtl.h#L3908
 	NTSYSAPI void NTAPI RtlReleaseActivationContext(
-		_In_ HANDLE handle);
+		_In_ PACTIVATION_CONTEXT ActivationContext);
 
 	// https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/actctx.c
 	NTSYSAPI NTSTATUS NTAPI RtlZombifyActivationContext(

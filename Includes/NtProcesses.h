@@ -95,13 +95,24 @@ extern "C" {
         SECTION_IMAGE_INFORMATION ImageInformation;
     } RTL_USER_PROCESS_INFORMATION, * PRTL_USER_PROCESS_INFORMATION;
 
+    typedef struct _TEB_THREAD_POOL_DATA_STR1 {
+        BYTE field_0[240];
+        PTP_IO pIo;
+    } TEB_THREAD_POOL_DATA_STR1, * PTEB_THREAD_POOL_DATA_STR1;
+
+    typedef struct _TEB_THREAD_POOL_DATA {
+        PTEB_THREAD_POOL_DATA_STR1 pThreadPoolDataStr1;
+        BYTE field_8[120];
+        DWORD field_80;
+    } TEB_THREAD_POOL_DATA, *PTEB_THREAD_POOL_DATA;
+
     typedef struct _THREAD_BASIC_INFORMATION {
         NTSTATUS ExitStatus;
         PVOID TebBaseAddress;
-        CLIENT_ID  ClientId;
-        KAFFINITY  AffinityMask;
-        KPRIORITY  Priority;
-        KPRIORITY  BasePriority;
+        CLIENT_ID ClientId;
+        KAFFINITY AffinityMask;
+        KPRIORITY Priority;
+        KPRIORITY BasePriority;
     } THREAD_BASIC_INFORMATION, * PTHREAD_BASIC_INFORMATION;
 
     // https://github.com/winsiderss/systeminformer/blob/c0f39855eec2553f0019566849df678356fb3273/phnt/include/ntpsapi.h#L1536C1-L1541C52
@@ -349,7 +360,7 @@ extern "C" {
         ThreadCycleTime = 23, // q: THREAD_CYCLE_TIME_INFORMATION (requires THREAD_QUERY_LIMITED_INFORMATION)
         ThreadPagePriority = 24, // qs: PAGE_PRIORITY_INFORMATION
         ThreadActualBasePriority = 25, // s: LONG (requires SeIncreaseBasePriorityPrivilege)
-        ThreadTebInformation = 26, // q: THREAD_TEB_INFORMATION (requires THREAD_GET_CONTEXT + THREAD_SET_CONTEXT)
+        ThreadTebInformation = 26, // q:THREAD_TEB_INFORMATION (requires THREAD_GET_CONTEXT + THREAD_SET_CONTEXT)
         ThreadCSwitchMon = 27, // Obsolete
         ThreadCSwitchPmu = 28, // Obsolete
         ThreadWow64Context = 29, // qs: WOW64_CONTEXT, ARM_NT_CONTEXT since 20H1

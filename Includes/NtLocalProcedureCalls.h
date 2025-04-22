@@ -4,6 +4,7 @@
 #define _NTLOCALPROCEDURECALLS_
 
 #include "NtCommonDefs.h"
+#include "NtAccessRights.h"
 
 #ifdef __cplusplus
 extern "C" {

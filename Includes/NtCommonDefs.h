@@ -25,10 +25,11 @@
 // Forward declarations
 typedef struct _SID_IDENTIFIER_AUTHORITY* PSID_IDENTIFIER_AUTHORITY;
 typedef struct _UNICODE_STRING* PUNICODE_STRING;
+typedef const _UNICODE_STRING* LPCUNICODE_STRING;
 
 // Intrinsic types aliases
 typedef int errno_t;
-typedef void* LPVOID;
+typedef void* PVOID, *LPVOID, ** PPVOID;
 typedef const void *LPCVOID;
 typedef int BOOL, * PBOOL;
 typedef unsigned char BYTE;
@@ -45,22 +46,21 @@ typedef __int64 LONG_PTR, * PLONG_PTR;
 typedef signed __int64 int64_t;
 typedef short SHORT, * PSHORT;
 typedef unsigned char UCHAR, * PUCHAR;
-typedef unsigned int uint32_t, UINT, UINT32;
+typedef unsigned int uint32_t, UINT, UINT32, *PUINT32;
 typedef unsigned __int64 uint64_t, DWORD64, UINT_PTR, * PUINT_PTR;
-typedef unsigned long ULONG, * PULONG;
+typedef unsigned long ULONG, ULONG32, * PULONG, * PULONG32;
 typedef unsigned __int64 ULONGLONG, *PULONGLONG;
 typedef unsigned __int64 ULONG_PTR, * PULONG_PTR;
 typedef unsigned char UINT8, * PUINT8;
 typedef unsigned short UINT16, *PUINT16, USHORT, * PUSHORT;
 typedef wchar_t WCHAR;    // wc,   16-bit UNICODE character
-typedef short WORD;
+typedef short WORD, *PWORD;
 
 // More derived types.
 typedef BYTE BOOLEAN, *PBOOLEAN, *PBYTE;
 typedef DWORD INT32, LCID, *PLCID;
 typedef ULONG CLONG, LOGICAL; 
 typedef LONG NTSTATUS, *PNTSTATUS;
-typedef VOID* PVOID, ** PPVOID;
 typedef void* POINTER_64 PVOID64;
 typedef const VOID* PCVOID;
 typedef ULONGLONG REGHANDLE, * PREGHANDLE;
@@ -82,37 +82,27 @@ typedef USHORT LANGID;
 typedef size_t SIZE_T, * PSIZE_T;
 
 typedef _Null_terminated_ CHAR* LPCH, * LPSTR, * NPSTR, * PCH, * PCHAR, * PSTR, * PSZ;
-typedef _Null_terminated_ CONST char *LPCCH, * LPCSTR, * PCCH, * PCSTR, * PCSZ;
+typedef _Null_terminated_ const char *LPCCH, * LPCSTR, * PCCH, * PCSTR, * PCSZ;
 
-typedef WCHAR* PWCHAR, * LPWCH, * PWCH;
-typedef CONST WCHAR* LPCWCH, * PCWCH;
+typedef wchar_t* PWCHAR, * LPWCH, * PWCH, * PNZWCH;
+typedef const wchar_t* LPCWCH, * PCWCH, * PCNZWCH, * LPCWCHAR, * PCWCHAR, * STRSAFE_PCNZWCH;
+typedef  wchar_t UNALIGNED* PUNZWCH;
+typedef  const wchar_t UNALIGNED* PCUNZWCH, * LPCUWCHAR, * PCUWCHAR;
 
-typedef _Null_terminated_ WCHAR* NWPSTR, * LPWSTR, * PWSTR;
+typedef _Null_terminated_ wchar_t* NWPSTR, * LPWSTR, * PWSTR, * PZZWSTR, *NTSTRSAFE_PWSTR;
 typedef _Null_terminated_ PWSTR* PZPWSTR;
-typedef _Null_terminated_ CONST PWSTR* PCZPWSTR;
-typedef _Null_terminated_ WCHAR UNALIGNED* LPUWSTR, * PUWSTR;
-typedef _Null_terminated_ CONST WCHAR* LPCWSTR, * PCWSTR;
+typedef _Null_terminated_ const PWSTR* PCZPWSTR;
+typedef _Null_terminated_ wchar_t UNALIGNED* LPUWSTR, * PUWSTR, * PUZZWSTR;
+typedef _Null_terminated_ const wchar_t* LPCWSTR, * PCWSTR, * PCZZWSTR;
 typedef _Null_terminated_ PCWSTR* PZPCWSTR;
-typedef _Null_terminated_ CONST PCWSTR* PCZPCWSTR;
-typedef _Null_terminated_ CONST WCHAR UNALIGNED* LPCUWSTR, * PCUWSTR;
+typedef _Null_terminated_ const PCWSTR* PCZPCWSTR;
+typedef _Null_terminated_ const wchar_t UNALIGNED* LPCUWSTR, * PCUWSTR, * PCUZZWSTR;
 
-typedef _NullNull_terminated_ WCHAR* PZZWSTR;
-typedef _NullNull_terminated_ CONST WCHAR* PCZZWSTR;
-typedef _NullNull_terminated_ WCHAR UNALIGNED* PUZZWSTR;
-typedef _NullNull_terminated_ CONST WCHAR UNALIGNED* PCUZZWSTR;
-
-typedef  WCHAR* PNZWCH;
-typedef  CONST WCHAR* PCNZWCH;
-typedef  WCHAR UNALIGNED* PUNZWCH;
-typedef  CONST WCHAR UNALIGNED* PCUNZWCH;
-
-typedef CONST WCHAR* LPCWCHAR, * PCWCHAR;
-typedef CONST WCHAR UNALIGNED* LPCUWCHAR, * PCUWCHAR;
-
-#define NTSYSAPI __declspec(dllimport)
 #ifdef _NTDLL_IMPL_
-#define NTSYSCALLAPI 
+#define NTSYSAPI __declspec(dllexport)
+#define NTSYSCALLAPI __declspec(dllexport)
 #else
+#define NTSYSAPI __declspec(dllimport)
 #define NTSYSCALLAPI __declspec(dllimport)
 #endif
 #define NTAPI __stdcall

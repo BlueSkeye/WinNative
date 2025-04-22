@@ -359,12 +359,12 @@ extern "C" {
 		HEAP_TAG_SHIFT = 18,
 		HEAP_CREATE_SEGMENT_HEAP = 0x00000100,
 		HEAP_CREATE_HARDENED = 0x00000200
-	} HEALLOC_FLAGS, *PHEAPALLOC_FLAGS;
+	} HEAPALLOC_FLAGS, *PHEAPALLOC_FLAGS;
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-rtlallocateheap
 	NTSYSAPI PVOID RtlAllocateHeap(
 		_In_ PVOID HeapHandle,
-		_In_opt_ HEALLOC_FLAGS Flags,
+		_In_opt_ HEAPALLOC_FLAGS Flags,
 		_In_ SIZE_T Size);
 
 	// https://processhacker.sourceforge.io/doc/ntrtl_8h.html#a45d5646d40fe2acf29e8137ca6b93795
