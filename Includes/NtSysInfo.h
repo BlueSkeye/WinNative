@@ -354,6 +354,36 @@ extern "C" {
             GROUP_RELATIONSHIP     Group;
         } DUMMYUNIONNAME;
     } SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX, * PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX;
+
+    // https://learn.microsoft.com/fr-fr/windows/win32/api/winnt/ne-winnt-firmware_type
+    typedef enum _FIRMWARE_TYPE {
+        FirmwareTypeUnknown,
+        FirmwareTypeBios,
+        FirmwareTypeUefi,
+        FirmwareTypeMax
+    } FIRMWARE_TYPE, * PFIRMWARE_TYPE;
+
+    // https://github.com/winsiderss/systeminformer/blob/d61dadd1645d4e12cee3ab6d25ff017c1e5ef180/phnt/include/ntexapi.h#L3418
+    typedef struct _SYSTEM_BOOT_ENVIRONMENT_INFORMATION {
+        GUID BootIdentifier;
+        FIRMWARE_TYPE FirmwareType;
+        union {
+            ULONGLONG BootFlags;
+            struct {
+                ULONGLONG DbgMenuOsSelection : 1; // REDSTONE4
+                ULONGLONG DbgHiberBoot : 1;
+                ULONGLONG DbgSoftBoot : 1;
+                ULONGLONG DbgMeasuredLaunch : 1;
+                ULONGLONG DbgMeasuredLaunchCapable : 1; // 19H1
+                ULONGLONG DbgSystemHiveReplace : 1;
+                ULONGLONG DbgMeasuredLaunchSmmProtections : 1;
+                ULONGLONG DbgMeasuredLaunchSmmLevel : 7; // 20H1
+                ULONGLONG DbgBugCheckRecovery : 1; // 24H2
+                ULONGLONG DbgFASR : 1;
+                ULONGLONG DbgUseCachedBcd : 1;
+            } DUMMYSTRUCTNAME;
+        } DUMMYUNIONNAME;
+    } SYSTEM_BOOT_ENVIRONMENT_INFORMATION, * PSYSTEM_BOOT_ENVIRONMENT_INFORMATION;
         
 #ifdef __cplusplus
 }

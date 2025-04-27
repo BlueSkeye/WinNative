@@ -55,10 +55,7 @@ extern "C" {
     struct _RTL_USER_PROCESS_PARAMETERS {
         BYTE Reserved1[16];
         PVOID Reserved2[5];
-        // Probably a UNICODE_STRING
-        WORD field_38;
-        WORD field_3A;
-        PWSTR field_40;
+        UNICODE_STRING field_38;
         PVOID Reserved3[3];
         UNICODE_STRING ImagePathName; // MS official
         UNICODE_STRING CommandLine; // MS official

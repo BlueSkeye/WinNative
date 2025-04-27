@@ -668,7 +668,7 @@ extern "C" {
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntsetinformationthread
     // See winternl.h
     // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
-    NTSYSAPI NTSTATUS NTAPI ZwSetInformationThread(
+    NTSYSAPI NTSTATUS NTAPI NtSetInformationThread(
         _In_ HANDLE ThreadHandle,
         _In_ THREADINFOCLASS ThreadInformationClass,
         _In_reads_bytes_(ThreadInformationLength) PVOID ThreadInformation,

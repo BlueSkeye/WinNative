@@ -490,7 +490,7 @@ extern "C" {
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwwaitforsingleobject
 	// See winternl.h
 	// https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
-	NTSYSAPI  NTSTATUS NTAPI ZwWaitForSingleObject(
+	NTSYSAPI  NTSTATUS NTAPI NtWaitForSingleObject(
 		_In_ HANDLE Handle,
 		_In_ BOOLEAN Alertable,
 		_In_opt_ PLARGE_INTEGER Timeout);

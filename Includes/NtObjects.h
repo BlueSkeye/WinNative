@@ -169,7 +169,7 @@ extern "C" {
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntqueryobject
     // See winternl.h
     // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
-    NTSYSAPI NTSTATUS NTAPI ZwQueryObject(
+    NTSYSAPI NTSTATUS NTAPI NtQueryObject(
         _In_ HANDLE Handle,
         _In_ OBJECT_INFORMATION_CLASS ObjectInformationClass,
         _Out_writes_bytes_opt_(ObjectInformationLength) PVOID ObjectInformation,
