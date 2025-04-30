@@ -138,6 +138,47 @@ extern "C" {
 		ULONGLONG Alignment;
 	} FILE_SEGMENT_ELEMENT, * PFILE_SEGMENT_ELEMENT;
 
+	// https://github.com/winsiderss/systeminformer/blob/ece2a073a64f31016102969c6c56ee42ade9aa34/phnt/include/ntioapi.h#L1811
+	//  Flag definitions for NtFlushBuffersFileEx
+	typedef enum _FLUSH_BUFFERS_FILE_EX_FLAGS FLUSH_BUFFERS_FILE_EX_FLAGS, * PFLUSH_BUFFERS_FILE_EX_FLAGS;
+	enum _FLUSH_BUFFERS_FILE_EX_FLAGS {
+		//  If none of the below flags are specified the following will occur for a
+		//  given file handle:
+		//      - Write any modified data for the given file from the Windows in-memory
+		//        cache.
+		//      - Commit all pending metadata changes for the given file from the
+		//        Windows in-memory cache.
+		//      - Send a SYNC command to the underlying storage device to commit all
+		//        written data in the devices cache to persistent storage.
+		//  If a volume handle is specified:
+		//      - Write all modified data for all files on the volume from the Windows
+		//        in-memory cache.
+		//      - Commit all pending metadata changes for all files on the volume from
+		//        the Windows in-memory cache.
+		//      - Send a SYNC command to the underlying storage device to commit all
+		//        written data in the devices cache to persistent storage.
+		//  This is equivalent to how NtFlushBuffersFile has always worked.
+		//  If set, this operation will write the data for the given file from the
+		//  Windows in-memory cache.  This will NOT commit any associated metadata
+		//  changes.  This will NOT send a SYNC to the storage device to flush its
+		//  cache.  Not supported on volume handles.
+		FLUSH_FLAGS_FILE_DATA_ONLY = 0x00000001,
+		//  If set, this operation will commit both the data and metadata changes for
+		//  the given file from the Windows in-memory cache.  This will NOT send a SYNC
+		//  to the storage device to flush its cache.  Not supported on volume handles.
+		FLUSH_FLAGS_NO_SYNC = 0x00000002,
+		//  If set, this operation will write the data for the given file from the
+		//  Windows in-memory cache.  It will also try to skip updating the timestamp
+		//  as much as possible.  This will send a SYNC to the storage device to flush its
+		//  cache.  Not supported on volume or directory handles.
+		FLUSH_FLAGS_FILE_DATA_SYNC_ONLY = 0x00000004, // REDSTONE1
+		//  If set, this operation will write the data for the given file from the
+		//  Windows in-memory cache.  It will also try to skip updating the timestamp
+		//  as much as possible.  This will send a SYNC to the storage device to flush its
+		//  cache.  Not supported on volume or directory handles.
+		FLUSH_FLAGS_FLUSH_AND_PURGE = 0x00000008 // 24H2
+	};
+
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_fsinfoclass
 	typedef enum _FSINFOCLASS {
 		FileFsVolumeInformation,
@@ -410,13 +451,21 @@ extern "C" {
 	// ZwDeviceIoControlFile
 
 	// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntflushbuffersfile
-	NTSYSCALLAPI NTSTATUS NtFlushBuffersFileEx(
+	NTSYSCALLAPI NTSTATUS NtFlushBuffersFile(
 		_In_ HANDLE FileHandle,
 		_In_ ULONG Flags,
 		_In_ PVOID Parameters,
 		_In_ ULONG ParametersSize,
 		_Out_ PIO_STATUS_BLOCK IoStatusBlock);
 	//ZwFlushBuffersFile
+
+	// https://github.com/winsiderss/systeminformer/blob/ece2a073a64f31016102969c6c56ee42ade9aa34/phnt/include/ntioapi.h#L1862C1-L1871C7
+	NTSYSCALLAPI NTSTATUS NTAPI NtFlushBuffersFileEx(
+		_In_ HANDLE FileHandle,
+		_In_ FLUSH_BUFFERS_FILE_EX_FLAGS Flags,
+		_In_reads_bytes_(ParametersSize) PVOID Parameters,
+		_In_ ULONG ParametersSize,
+		_Out_ PIO_STATUS_BLOCK IoStatusBlock);
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-zwfscontrolfile
 	NTSYSAPI NTSTATUS NtFsControlFile(
@@ -482,7 +531,7 @@ extern "C" {
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/Winternl/nf-winternl-ntopenfile
 	// https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
-	NTSYSCALLAPI NTSTATUS NTAPI ZwOpenFile(
+	NTSYSCALLAPI NTSTATUS NTAPI NtOpenFile(
 		_Out_ PHANDLE FileHandle,
 		_In_ ACCESS_MASK DesiredAccess,
 		_In_ POBJECT_ATTRIBUTES ObjectAttributes,
@@ -651,8 +700,7 @@ extern "C" {
 		_In_  HANDLE           FileHandle,
 		_Out_ PIO_STATUS_BLOCK IoStatusBlock,
 		_In_  PVOID            Buffer,
-		_In_  ULONG            Length
-	);
+		_In_  ULONG            Length);
 	//ZwSetEaFile
 
 	//https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntsetinformationfile

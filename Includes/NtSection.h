@@ -69,7 +69,8 @@ extern "C" {
 		_In_ ULONG ExtendedParameterCount);
 	//ZwCreateSectionEx
 
-	NTSYSAPI NTSTATUS NTAPI NtExtendSection(_In_ HANDLE SectionHandle,
+	NTSYSAPI NTSTATUS NTAPI NtExtendSection(
+		_In_ HANDLE SectionHandle,
 		_Inout_ PLARGE_INTEGER NewSectionSize);
 	//ZwExtendSection
 

@@ -209,7 +209,7 @@ extern "C" {
     // https://learn.microsoft.com/en-us/windows/win32/api/Winternl/nf-winternl-ntnotifychangemultiplekeys
     // See winternl.h
     // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
-    NTSYSCALLAPI NTSTATUS NTAPI ZwNotifyChangeMultipleKeys(
+    NTSYSCALLAPI NTSTATUS NTAPI NtNotifyChangeMultipleKeys(
         _In_ HANDLE MasterKeyHandle,
         _In_opt_ ULONG Count,
         _In_reads_opt_(Count) OBJECT_ATTRIBUTES SubordinateObjects[],
@@ -316,7 +316,7 @@ extern "C" {
 
     // See winternl.h
     // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
-    NTSYSCALLAPI NTSTATUS NTAPI ZwRenameKey(
+    NTSYSCALLAPI NTSTATUS NTAPI NtRenameKey(
         _In_ HANDLE KeyHandle,
         _In_ PUNICODE_STRING NewName);
     //ZwRenameKey

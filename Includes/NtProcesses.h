@@ -519,7 +519,7 @@ extern "C" {
 	//ZwDelayExecution
 
     // https://processhacker.sourceforge.io/doc/ntzwapi_8h_source.html
-    NTSYSAPI NTSTATUS NTAPI ZwGetContextThread(
+    NTSYSAPI NTSTATUS NTAPI NtGetContextThread(
         _In_ HANDLE ThreadHandle,
         _Inout_ PCONTEXT ThreadContext);
     //ZwGetContextThread

@@ -995,6 +995,10 @@ extern "C" {
 		_Out_ PBOOLEAN IsInSchema,
 		_Out_ PBOOLEAN Present);
 
+	// https://github.com/winsiderss/systeminformer/blob/ece2a073a64f31016102969c6c56ee42ade9aa34/phnt/include/ntexapi.h#L1796C1-L1801C7
+	NTSYSCALLAPI NTSTATUS NTAPI NtAllocateLocallyUniqueId(
+		_Out_ PLUID Luid);
+
 	// https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
 	NTSYSAPI NTSTATUS NTAPI NtAllocateUuids(
 		_Out_ PLARGE_INTEGER UuidLastTimeAllocated,

@@ -663,7 +663,7 @@ extern "C" {
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
     NTSYSCALLAPI NTSTATUS NTAPI NtImpersonateAnonymousToken(
-        _In_ HANDLE THreadHandle);
+        _In_ HANDLE ThreadHandle);
     //ZwImpersonateAnonymousToken
 
     // https://raw.githubusercontent.com/rogerorr/NtTrace/refs/heads/main/NtTrace.cfg
